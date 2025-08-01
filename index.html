@@ -1586,21 +1586,30 @@
                         const contentType = activeTab.dataset.type;
                         console.log('Saving content type:', contentType, 'with ID:', id);
                         
+                        // Debug: Check if required elements exist
+                        console.log('Checking required elements...');
+                        console.log('entryIdInput:', entryIdInput);
+                        console.log('activeTab:', activeTab);
+                        console.log('contentType:', contentType);
+                        
                         if (contentType === 'channel') {
+                            console.log('Saving channel...');
                             saveChannel(id);
                         } else if (contentType === 'series') {
+                            console.log('Saving series...');
                             saveSeries(id);
                         } else {
+                            console.log('Saving movie...');
                             saveMovie(id);
                         }
                         
-                                            console.log('Content saved successfully');
-                    renderEntries();
-                    closeModal();
-                    
-                    // Save to localStorage after successful save
-                    saveToLocalStorage();
-                    showNotification('Content saved successfully!', true);
+                        console.log('Content saved successfully');
+                        renderEntries();
+                        closeModal();
+                        
+                        // Save to localStorage after successful save
+                        saveToLocalStorage();
+                        showNotification('Content saved successfully!', true);
                         
                     } catch (error) {
                         console.error('Error saving content:', error);
