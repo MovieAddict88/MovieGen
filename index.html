@@ -987,6 +987,7 @@
             // --- State Management ---
             let jsonData = null;
             let currentMovieSources = [];
+            let currentMovieGenres = [];
             let currentFilter = 'all';
             let currentSeriesData = { seasons: [] };
 
@@ -1095,7 +1096,8 @@
                                 alert('Channel saved successfully!');
                             }
                             
-                            // Update UI
+                            // Update UI and auto-generate related content
+                            autoGenerateRelatedContent();
                             renderEntries();
                             closeModal();
                             
@@ -1239,6 +1241,184 @@
                 }
             };
             console.log('✅ You can now test with: testFormSubmit() in console');
+            
+            // --- Auto-Generation Functions ---
+            function autoGenerateRelatedContent() {
+                console.log('🔄 Auto-generating slides, featured content, actors, and genres...');
+                
+                try {
+                    // Initialize structures
+                    if (!jsonData.home) jsonData.home = {};
+                    if (!jsonData.home.slides) jsonData.home.slides = [];
+                    if (!jsonData.home.featured_movies) jsonData.home.featured_movies = [];
+                    if (!jsonData.actors) jsonData.actors = [];
+                    if (!jsonData.genres) jsonData.genres = [];
+                    if (!jsonData.api_info) jsonData.api_info = {
+                        version: "2.0",
+                        description: "Enhanced Free Movie & TV Streaming JSON API",
+                        last_updated: new Date().toISOString().split('T')[0],
+                        total_movies: 0,
+                        total_channels: 0,
+                        total_actors: 0
+                    };
+                    
+                    // Auto-generate slides from top-rated content
+                    autoGenerateSlides();
+                    
+                    // Auto-generate featured movies (high-rated movies)
+                    autoGenerateFeaturedMovies();
+                    
+                    // Auto-generate actors from movie/series data
+                    autoGenerateActors();
+                    
+                    // Auto-generate genres from movie/series data
+                    autoGenerateGenres();
+                    
+                    // Update API info
+                    updateApiInfo();
+                    
+                    console.log('✅ Auto-generation completed successfully');
+                } catch (error) {
+                    console.error('❌ Error in auto-generation:', error);
+                }
+            }
+            
+            function autoGenerateSlides() {
+                console.log('📸 Generating slides...');
+                
+                // Get top content for slides (movies, series, channels with images)
+                const allContent = [
+                    ...(jsonData.movies || []).map(m => ({...m, contentType: 'movie', url: `movies/${m.id}`})),
+                    ...(jsonData.channels || []).map(c => ({...c, contentType: 'channel', url: `channels/${c.id}`}))
+                ];
+                
+                // Filter content with images and sort by rating
+                const slideContent = allContent
+                    .filter(item => item.image && item.title)
+                    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+                    .slice(0, 5); // Top 5 for slides
+                
+                // Generate slides
+                jsonData.home.slides = slideContent.map((item, index) => ({
+                    id: index + 1,
+                    title: item.title,
+                    type: item.contentType,
+                    image: item.image,
+                    url: item.url,
+                    poster: item.contentType === 'movie' ? { ...item } : null,
+                    channel: item.contentType === 'channel' ? { ...item } : null
+                }));
+                
+                console.log(`✅ Generated ${jsonData.home.slides.length} slides`);
+            }
+            
+            function autoGenerateFeaturedMovies() {
+                console.log('⭐ Generating featured movies...');
+                
+                // Get movies with rating >= 7 or recent movies
+                const featuredMovies = (jsonData.movies || [])
+                    .filter(movie => (movie.rating >= 7 || movie.year >= 2020) && movie.image)
+                    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+                    .slice(0, 10); // Top 10 featured
+                
+                jsonData.home.featured_movies = featuredMovies.map(movie => ({
+                    ...movie,
+                    views: movie.views || 0,
+                    created_at: movie.created_at || new Date().toISOString().split('T')[0]
+                }));
+                
+                console.log(`✅ Generated ${jsonData.home.featured_movies.length} featured movies`);
+            }
+            
+            function autoGenerateActors() {
+                console.log('👥 Generating actors...');
+                
+                const actorMap = new Map();
+                
+                // Collect actors from movies and series
+                (jsonData.movies || []).forEach(movie => {
+                    if (movie.actors && movie.actors.length > 0) {
+                        movie.actors.forEach(actor => {
+                            if (actor.name) {
+                                const key = actor.name.toLowerCase();
+                                if (!actorMap.has(key)) {
+                                    actorMap.set(key, {
+                                        id: actorMap.size + 1,
+                                        name: actor.name,
+                                        type: actor.type || 'actor',
+                                        role: actor.role || 'Actor',
+                                        image: actor.image || '',
+                                        born: actor.born || '',
+                                        height: actor.height || '',
+                                        bio: actor.bio || '',
+                                        movies: []
+                                    });
+                                }
+                                
+                                // Add movie to actor's filmography
+                                const actorData = actorMap.get(key);
+                                actorData.movies.push({
+                                    id: movie.id,
+                                    title: movie.title,
+                                    image: movie.image,
+                                    year: movie.year
+                                });
+                            }
+                        });
+                    }
+                });
+                
+                jsonData.actors = Array.from(actorMap.values());
+                console.log(`✅ Generated ${jsonData.actors.length} actors`);
+            }
+            
+            function autoGenerateGenres() {
+                console.log('🏷️ Generating genres...');
+                
+                const genreMap = new Map();
+                
+                // Collect genres from movies and series
+                (jsonData.movies || []).forEach(movie => {
+                    if (movie.genres && movie.genres.length > 0) {
+                        movie.genres.forEach(genre => {
+                            if (genre.title) {
+                                const key = genre.title.toLowerCase();
+                                if (!genreMap.has(key)) {
+                                    genreMap.set(key, {
+                                        id: genreMap.size + 1,
+                                        title: genre.title,
+                                        posters: []
+                                    });
+                                }
+                                
+                                // Add movie poster to genre
+                                const genreData = genreMap.get(key);
+                                if (movie.image && !genreData.posters.find(p => p.id === movie.id)) {
+                                    genreData.posters.push({
+                                        id: movie.id,
+                                        title: movie.title,
+                                        image: movie.image
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+                
+                jsonData.genres = Array.from(genreMap.values());
+                console.log(`✅ Generated ${jsonData.genres.length} genres`);
+            }
+            
+            function updateApiInfo() {
+                console.log('📊 Updating API info...');
+                
+                jsonData.api_info.total_movies = (jsonData.movies || []).length;
+                jsonData.api_info.total_channels = (jsonData.channels || []).length;
+                jsonData.api_info.total_actors = (jsonData.actors || []).length;
+                jsonData.api_info.last_updated = new Date().toISOString().split('T')[0];
+                
+                console.log(`✅ Updated API info: ${jsonData.api_info.total_movies} movies, ${jsonData.api_info.total_channels} channels, ${jsonData.api_info.total_actors} actors`);
+            }
             
             // --- Utility Functions ---
             function showNotification(message, isSuccess = true) {
@@ -1672,7 +1852,7 @@
                     downloads: 0,
                     shares: 0,
                     created_at: new Date().toISOString().split('T')[0],
-                    genres: [],
+                    genres: currentMovieGenres.length > 0 ? currentMovieGenres : [],
                     actors: [],
                     subtitles: [],
                     comments: []
@@ -2110,6 +2290,10 @@
                         `https://image.tmdb.org/t/p/w500${movieData.poster_path}` : '';
                     movieCoverInput.value = movieData.backdrop_path ? 
                         `https://image.tmdb.org/t/p/original${movieData.backdrop_path}` : '';
+                    
+                    // Auto-add genres from TMDb
+                    currentMovieGenres = movieData.genres || [];
+                    console.log('Auto-added genres:', currentMovieGenres);
                     
                     // Fetch trailer
                     const videosUrl = `https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=${tmdbApiKey}`;
