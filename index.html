@@ -95,6 +95,50 @@
             flex: 1;
         }
         
+        .auto-gen-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .auto-gen-toggle label {
+            margin: 0;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .auto-gen-toggle input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+        }
+        
+        .auto-gen-toggle .help-text {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-left: 10px;
+        }
+        
+        .btn-secondary {
+            background-color: var(--gray);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
         label {
             display: block;
             margin-bottom: 8px;
@@ -590,6 +634,22 @@
 
         <div class="card">
             <h2><i class="fas fa-download"></i> 1. Load Data</h2>
+            
+            <div class="auto-gen-toggle">
+                <input type="checkbox" id="autoGenToggle" checked>
+                <label for="autoGenToggle">Auto-generate slides, featured, actors, and genres</label>
+                <span class="help-text">When enabled, automatically creates related content when you add movies/series</span>
+                <button id="manualGenButton" class="btn btn-secondary" style="margin-left: 20px;">
+                    <i class="fas fa-magic"></i> Generate Now
+                </button>
+                <button id="validateJsonButton" class="btn btn-secondary" style="margin-left: 10px;">
+                    <i class="fas fa-check-circle"></i> Validate JSON
+                </button>
+                <div id="autoGenStatus" style="margin-left: 20px; font-size: 0.9rem; color: var(--success); display: none;">
+                    <i class="fas fa-check-circle"></i> Auto-generation active
+                </div>
+            </div>
+            
             <div class="load-section">
                 <div class="load-file">
                     <label for="fileInput">Load JSON file:</label>
@@ -990,6 +1050,9 @@
             let currentMovieGenres = [];
             let currentFilter = 'all';
             let currentSeriesData = { seasons: [] };
+            let currentSeriesGenres = [];
+            let currentSeriesActors = [];
+            let autoGenerationEnabled = true; // Global control for auto-generation
 
             // SIMPLE CLICK TEST
             console.log('🧪 Setting up simple click tests...');
@@ -1255,8 +1318,93 @@
             };
             console.log('✅ You can test auto-generation with: testAutoGeneration() in console');
             
+            // --- Auto-Generation Control ---
+            const autoGenToggle = document.getElementById('autoGenToggle');
+            const manualGenButton = document.getElementById('manualGenButton');
+            
+            if (autoGenToggle) {
+                autoGenToggle.addEventListener('change', (e) => {
+                    autoGenerationEnabled = e.target.checked;
+                    console.log(`Auto-generation ${autoGenerationEnabled ? 'enabled' : 'disabled'}`);
+                    showNotification(`Auto-generation ${autoGenerationEnabled ? 'enabled' : 'disabled'}`, true);
+                    
+                    // Update status indicator
+                    const statusElement = document.getElementById('autoGenStatus');
+                    if (statusElement) {
+                        statusElement.style.display = autoGenerationEnabled ? 'inline-block' : 'none';
+                    }
+                });
+                
+                // Initialize status indicator
+                const statusElement = document.getElementById('autoGenStatus');
+                if (statusElement && autoGenerationEnabled) {
+                    statusElement.style.display = 'inline-block';
+                }
+            }
+            
+            if (manualGenButton) {
+                manualGenButton.addEventListener('click', () => {
+                    if (!jsonData) {
+                        showNotification('Please load data first before generating content', false);
+                        return;
+                    }
+                    
+                    console.log('🔧 Manual generation triggered...');
+                    showNotification('Generating related content...', true);
+                    
+                    // Temporarily enable auto-generation for manual trigger
+                    const wasEnabled = autoGenerationEnabled;
+                    autoGenerationEnabled = true;
+                    
+                    autoGenerateRelatedContent();
+                    renderEntries();
+                    
+                    // Restore previous state
+                    autoGenerationEnabled = wasEnabled;
+                    
+                    showNotification('Content generation completed!', true);
+                });
+            }
+            
+            const validateJsonButton = document.getElementById('validateJsonButton');
+            if (validateJsonButton) {
+                validateJsonButton.addEventListener('click', () => {
+                    if (!jsonData) {
+                        showNotification('Please load data first before validating', false);
+                        return;
+                    }
+                    
+                    console.log('🔍 Manual JSON validation triggered...');
+                    const validation = validateJsonStructure(jsonData);
+                    
+                    if (validation.isValid) {
+                        showNotification('✅ JSON structure is valid!', true);
+                        if (validation.warnings.length > 0) {
+                            console.warn('⚠️ Warnings:', validation.warnings);
+                            setTimeout(() => {
+                                showNotification(`⚠️ Warnings: ${validation.warnings.join(', ')}`, false);
+                            }, 1000);
+                        }
+                    } else {
+                        showNotification(`❌ JSON validation failed: ${validation.errors.join(', ')}`, false);
+                        
+                        if (confirm('Would you like to attempt to fix the issues automatically?')) {
+                            const fixResult = fixJsonStructure(jsonData);
+                            jsonData = fixResult.data;
+                            renderEntries();
+                            showNotification(`✅ Fixed ${fixResult.fixes.length} issues!`, true);
+                        }
+                    }
+                });
+            }
+            
             // --- Auto-Generation Functions ---
             function autoGenerateRelatedContent() {
+                if (!autoGenerationEnabled) {
+                    console.log('⏸️ Auto-generation disabled, skipping...');
+                    return;
+                }
+                
                 console.log('🔄 Auto-generating slides, featured content, actors, and genres...');
                 
                 try {
@@ -1305,10 +1453,16 @@
                     ...(jsonData.channels || []).map(c => ({...c, contentType: 'channel', url: `channels/${c.id}`}))
                 ];
                 
-                // Filter content with images and sort by rating
+                // Filter content with images and sort by rating, then by year (newer first)
                 const slideContent = allContent
                     .filter(item => item.image && item.title)
-                    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+                    .sort((a, b) => {
+                        // First sort by rating (high to low)
+                        const ratingDiff = (b.rating || 0) - (a.rating || 0);
+                        if (ratingDiff !== 0) return ratingDiff;
+                        // Then by year (newer first)
+                        return (b.year || 0) - (a.year || 0);
+                    })
                     .slice(0, 5); // Top 5 for slides
                 
                 // Generate slides - create at least one default slide if no content
@@ -1336,7 +1490,12 @@
                         type: item.contentType,
                         image: item.image,
                         url: item.url,
-                        poster: item.contentType === 'movie' ? { ...item } : null,
+                        poster: item.contentType === 'movie' ? { 
+                            ...item,
+                            label: item.contentType === 'movie' ? 'Latest Movie' : 'Featured Content',
+                            sublabel: item.year ? `Released ${item.year}` : 'New Release',
+                            description: item.description || item.overview || 'Check out this amazing content!'
+                        } : null,
                         channel: item.contentType === 'channel' ? { ...item } : null
                     }));
                 }
@@ -1347,27 +1506,40 @@
             function autoGenerateFeaturedMovies() {
                 console.log('⭐ Generating featured movies...');
                 
-                // Get movies with rating >= 7 or recent movies
+                // Get movies with rating >= 7 or recent movies (last 3 years)
+                const currentYear = new Date().getFullYear();
                 const featuredMovies = (jsonData.movies || [])
-                    .filter(movie => (movie.rating >= 7 || movie.year >= 2020) && movie.image)
-                    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-                    .slice(0, 10); // Top 10 featured
+                    .filter(movie => {
+                        const hasGoodRating = movie.rating >= 7;
+                        const isRecent = movie.year >= (currentYear - 3);
+                        const hasImage = movie.image;
+                        return (hasGoodRating || isRecent) && hasImage;
+                    })
+                    .sort((a, b) => {
+                        // First sort by rating (high to low)
+                        const ratingDiff = (b.rating || 0) - (a.rating || 0);
+                        if (ratingDiff !== 0) return ratingDiff;
+                        // Then by year (newer first)
+                        return (b.year || 0) - (a.year || 0);
+                    })
+                    .slice(0, 12); // Top 12 featured
                 
                 // If no featured movies, use all available movies
                 if (featuredMovies.length === 0 && jsonData.movies.length > 0) {
                     const fallbackMovies = jsonData.movies
+                        .filter(movie => movie.image) // Only movies with images
                         .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-                        .slice(0, 5); // Top 5 as fallback
+                        .slice(0, 8); // Top 8 as fallback
                     
                     jsonData.home.featured_movies = fallbackMovies.map(movie => ({
                         ...movie,
-                        views: movie.views || 0,
+                        views: movie.views || Math.floor(Math.random() * 10000) + 1000, // Random views
                         created_at: movie.created_at || new Date().toISOString().split('T')[0]
                     }));
                 } else {
                     jsonData.home.featured_movies = featuredMovies.map(movie => ({
                         ...movie,
-                        views: movie.views || 0,
+                        views: movie.views || Math.floor(Math.random() * 10000) + 1000, // Random views
                         created_at: movie.created_at || new Date().toISOString().split('T')[0]
                     }));
                 }
@@ -1635,9 +1807,39 @@
                     console.log('Loading JSON data...');
                     console.log('JSON string length:', jsonString.length);
                     
-                    jsonData = JSON.parse(jsonString);
-                    console.log('Parsed JSON data:', jsonData);
+                    const rawData = JSON.parse(jsonString);
+                    console.log('Parsed JSON data:', rawData);
                     
+                    // Validate JSON structure
+                    console.log('🔍 Validating JSON structure...');
+                    const validation = validateJsonStructure(rawData);
+                    
+                    if (!validation.isValid) {
+                        console.error('❌ JSON validation failed:', validation.errors);
+                        showNotification(`JSON validation failed: ${validation.errors.join(', ')}`, false);
+                        
+                        // Ask user if they want to fix the structure
+                        if (confirm('JSON structure has issues. Would you like to attempt to fix them automatically?')) {
+                            console.log('🔧 Attempting to fix JSON structure...');
+                            const fixResult = fixJsonStructure(rawData);
+                            jsonData = fixResult.data;
+                            
+                            if (fixResult.fixes.length > 0) {
+                                console.log('✅ Fixes applied:', fixResult.fixes);
+                                showNotification(`Fixed ${fixResult.fixes.length} issues: ${fixResult.fixes.join(', ')}`, true);
+                            }
+                        } else {
+                            throw new Error('JSON structure validation failed');
+                        }
+                    } else {
+                        jsonData = rawData;
+                        if (validation.warnings.length > 0) {
+                            console.warn('⚠️ JSON warnings:', validation.warnings);
+                            showNotification(`Loaded with warnings: ${validation.warnings.join(', ')}`, false);
+                        }
+                    }
+                    
+                    // Ensure required arrays exist
                     if (!jsonData.movies) {
                         console.log('No movies array found, creating empty array');
                         jsonData.movies = [];
@@ -2408,6 +2610,38 @@
                     currentMovieGenres = movieData.genres || [];
                     console.log('Auto-added genres:', currentMovieGenres);
                     
+                    // Auto-add actors from TMDb credits
+                    try {
+                        const creditsUrl = `https://api.themoviedb.org/3/movie/${tmdbId}/credits?api_key=${tmdbApiKey}`;
+                        const creditsRes = await fetch(creditsUrl);
+                        const creditsData = creditsRes.ok ? await creditsRes.json() : { cast: [], crew: [] };
+                        
+                        // Add top 5 cast members as actors
+                        const topActors = creditsData.cast.slice(0, 5).map(actor => ({
+                            name: actor.name,
+                            type: 'actor',
+                            role: actor.character || 'Actor',
+                            image: actor.profile_path ? `https://image.tmdb.org/t/p/w200${actor.profile_path}` : ''
+                        }));
+                        
+                        // Add director from crew
+                        const director = creditsData.crew.find(person => person.job === 'Director');
+                        if (director) {
+                            topActors.push({
+                                name: director.name,
+                                type: 'director',
+                                role: 'Director',
+                                image: director.profile_path ? `https://image.tmdb.org/t/p/w200${director.profile_path}` : ''
+                            });
+                        }
+                        
+                        // Update current movie actors
+                        currentMovieActors = topActors;
+                        console.log('Auto-added actors from TMDb:', currentMovieActors);
+                    } catch (error) {
+                        console.warn('Could not fetch credits:', error);
+                    }
+                    
                     // Fetch trailer
                     const videosUrl = `https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=${tmdbApiKey}`;
                     const videosRes = await fetch(videosUrl);
@@ -2430,7 +2664,15 @@
                     }];
                     renderMovieSources();
                     
-                    showNotification('Movie data fetched successfully!', true);
+                    // Auto-generate related content after TMDB fetch
+                    console.log('🔄 Auto-generating related content after TMDB movie fetch...');
+                    showNotification('Fetching movie data and generating related content...', true);
+                    
+                    setTimeout(() => {
+                        autoGenerateRelatedContent();
+                        renderEntries();
+                        showNotification(`✅ Movie "${movieData.title}" added with auto-generated slides, featured, actors, and genres!`, true);
+                    }, 500);
                 } catch (error) {
                     showNotification(`Error: ${error.message}`, false);
                 }
@@ -2455,6 +2697,42 @@
                     seriesCoverInput.value = seriesData.backdrop_path ? 
                         `https://image.tmdb.org/t/p/original${seriesData.backdrop_path}` : '';
                     seriesTrailerInput.value = seriesData.trailer || '';
+                    
+                    // Auto-add genres from TMDb
+                    currentSeriesGenres = seriesData.genres || [];
+                    console.log('Auto-added series genres:', currentSeriesGenres);
+                    
+                    // Auto-add actors from TMDb credits
+                    try {
+                        const creditsUrl = `https://api.themoviedb.org/3/tv/${tmdbId}/credits?api_key=${tmdbApiKey}`;
+                        const creditsRes = await fetch(creditsUrl);
+                        const creditsData = creditsRes.ok ? await creditsRes.json() : { cast: [], crew: [] };
+                        
+                        // Add top 5 cast members as actors
+                        const topActors = creditsData.cast.slice(0, 5).map(actor => ({
+                            name: actor.name,
+                            type: 'actor',
+                            role: actor.character || 'Actor',
+                            image: actor.profile_path ? `https://image.tmdb.org/t/p/w200${actor.profile_path}` : ''
+                        }));
+                        
+                        // Add creator from crew
+                        const creator = creditsData.crew.find(person => person.job === 'Creator');
+                        if (creator) {
+                            topActors.push({
+                                name: creator.name,
+                                type: 'creator',
+                                role: 'Creator',
+                                image: creator.profile_path ? `https://image.tmdb.org/t/p/w200${creator.profile_path}` : ''
+                            });
+                        }
+                        
+                        // Update current series actors
+                        currentSeriesActors = topActors;
+                        console.log('Auto-added series actors from TMDb:', currentSeriesActors);
+                    } catch (error) {
+                        console.warn('Could not fetch series credits:', error);
+                    }
                     
                     // Prepare seasons data with auto vidsrc URLs
                     currentSeriesData = {
@@ -2489,7 +2767,15 @@
                     // Render seasons
                     renderSeasons(currentSeriesData.seasons);
                     
-                    showNotification('Series data fetched successfully!', true);
+                    // Auto-generate related content after TMDB fetch
+                    console.log('🔄 Auto-generating related content after TMDB series fetch...');
+                    showNotification('Fetching series data and generating related content...', true);
+                    
+                    setTimeout(() => {
+                        autoGenerateRelatedContent();
+                        renderEntries();
+                        showNotification(`✅ Series "${seriesData.name}" added with auto-generated slides, featured, actors, and genres!`, true);
+                    }, 500);
                 } catch (error) {
                     showNotification(`Error: ${error.message}`, false);
                 }
@@ -2523,6 +2809,192 @@
                     closeModal();
                 }
             });
+
+            // --- JSON Validation and Structure Checking ---
+            function validateJsonStructure(data) {
+                console.log('🔍 Validating JSON structure...');
+                const errors = [];
+                const warnings = [];
+                
+                try {
+                    // Check for required top-level sections
+                    const requiredSections = ['api_info', 'home', 'movies', 'channels', 'actors', 'genres'];
+                    requiredSections.forEach(section => {
+                        if (!data[section]) {
+                            errors.push(`Missing required section: ${section}`);
+                        }
+                    });
+                    
+                    // Check for duplicate sections
+                    const sections = Object.keys(data);
+                    const duplicates = sections.filter((item, index) => sections.indexOf(item) !== index);
+                    if (duplicates.length > 0) {
+                        errors.push(`Duplicate sections found: ${duplicates.join(', ')}`);
+                    }
+                    
+                    // Check for nested "movies" arrays in actors
+                    if (data.actors && Array.isArray(data.actors)) {
+                        data.actors.forEach((actor, index) => {
+                            if (actor.movies) {
+                                warnings.push(`Actor "${actor.name}" has nested "movies" array - consider renaming to "filmography"`);
+                            }
+                        });
+                    }
+                    
+                    // Validate arrays are actually arrays
+                    const arraySections = ['movies', 'channels', 'actors', 'genres'];
+                    arraySections.forEach(section => {
+                        if (data[section] && !Array.isArray(data[section])) {
+                            errors.push(`Section "${section}" should be an array`);
+                        }
+                    });
+                    
+                    // Check for empty or invalid entries
+                    if (data.movies && Array.isArray(data.movies)) {
+                        data.movies.forEach((movie, index) => {
+                            if (!movie.title || movie.title.trim() === '') {
+                                errors.push(`Movie at index ${index} has empty or missing title`);
+                            }
+                            if (!movie.id) {
+                                errors.push(`Movie "${movie.title}" has missing ID`);
+                            }
+                        });
+                    }
+                    
+                    if (data.channels && Array.isArray(data.channels)) {
+                        data.channels.forEach((channel, index) => {
+                            if (!channel.title || channel.title.trim() === '') {
+                                errors.push(`Channel at index ${index} has empty or missing title`);
+                            }
+                            if (!channel.id) {
+                                errors.push(`Channel "${channel.title}" has missing ID`);
+                            }
+                        });
+                    }
+                    
+                    // Check home section structure
+                    if (data.home) {
+                        if (!data.home.slides || !Array.isArray(data.home.slides)) {
+                            warnings.push('Home section missing or invalid slides array');
+                        }
+                        if (!data.home.featured_movies || !Array.isArray(data.home.featured_movies)) {
+                            warnings.push('Home section missing or invalid featured_movies array');
+                        }
+                    }
+                    
+                    return { errors, warnings, isValid: errors.length === 0 };
+                } catch (error) {
+                    return { 
+                        errors: [`JSON validation error: ${error.message}`], 
+                        warnings: [], 
+                        isValid: false 
+                    };
+                }
+            }
+            
+            function fixJsonStructure(data) {
+                console.log('🔧 Fixing JSON structure...');
+                const fixes = [];
+                
+                try {
+                    // Ensure all required sections exist
+                    if (!data.api_info) {
+                        data.api_info = {
+                            version: "2.0",
+                            description: "Enhanced Free Movie & TV Streaming JSON API",
+                            last_updated: new Date().toISOString().split('T')[0],
+                            total_movies: 0,
+                            total_channels: 0,
+                            total_actors: 0
+                        };
+                        fixes.push('Created missing api_info section');
+                    }
+                    
+                    if (!data.home) {
+                        data.home = { slides: [], featured_movies: [] };
+                        fixes.push('Created missing home section');
+                    }
+                    
+                    if (!data.home.slides) {
+                        data.home.slides = [];
+                        fixes.push('Created missing slides array');
+                    }
+                    
+                    if (!data.home.featured_movies) {
+                        data.home.featured_movies = [];
+                        fixes.push('Created missing featured_movies array');
+                    }
+                    
+                    if (!data.movies) {
+                        data.movies = [];
+                        fixes.push('Created missing movies array');
+                    }
+                    
+                    if (!data.channels) {
+                        data.channels = [];
+                        fixes.push('Created missing channels array');
+                    }
+                    
+                    if (!data.actors) {
+                        data.actors = [];
+                        fixes.push('Created missing actors array');
+                    }
+                    
+                    if (!data.genres) {
+                        data.genres = [];
+                        fixes.push('Created missing genres array');
+                    }
+                    
+                    // Fix nested movies arrays in actors
+                    if (data.actors && Array.isArray(data.actors)) {
+                        data.actors.forEach(actor => {
+                            if (actor.movies && !actor.filmography) {
+                                actor.filmography = actor.movies;
+                                delete actor.movies;
+                                fixes.push(`Renamed "movies" to "filmography" for actor "${actor.name}"`);
+                            }
+                        });
+                    }
+                    
+                    // Remove duplicate sections (keep only the first occurrence)
+                    const seenSections = new Set();
+                    const cleanedData = {};
+                    
+                    Object.keys(data).forEach(key => {
+                        if (!seenSections.has(key)) {
+                            cleanedData[key] = data[key];
+                            seenSections.add(key);
+                        } else {
+                            fixes.push(`Removed duplicate section: ${key}`);
+                        }
+                    });
+                    
+                    // Clean empty entries
+                    if (cleanedData.movies) {
+                        const originalLength = cleanedData.movies.length;
+                        cleanedData.movies = cleanedData.movies.filter(movie => 
+                            movie && movie.title && movie.title.trim() !== ''
+                        );
+                        if (cleanedData.movies.length !== originalLength) {
+                            fixes.push(`Removed ${originalLength - cleanedData.movies.length} empty movie entries`);
+                        }
+                    }
+                    
+                    if (cleanedData.channels) {
+                        const originalLength = cleanedData.channels.length;
+                        cleanedData.channels = cleanedData.channels.filter(channel => 
+                            channel && channel.title && channel.title.trim() !== ''
+                        );
+                        if (cleanedData.channels.length !== originalLength) {
+                            fixes.push(`Removed ${originalLength - cleanedData.channels.length} empty channel entries`);
+                        }
+                    }
+                    
+                    return { data: cleanedData, fixes };
+                } catch (error) {
+                    return { data: data, fixes: [`Error fixing structure: ${error.message}`] };
+                }
+            }
         });
     </script>
 </body>
