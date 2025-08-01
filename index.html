@@ -533,6 +533,41 @@
             border-radius: 4px;
         }
         
+        .tmdb-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .tmdb-status.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #81c784;
+        }
+        
+        .tmdb-status.loading {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #64b5f6;
+        }
+        
+        .actor-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        
+        .actor-tag {
+            background-color: #f1f8ff;
+            color: #2980b9;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            border: 1px solid #e3f2fd;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .load-section {
@@ -630,6 +665,7 @@
                                 <i class="fas fa-cloud-download-alt"></i> Fetch Movie
                             </button>
                         </div>
+                        <div id="movieTmdbStatus" class="tmdb-status" style="display: none;"></div>
                     </div>
                     
                     <div class="form-row">
@@ -687,6 +723,7 @@
                                 <i class="fas fa-cloud-download-alt"></i> Fetch Series
                             </button>
                         </div>
+                        <div id="seriesTmdbStatus" class="tmdb-status" style="display: none;"></div>
                     </div>
                     
                     <div class="form-row">
@@ -803,6 +840,7 @@
             // Movie elements
             const movieTmdbIdInput = document.getElementById('movieTmdbId');
             const fetchMovieTMDbButton = document.getElementById('fetchMovieTMDbButton');
+            const movieTmdbStatus = document.getElementById('movieTmdbStatus');
             const movieTitleInput = document.getElementById('movieTitle');
             const movieYearInput = document.getElementById('movieYear');
             const movieDescriptionInput = document.getElementById('movieDescription');
@@ -817,6 +855,7 @@
             // Series elements
             const seriesTmdbIdInput = document.getElementById('seriesTmdbId');
             const fetchSeriesTMDbButton = document.getElementById('fetchSeriesTMDbButton');
+            const seriesTmdbStatus = document.getElementById('seriesTmdbStatus');
             const seriesTitleInput = document.getElementById('seriesTitle');
             const seriesYearInput = document.getElementById('seriesYear');
             const seriesDescriptionInput = document.getElementById('seriesDescription');
@@ -1227,22 +1266,63 @@
                     throw new Error('Movie title is required');
                 }
                 
+                // Get comprehensive data from TMDB fetch
+                let comprehensiveData = {};
+                try {
+                    const storedData = movieTmdbIdInput.dataset.comprehensiveData;
+                    if (storedData) {
+                        comprehensiveData = JSON.parse(storedData);
+                    }
+                } catch (e) {
+                    console.warn('Could not parse comprehensive data:', e);
+                }
+                
+                // Enhanced sources format matching reference API
+                const enhancedSources = currentMovieSources.map((source, index) => ({
+                    id: source.id || (index + 1),
+                    type: source.type || 'video',
+                    title: source.title || `Source ${index + 1}`,
+                    quality: source.quality || 'HD',
+                    size: 'N/A',
+                    kind: 'both',
+                    premium: 'false',
+                    external: source.external || false,
+                    url: source.url
+                }));
+                
                 const entryData = {
                     type: 'movie',
                     title: title,
-                    year: movieYearInput.value.trim(),
+                    label: comprehensiveData.genres?.[0]?.title || 'Movie',
+                    sublabel: 'Feature Film',
+                    imdb: comprehensiveData.imdb_id || '',
+                    downloadas: `${title.toLowerCase().replace(/\s+/g, '-')}.mp4`,
+                    comment: true,
+                    playas: 'video',
                     description: movieDescriptionInput.value.trim(),
+                    classification: 'PG-13', // Default, could be enhanced from TMDB
+                    year: movieYearInput.value.trim(),
+                    duration: comprehensiveData.runtime ? `${comprehensiveData.runtime}:00` : '120:00',
+                    rating: comprehensiveData.vote_average || 7.0,
                     image: movieImageInput.value.trim(),
                     cover: movieCoverInput.value.trim(),
-                    trailer: movieTrailerInput.value.trim() ? { url: movieTrailerInput.value.trim() } : null,
-                    sources: currentMovieSources,
-                    genres: [],
-                    actors: [],
-                    subtitles: [],
-                    comments: []
+                    genres: comprehensiveData.genres || [],
+                    sources: enhancedSources,
+                    trailer: comprehensiveData.trailer || (movieTrailerInput.value.trim() ? {
+                        id: generateNewId(),
+                        type: 'video',
+                        title: `${title} Trailer`,
+                        url: movieTrailerInput.value.trim()
+                    } : null),
+                    actors: comprehensiveData.actors || [],
+                    subtitles: [], // Could be enhanced later
+                    comments: [], // Empty initially
+                    views: 0,
+                    downloads: 0,
+                    shares: 0
                 };
                 
-                console.log('Movie data to save:', entryData);
+                console.log('Enhanced movie data to save:', entryData);
                 
                 if (id) {
                     // Update existing entry
@@ -1271,51 +1351,95 @@
                     throw new Error('Series title is required');
                 }
                 
-                // Collect season/episode data from the form
-                const seasons = [];
-                const seasonElements = document.querySelectorAll('.season-card');
+                // Get comprehensive data from TMDB fetch
+                let comprehensiveData = {};
+                try {
+                    const storedData = seriesTmdbIdInput.dataset.comprehensiveData;
+                    if (storedData) {
+                        comprehensiveData = JSON.parse(storedData);
+                    }
+                } catch (e) {
+                    console.warn('Could not parse comprehensive series data:', e);
+                }
                 
-                for (const seasonElement of seasonElements) {
-                    const seasonNumber = parseInt(seasonElement.dataset.season);
-                    const episodes = [];
-                    const episodeElements = seasonElement.querySelectorAll('.episode-item');
+                // Use the comprehensive seasons data if available, otherwise collect from form
+                let seasons = [];
+                if (comprehensiveData.seasonsData && comprehensiveData.seasonsData.length > 0) {
+                    seasons = comprehensiveData.seasonsData;
+                    console.log('Using comprehensive seasons data with episodes');
+                } else {
+                    // Fallback to form data collection
+                    const seasonElements = document.querySelectorAll('.season-card');
                     
-                    for (const episodeElement of episodeElements) {
-                        const episodeNumber = parseInt(episodeElement.dataset.episode);
-                        const sourceUrl = episodeElement.querySelector('.episode-sources input').value.trim();
+                    for (const seasonElement of seasonElements) {
+                        const seasonNumber = parseInt(seasonElement.dataset.season);
+                        const episodes = [];
+                        const episodeElements = seasonElement.querySelectorAll('.episode-item');
                         
-                        if (sourceUrl) {
-                            const titleElement = episodeElement.querySelector('.episode-title');
-                            const episodeTitle = titleElement ? titleElement.textContent.replace(/^Episode \d+: /, '') : `Episode ${episodeNumber}`;
+                        for (const episodeElement of episodeElements) {
+                            const episodeNumber = parseInt(episodeElement.dataset.episode);
+                            const sourceUrl = episodeElement.querySelector('.episode-sources input').value.trim();
                             
-                            episodes.push({
-                                episode: episodeNumber,
-                                title: episodeTitle,
-                                sources: [{ url: sourceUrl, type: 'video' }]
+                            if (sourceUrl) {
+                                const titleElement = episodeElement.querySelector('.episode-title');
+                                const episodeTitle = titleElement ? titleElement.textContent.replace(/^Episode \d+: /, '') : `Episode ${episodeNumber}`;
+                                
+                                episodes.push({
+                                    episode: episodeNumber,
+                                    title: episodeTitle,
+                                    sources: [{ 
+                                        id: `${episodeNumber}_1`,
+                                        type: 'video',
+                                        title: 'Source 1',
+                                        quality: 'HD',
+                                        url: sourceUrl 
+                                    }]
+                                });
+                            }
+                        }
+                        
+                        if (episodes.length > 0) {
+                            seasons.push({
+                                season: seasonNumber,
+                                name: `Season ${seasonNumber}`,
+                                episodes: episodes
                             });
                         }
-                    }
-                    
-                    if (episodes.length > 0) {
-                        seasons.push({
-                            season: seasonNumber,
-                            episodes: episodes
-                        });
                     }
                 }
                 
                 const entryData = {
                     type: 'series',
                     title: title,
-                    year: seriesYearInput.value.trim(),
+                    label: comprehensiveData.genres?.[0]?.title || 'Series',
+                    sublabel: 'TV Series',
+                    imdb: comprehensiveData.imdb_id || '',
+                    downloadas: `${title.toLowerCase().replace(/\s+/g, '-')}-series`,
+                    comment: true,
+                    playas: 'video',
                     description: seriesDescriptionInput.value.trim(),
+                    classification: 'TV-14', // Default rating for series
+                    year: seriesYearInput.value.trim(),
+                    rating: comprehensiveData.vote_average || 7.0,
                     image: seriesImageInput.value.trim(),
                     cover: seriesCoverInput.value.trim(),
-                    trailer: seriesTrailerInput.value.trim() ? { url: seriesTrailerInput.value.trim() } : null,
+                    genres: comprehensiveData.genres || [],
+                    trailer: comprehensiveData.trailer || (seriesTrailerInput.value.trim() ? {
+                        id: generateNewId(),
+                        type: 'video',
+                        title: `${title} Trailer`,
+                        url: seriesTrailerInput.value.trim()
+                    } : null),
+                    actors: comprehensiveData.actors || [],
+                    subtitles: [],
+                    comments: [],
+                    views: 0,
+                    downloads: 0,
+                    shares: 0,
                     seasons: seasons
                 };
                 
-                console.log('Series data to save:', entryData);
+                console.log('Enhanced series data to save:', entryData);
                 
                 if (id) {
                     // Update existing entry
@@ -1349,26 +1473,59 @@
                     throw new Error('Stream URL is required');
                 }
                 
+                // Enhanced sources format matching reference API
                 const sources = [];
-                sources.push({ url: streamUrl, type: 'live' });
+                let sourceId = 1;
                 
+                // Main stream source
+                sources.push({
+                    id: sourceId++,
+                    type: 'live',
+                    title: 'HD',
+                    quality: 'HD',
+                    size: 'Live',
+                    kind: 'play',
+                    premium: 'false',
+                    external: false,
+                    url: streamUrl
+                });
+                
+                // Backup stream source if provided
                 const backupUrl = channelBackupUrlInput.value.trim();
                 if (backupUrl) {
-                    sources.push({ url: backupUrl, type: 'live' });
+                    sources.push({
+                        id: sourceId++,
+                        type: 'live',
+                        title: 'Backup',
+                        quality: 'HD',
+                        size: 'Live',
+                        kind: 'play',
+                        premium: 'false',
+                        external: false,
+                        url: backupUrl
+                    });
                 }
                 
                 const entryData = {
                     title: title,
-                    image: channelImageInput.value.trim(),
-                    rating: parseFloat(channelRatingInput.value) || 0,
-                    category: channelCategoryInput.value.trim() || '',
+                    label: channelCategoryInput.value.trim() || 'Entertainment',
+                    sublabel: 'Live TV',
                     description: channelDescriptionInput.value.trim(),
+                    website: '', // Could be enhanced later
+                    classification: channelCategoryInput.value.trim() || 'General',
+                    views: 0,
+                    shares: 0,
+                    rating: parseFloat(channelRatingInput.value) || 7.0,
+                    comment: true,
+                    image: channelImageInput.value.trim(),
+                    playas: 'live',
                     sources: sources,
-                    countries: [],
+                    categories: channelCategoryInput.value.trim() ? [channelCategoryInput.value.trim()] : [],
+                    countries: [], // Could be enhanced later
                     comments: []
                 };
                 
-                console.log('Channel data to save:', entryData);
+                console.log('Enhanced channel data to save:', entryData);
                 
                 if (id) {
                     // Update existing entry
@@ -1542,6 +1699,23 @@
                 }
             }
             
+            async function fetchSeasonEpisodes(tmdbId, seasonNumber) {
+                try {
+                    const url = `https://api.themoviedb.org/3/tv/${tmdbId}/season/${seasonNumber}?api_key=${tmdbApiKey}`;
+                    const res = await fetch(url);
+                    
+                    if (!res.ok) {
+                        throw new Error(`Failed to fetch season ${seasonNumber} data`);
+                    }
+                    
+                    const seasonData = await res.json();
+                    return seasonData.episodes || [];
+                } catch (error) {
+                    console.error(`Error fetching season ${seasonNumber} episodes:`, error);
+                    return [];
+                }
+            }
+            
             async function fetchComprehensiveSeriesData(tmdbId) {
                 try {
                     console.log('Fetching comprehensive series data for TMDB ID:', tmdbId);
@@ -1571,13 +1745,47 @@
                         title: genre.name
                     })) || [];
                     
-                    // Prepare seasons data for series
-                    const seasonsData = seriesData.seasons?.filter(s => s.season_number > 0).map(season => ({
-                        season: season.season_number,
-                        name: season.name,
-                        episode_count: season.episode_count,
-                        episodes: [] // Will be populated with manual episode data entry
-                    })) || [];
+                    // Fetch detailed season and episode data
+                    const seasonsWithEpisodes = [];
+                    const availableSeasons = seriesData.seasons?.filter(s => s.season_number > 0) || [];
+                    
+                    for (const season of availableSeasons) {
+                        console.log(`Fetching episodes for season ${season.season_number}`);
+                        const episodes = await fetchSeasonEpisodes(tmdbId, season.season_number);
+                        
+                        // Generate episodes with vidsrc.net links
+                        const episodesWithSources = episodes.map(episode => ({
+                            episode: episode.episode_number,
+                            title: episode.name || `Episode ${episode.episode_number}`,
+                            overview: episode.overview || '',
+                            air_date: episode.air_date || '',
+                            runtime: episode.runtime || null,
+                            vote_average: episode.vote_average || 0,
+                            still_path: episode.still_path ? 
+                                `https://image.tmdb.org/t/p/w300${episode.still_path}` : null,
+                            sources: [
+                                {
+                                    id: `${tmdbId}_s${season.season_number}_e${episode.episode_number}`,
+                                    type: 'video',
+                                    title: 'vidsrc.net',
+                                    quality: 'HD',
+                                    url: `https://vidsrc.net/embed/tv/${tmdbId}/${season.season_number}/${episode.episode_number}`,
+                                    external: false
+                                }
+                            ]
+                        }));
+                        
+                        seasonsWithEpisodes.push({
+                            season: season.season_number,
+                            name: season.name || `Season ${season.season_number}`,
+                            overview: season.overview || '',
+                            episode_count: season.episode_count,
+                            air_date: season.air_date || '',
+                            poster_path: season.poster_path ? 
+                                `https://image.tmdb.org/t/p/w300${season.poster_path}` : null,
+                            episodes: episodesWithSources
+                        });
+                    }
                     
                     return {
                         ...seriesData,
@@ -1589,7 +1797,7 @@
                             title: trailer.name || 'Trailer',
                             url: `https://www.youtube.com/watch?v=${trailer.key}`
                         } : null,
-                        seasonsData: seasonsData
+                        seasonsData: seasonsWithEpisodes
                     };
                 } catch (error) {
                     console.error('Error fetching comprehensive series data:', error);
@@ -1619,10 +1827,20 @@
                     return;
                 }
                 
+                // Show loading state
+                const originalText = fetchMovieTMDbButton.innerHTML;
+                fetchMovieTMDbButton.disabled = true;
+                fetchMovieTMDbButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching...';
+                
+                // Show status
+                movieTmdbStatus.style.display = 'block';
+                movieTmdbStatus.className = 'tmdb-status loading';
+                movieTmdbStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching movie data from TMDb...';
+                
                 try {
-                    const movieData = await fetchTMDbData('movie', tmdbId);
+                    const movieData = await fetchComprehensiveMovieData(tmdbId);
                     
-                    // Populate form
+                    // Populate form with comprehensive data
                     movieTitleInput.value = movieData.title;
                     movieYearInput.value = movieData.release_date ? movieData.release_date.split('-')[0] : '';
                     movieDescriptionInput.value = movieData.overview || '';
@@ -1631,21 +1849,57 @@
                     movieCoverInput.value = movieData.backdrop_path ? 
                         `https://image.tmdb.org/t/p/original${movieData.backdrop_path}` : '';
                     
-                    // Fetch trailer
-                    const videosUrl = `https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=${tmdbApiKey}`;
-                    const videosRes = await fetch(videosUrl);
-                    const videosData = videosRes.ok ? await videosRes.json() : { results: [] };
-                    const trailer = videosData.results.find(v => v.site === 'YouTube' && v.type === 'Trailer');
-                    movieTrailerInput.value = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : '';
+                    // Set trailer URL
+                    movieTrailerInput.value = movieData.extractedTrailer ? movieData.extractedTrailer.url : '';
                     
-                    // Auto-add vidsrc source
+                    // Auto-add vidsrc source with multiple quality options
                     const vidsrcUrl = `https://vidsrc.net/embed/movie/${tmdbId}`;
-                    currentMovieSources = [{ title: 'vidsrc.net', url: vidsrcUrl, type: 'video' }];
+                    currentMovieSources = [
+                        { 
+                            id: `${tmdbId}_hd`,
+                            title: 'vidsrc.net HD', 
+                            url: vidsrcUrl, 
+                            type: 'video',
+                            quality: 'HD',
+                            external: false
+                        }
+                    ];
                     renderMovieSources();
                     
-                    showNotification('Movie data fetched successfully!', true);
+                    // Store comprehensive data for saving
+                    movieTmdbIdInput.dataset.comprehensiveData = JSON.stringify({
+                        actors: movieData.extractedActors,
+                        genres: movieData.extractedGenres,
+                        trailer: movieData.extractedTrailer,
+                        imdb_id: movieData.imdb_id,
+                        runtime: movieData.runtime,
+                        vote_average: movieData.vote_average,
+                        popularity: movieData.popularity
+                    });
+                    
+                    // Show success status
+                    movieTmdbStatus.className = 'tmdb-status success';
+                    movieTmdbStatus.innerHTML = `
+                        <i class="fas fa-check-circle"></i> Successfully fetched: ${movieData.title} (${movieData.release_date?.split('-')[0] || 'N/A'})
+                        <div class="actor-preview">
+                            ${movieData.extractedActors.slice(0, 4).map(actor => 
+                                `<span class="actor-tag">${actor.name}</span>`
+                            ).join('')}
+                            ${movieData.extractedActors.length > 4 ? `<span class="actor-tag">+${movieData.extractedActors.length - 4} more</span>` : ''}
+                        </div>
+                    `;
+                    
+                    showNotification(`Movie data fetched successfully! Found ${movieData.extractedActors.length} actors.`, true);
                 } catch (error) {
+                    movieTmdbStatus.className = 'tmdb-status';
+                    movieTmdbStatus.style.backgroundColor = '#ffebee';
+                    movieTmdbStatus.style.color = '#c62828';
+                    movieTmdbStatus.style.border = '1px solid #ef9a9a';
+                    movieTmdbStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error: ${error.message}`;
                     showNotification(`Error: ${error.message}`, false);
+                } finally {
+                    fetchMovieTMDbButton.disabled = false;
+                    fetchMovieTMDbButton.innerHTML = originalText;
                 }
             });
             
@@ -1656,10 +1910,15 @@
                     return;
                 }
                 
+                // Show loading state
+                const originalText = fetchSeriesTMDbButton.innerHTML;
+                fetchSeriesTMDbButton.disabled = true;
+                fetchSeriesTMDbButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching Episodes...';
+                
                 try {
-                    const seriesData = await fetchSeriesDetails(tmdbId);
+                    const seriesData = await fetchComprehensiveSeriesData(tmdbId);
                     
-                    // Populate form
+                    // Populate form with comprehensive data
                     seriesTitleInput.value = seriesData.name;
                     seriesYearInput.value = seriesData.first_air_date ? seriesData.first_air_date.split('-')[0] : '';
                     seriesDescriptionInput.value = seriesData.overview || '';
@@ -1667,23 +1926,35 @@
                         `https://image.tmdb.org/t/p/w500${seriesData.poster_path}` : '';
                     seriesCoverInput.value = seriesData.backdrop_path ? 
                         `https://image.tmdb.org/t/p/original${seriesData.backdrop_path}` : '';
-                    seriesTrailerInput.value = seriesData.trailer || '';
+                    seriesTrailerInput.value = seriesData.extractedTrailer ? seriesData.extractedTrailer.url : '';
                     
-                    // Prepare seasons data
+                    // Use the comprehensive seasons data with episodes and vidsrc links
                     currentSeriesData = {
                         ...seriesData,
-                        seasons: seriesData.seasons.filter(s => s.season_number > 0).map(season => ({
-                            season: season.season_number,
-                            episodes: []
-                        }))
+                        seasons: seriesData.seasonsData
                     };
                     
-                    // Render seasons
-                    renderSeasons(currentSeriesData.seasons);
+                    // Render seasons with episodes
+                    await renderSeasons(currentSeriesData.seasons);
                     
-                    showNotification('Series data fetched successfully!', true);
+                    // Store comprehensive data for saving
+                    seriesTmdbIdInput.dataset.comprehensiveData = JSON.stringify({
+                        actors: seriesData.extractedActors,
+                        genres: seriesData.extractedGenres,
+                        trailer: seriesData.extractedTrailer,
+                        imdb_id: seriesData.imdb_id,
+                        vote_average: seriesData.vote_average,
+                        popularity: seriesData.popularity,
+                        seasonsData: seriesData.seasonsData
+                    });
+                    
+                    const totalEpisodes = seriesData.seasonsData.reduce((total, season) => total + season.episodes.length, 0);
+                    showNotification(`Series data fetched successfully! Found ${seriesData.seasonsData.length} seasons with ${totalEpisodes} episodes and ${seriesData.extractedActors.length} actors.`, true);
                 } catch (error) {
                     showNotification(`Error: ${error.message}`, false);
+                } finally {
+                    fetchSeriesTMDbButton.disabled = false;
+                    fetchSeriesTMDbButton.innerHTML = originalText;
                 }
             });
             
