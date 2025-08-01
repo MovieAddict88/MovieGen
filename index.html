@@ -932,9 +932,79 @@
             const modalSaveButton = document.querySelector('#modalSaveButton');
             if (modalSaveButton) {
                 console.log('✅ Modal Save button found!');
-                modalSaveButton.addEventListener('click', () => {
+                modalSaveButton.addEventListener('click', (e) => {
                     console.log('🎯 MODAL SAVE BUTTON WAS CLICKED DIRECTLY!');
-                    alert('Modal Save button clicked directly! This means the button works.');
+                    console.log('Button type:', modalSaveButton.type);
+                    console.log('Form element:', modalSaveButton.form);
+                    
+                    // The issue is likely that the form isn't submitting
+                    // Let's manually trigger the form submit
+                    e.preventDefault(); // Prevent default button behavior
+                    
+                    if (modalSaveButton.form) {
+                        console.log('🚀 Manually triggering form submit...');
+                        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                        modalSaveButton.form.dispatchEvent(submitEvent);
+                    } else {
+                        console.log('❌ Button is not associated with a form! Calling save directly...');
+                        
+                        // Direct save as fallback
+                        try {
+                            console.log('🔧 DIRECT SAVE FALLBACK TRIGGERED!');
+                            
+                            if (!jsonData) {
+                                alert('ERROR: No JSON data loaded. Please load a JSON file first.');
+                                return;
+                            }
+                            
+                            const activeTabElement = document.querySelector('.tab-btn.active');
+                            if (!activeTabElement) {
+                                alert('ERROR: No active tab found. Please select Movie, Series, or Channel.');
+                                return;
+                            }
+                            
+                            const activeTab = activeTabElement.dataset.type;
+                            console.log('Active tab for direct save:', activeTab);
+                            
+                            // Get form data and save
+                            const id = entryIdInput.value;
+                            
+                            if (activeTab === 'movie') {
+                                if (!movieTitleInput.value.trim()) {
+                                    alert('ERROR: Movie title is required');
+                                    return;
+                                }
+                                saveMovie(id);
+                                alert('Movie saved successfully!');
+                            } else if (activeTab === 'series') {
+                                if (!seriesTitleInput.value.trim()) {
+                                    alert('ERROR: Series title is required');
+                                    return;
+                                }
+                                saveSeries(id);
+                                alert('Series saved successfully!');
+                            } else if (activeTab === 'channel') {
+                                if (!channelTitleInput.value.trim()) {
+                                    alert('ERROR: Channel name is required');
+                                    return;
+                                }
+                                if (!channelStreamUrlInput.value.trim()) {
+                                    alert('ERROR: Stream URL is required');
+                                    return;
+                                }
+                                saveChannel(id);
+                                alert('Channel saved successfully!');
+                            }
+                            
+                            // Update UI
+                            renderEntries();
+                            closeModal();
+                            
+                        } catch (error) {
+                            console.error('Direct save error:', error);
+                            alert('Save error: ' + error.message);
+                        }
+                    }
                 });
             } else {
                 console.log('❌ Modal Save button NOT found!');
