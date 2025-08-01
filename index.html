@@ -807,7 +807,22 @@
     </div>
 
     <script>
+        // Global error handler to prevent white screen
+        window.addEventListener('error', (event) => {
+            console.error('Global error caught:', event.error);
+            showNotification(`Unexpected error: ${event.error.message}`, false);
+            return true; // Prevent default browser error handling
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
+            showNotification(`Promise error: ${event.reason}`, false);
+            event.preventDefault();
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM Content Loaded - Initializing app...');
+            
             // --- Constants and Config ---
             const tmdbApiKey = 'ec926176bf467b3f7735e3154238c161';
             
@@ -873,37 +888,53 @@
             
             // --- Utility Functions ---
             function showNotification(message, isSuccess = true) {
-                const notification = document.createElement('div');
-                notification.textContent = message;
-                notification.style.position = 'fixed';
-                notification.style.top = '20px';
-                notification.style.right = '20px';
-                notification.style.padding = '15px 25px';
-                notification.style.background = isSuccess ? '#2ecc71' : '#e74c3c';
-                notification.style.color = 'white';
-                notification.style.borderRadius = '6px';
-                notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                notification.style.zIndex = '10000';
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateX(100px)';
-                notification.style.transition = 'all 0.3s ease';
-                
-                document.body.appendChild(notification);
-                
-                // Animate in
-                setTimeout(() => {
-                    notification.style.opacity = '1';
-                    notification.style.transform = 'translateX(0)';
-                }, 10);
-                
-                // Remove after delay
-                setTimeout(() => {
+                try {
+                    console.log('Showing notification:', message, 'Success:', isSuccess);
+                    
+                    const notification = document.createElement('div');
+                    notification.textContent = message;
+                    notification.style.position = 'fixed';
+                    notification.style.top = '20px';
+                    notification.style.right = '20px';
+                    notification.style.padding = '15px 25px';
+                    notification.style.background = isSuccess ? '#2ecc71' : '#e74c3c';
+                    notification.style.color = 'white';
+                    notification.style.borderRadius = '6px';
+                    notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                    notification.style.zIndex = '10000';
                     notification.style.opacity = '0';
                     notification.style.transform = 'translateX(100px)';
+                    notification.style.transition = 'all 0.3s ease';
+                    notification.style.maxWidth = '400px';
+                    notification.style.wordWrap = 'break-word';
+                    
+                    document.body.appendChild(notification);
+                    
+                    // Animate in
                     setTimeout(() => {
-                        document.body.removeChild(notification);
-                    }, 300);
-                }, 3000);
+                        notification.style.opacity = '1';
+                        notification.style.transform = 'translateX(0)';
+                    }, 10);
+                    
+                    // Remove after delay
+                    setTimeout(() => {
+                        notification.style.opacity = '0';
+                        notification.style.transform = 'translateX(100px)';
+                        setTimeout(() => {
+                            try {
+                                if (notification.parentNode) {
+                                    document.body.removeChild(notification);
+                                }
+                            } catch (e) {
+                                console.warn('Could not remove notification:', e);
+                            }
+                        }, 300);
+                    }, 5000); // Increased to 5 seconds so you can read error messages
+                } catch (error) {
+                    console.error('Error showing notification:', error);
+                    // Fallback to alert if notification fails
+                    alert(`${isSuccess ? 'SUCCESS' : 'ERROR'}: ${message}`);
+                }
             }
             
             function openModal(title = 'Add New Content') {
@@ -988,16 +1019,37 @@
             });
             
             function loadData(jsonString) {
-                jsonData = JSON.parse(jsonString);
-                if (!jsonData.movies) jsonData.movies = [];
-                if (!jsonData.channels) jsonData.channels = [];
-                
-                editorDiv.style.display = 'block';
-                saveSectionDiv.style.display = 'block';
-                renderEntries();
-                
-                const totalItems = (jsonData.movies?.length || 0) + (jsonData.channels?.length || 0);
-                showNotification(`Data loaded successfully! Found ${totalItems} items.`, true);
+                try {
+                    console.log('Loading JSON data...');
+                    console.log('JSON string length:', jsonString.length);
+                    
+                    jsonData = JSON.parse(jsonString);
+                    console.log('Parsed JSON data:', jsonData);
+                    
+                    if (!jsonData.movies) {
+                        console.log('No movies array found, creating empty array');
+                        jsonData.movies = [];
+                    }
+                    if (!jsonData.channels) {
+                        console.log('No channels array found, creating empty array');
+                        jsonData.channels = [];
+                    }
+                    
+                    console.log('Movies count:', jsonData.movies.length);
+                    console.log('Channels count:', jsonData.channels.length);
+                    
+                    editorDiv.style.display = 'block';
+                    saveSectionDiv.style.display = 'block';
+                    renderEntries();
+                    
+                    const totalItems = (jsonData.movies?.length || 0) + (jsonData.channels?.length || 0);
+                    showNotification(`Data loaded successfully! Found ${totalItems} items.`, true);
+                    console.log('Data loading completed successfully');
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    showNotification(`Failed to load data: ${error.message}`, false);
+                    throw error;
+                }
             }
             
             // --- Render Entries ---
@@ -1201,25 +1253,59 @@
             entryForm.addEventListener('submit', (event) => {
                 event.preventDefault();
                 
+                console.log('=== FORM SUBMIT STARTED ===');
+                console.log('Event:', event);
+                
+                // Prevent double submission
+                const submitButton = event.target.querySelector('button[type="submit"]');
+                if (submitButton.disabled) {
+                    console.log('Button already disabled - preventing double submit');
+                    showNotification('Please wait, saving in progress...', false);
+                    return;
+                }
+                
+                // Disable submit button temporarily
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                
                 try {
+                    console.log('=== CHECKING BASIC ELEMENTS ===');
+                    
+                    if (!jsonData) {
+                        throw new Error('No JSON data loaded. Please load a JSON file first.');
+                    }
+                    
                     const id = entryIdInput.value;
-                    const activeTab = document.querySelector('.tab-btn.active').dataset.type;
+                    console.log('Entry ID:', id);
+                    
+                    const activeTabElement = document.querySelector('.tab-btn.active');
+                    if (!activeTabElement) {
+                        throw new Error('No active tab found');
+                    }
+                    
+                    const activeTab = activeTabElement.dataset.type;
+                    console.log('Active tab:', activeTab);
                     
                     // Validate required fields
+                    console.log('=== VALIDATING FIELDS ===');
                     let isValid = true;
                     let errorMessage = '';
                     
                     if (activeTab === 'movie') {
+                        console.log('Movie title value:', movieTitleInput.value);
                         if (!movieTitleInput.value.trim()) {
                             isValid = false;
                             errorMessage = 'Movie title is required';
                         }
                     } else if (activeTab === 'series') {
+                        console.log('Series title value:', seriesTitleInput.value);
                         if (!seriesTitleInput.value.trim()) {
                             isValid = false;
                             errorMessage = 'Series title is required';
                         }
                     } else if (activeTab === 'channel') {
+                        console.log('Channel title value:', channelTitleInput.value);
+                        console.log('Channel stream URL value:', channelStreamUrlInput.value);
                         if (!channelTitleInput.value.trim()) {
                             isValid = false;
                             errorMessage = 'Channel name is required';
@@ -1231,25 +1317,40 @@
                     }
                     
                     if (!isValid) {
+                        console.log('Validation failed:', errorMessage);
                         showNotification(errorMessage, false);
                         return;
                     }
                     
+                    console.log('=== SAVING DATA ===');
                     // Save the data
                     if (activeTab === 'channel') {
+                        console.log('Calling saveChannel...');
                         saveChannel(id);
                     } else if (activeTab === 'series') {
+                        console.log('Calling saveSeries...');
                         saveSeries(id);
                     } else {
+                        console.log('Calling saveMovie...');
                         saveMovie(id);
                     }
                     
+                    console.log('=== UPDATING UI ===');
                     renderEntries();
                     closeModal();
                     showNotification(`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} saved successfully!`, true);
+                    console.log('=== SAVE COMPLETED SUCCESSFULLY ===');
+                    
                 } catch (error) {
-                    console.error('Save error:', error);
+                    console.error('=== SAVE ERROR ===', error);
+                    console.error('Error stack:', error.stack);
                     showNotification(`Error saving content: ${error.message}`, false);
+                } finally {
+                    // Re-enable submit button
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = '<i class="fas fa-save"></i> Save Content';
+                    }
                 }
             });
             
