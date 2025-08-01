@@ -1200,23 +1200,63 @@
             
             entryForm.addEventListener('submit', (event) => {
                 event.preventDefault();
-                const id = entryIdInput.value;
-                const activeTab = document.querySelector('.tab-btn.active').dataset.type;
                 
-                if (activeTab === 'channel') {
-                    saveChannel(id);
-                } else if (activeTab === 'series') {
-                    saveSeries(id);
-                } else {
-                    saveMovie(id);
+                try {
+                    const id = entryIdInput.value;
+                    const activeTab = document.querySelector('.tab-btn.active').dataset.type;
+                    
+                    // Validate required fields
+                    let isValid = true;
+                    let errorMessage = '';
+                    
+                    if (activeTab === 'movie') {
+                        if (!movieTitleInput.value.trim()) {
+                            isValid = false;
+                            errorMessage = 'Movie title is required';
+                        }
+                    } else if (activeTab === 'series') {
+                        if (!seriesTitleInput.value.trim()) {
+                            isValid = false;
+                            errorMessage = 'Series title is required';
+                        }
+                    } else if (activeTab === 'channel') {
+                        if (!channelTitleInput.value.trim()) {
+                            isValid = false;
+                            errorMessage = 'Channel name is required';
+                        }
+                        if (!channelStreamUrlInput.value.trim()) {
+                            isValid = false;
+                            errorMessage = 'Stream URL is required';
+                        }
+                    }
+                    
+                    if (!isValid) {
+                        showNotification(errorMessage, false);
+                        return;
+                    }
+                    
+                    // Save the data
+                    if (activeTab === 'channel') {
+                        saveChannel(id);
+                    } else if (activeTab === 'series') {
+                        saveSeries(id);
+                    } else {
+                        saveMovie(id);
+                    }
+                    
+                    renderEntries();
+                    closeModal();
+                    showNotification(`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} saved successfully!`, true);
+                } catch (error) {
+                    console.error('Save error:', error);
+                    showNotification(`Error saving content: ${error.message}`, false);
                 }
-                
-                renderEntries();
-                closeModal();
-                showNotification(`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} saved successfully!`, true);
             });
             
             function saveMovie(id) {
+                console.log('Saving movie with ID:', id);
+                console.log('Current movie sources:', currentMovieSources);
+                
                 const entryData = {
                     type: 'movie',
                     title: movieTitleInput.value.trim(),
@@ -1250,15 +1290,21 @@
                     comments: []
                 };
                 
+                console.log('Movie data to save:', entryData);
+                
                 if (id) {
                     const index = jsonData.movies.findIndex(m => m.id == id);
                     if (index > -1) {
                         jsonData.movies[index] = { ...jsonData.movies[index], ...entryData };
+                        console.log('Updated existing movie at index:', index);
                     }
                 } else {
                     const newId = generateNewId();
                     jsonData.movies.push({ id: newId, ...entryData });
+                    console.log('Added new movie with ID:', newId);
                 }
+                
+                console.log('Total movies after save:', jsonData.movies.length);
             }
             
             function saveSeries(id) {
@@ -1684,19 +1730,8 @@
                     const trailer = videosData.results.find(v => v.site === 'YouTube' && v.type === 'Trailer');
                     movieTrailerInput.value = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : '';
                     
-                    // Auto-add vidsrc source
-                    const vidsrcUrl = `https://vidsrc.net/embed/movie/${tmdbId}`;
-                    currentMovieSources = [{ 
-                        id: generateNewId(),
-                        type: 'video',
-                        title: 'vidsrc.net 1080p',
-                        quality: '1080p',
-                        size: '0MB',
-                        kind: 'both',
-                        premium: 'false',
-                        external: false,
-                        url: vidsrcUrl 
-                    }];
+                    // Clear any existing sources - user will add manually
+                    currentMovieSources = [];
                     renderMovieSources();
                     
                     showNotification('Movie data fetched successfully!', true);
