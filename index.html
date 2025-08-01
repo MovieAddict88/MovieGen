@@ -767,7 +767,7 @@
                 </div>
                 
                 <div class="form-group" style="margin-top: 20px; text-align: center;">
-                    <button type="submit" style="padding: 12px 30px; font-size: 1.1rem;">
+                    <button type="submit" id="saveContentButton" style="padding: 12px 30px; font-size: 1.1rem;">
                         <i class="fas fa-save"></i> Save Content
                     </button>
                 </div>
@@ -1163,31 +1163,78 @@
             
             entryForm.addEventListener('submit', (event) => {
                 event.preventDefault();
-                const id = entryIdInput.value;
-                const activeTab = document.querySelector('.tab-btn.active').dataset.type;
+                console.log('Form submission started');
                 
-                if (activeTab === 'channel') {
-                    saveChannel(id);
-                } else if (activeTab === 'series') {
-                    saveSeries(id);
-                } else {
-                    saveMovie(id);
-                }
+                const saveButton = document.getElementById('saveContentButton');
+                const originalButtonText = saveButton.innerHTML;
                 
-                renderEntries();
-                closeModal();
-                showNotification('Content saved successfully!', true);
+                // Show loading state
+                saveButton.disabled = true;
+                saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                
+                // Small delay to show the loading state
+                setTimeout(() => {
+                    try {
+                        // Ensure jsonData is initialized
+                        if (!jsonData) {
+                            console.log('Initializing jsonData');
+                            jsonData = { movies: [], channels: [] };
+                            editorDiv.style.display = 'block';
+                            saveSectionDiv.style.display = 'block';
+                        }
+                        
+                        const id = entryIdInput.value;
+                        const activeTab = document.querySelector('.tab-btn.active');
+                        
+                        if (!activeTab) {
+                            console.error('No active tab found');
+                            throw new Error('No content type selected');
+                        }
+                        
+                        const contentType = activeTab.dataset.type;
+                        console.log('Saving content type:', contentType, 'with ID:', id);
+                        
+                        if (contentType === 'channel') {
+                            saveChannel(id);
+                        } else if (contentType === 'series') {
+                            saveSeries(id);
+                        } else {
+                            saveMovie(id);
+                        }
+                        
+                        console.log('Content saved successfully');
+                        renderEntries();
+                        closeModal();
+                        showNotification('Content saved successfully!', true);
+                        
+                    } catch (error) {
+                        console.error('Error saving content:', error);
+                        showNotification(`Error saving content: ${error.message}`, false);
+                    } finally {
+                        // Reset button state
+                        saveButton.disabled = false;
+                        saveButton.innerHTML = originalButtonText;
+                    }
+                }, 100);
             });
             
             function saveMovie(id) {
+                console.log('Saving movie with ID:', id);
+                
+                // Validation
+                const title = movieTitleInput.value.trim();
+                if (!title) {
+                    throw new Error('Movie title is required');
+                }
+                
                 const entryData = {
                     type: 'movie',
-                    title: movieTitleInput.value,
-                    year: movieYearInput.value,
-                    description: movieDescriptionInput.value,
-                    image: movieImageInput.value,
-                    cover: movieCoverInput.value,
-                    trailer: movieTrailerInput.value ? { url: movieTrailerInput.value } : null,
+                    title: title,
+                    year: movieYearInput.value.trim(),
+                    description: movieDescriptionInput.value.trim(),
+                    image: movieImageInput.value.trim(),
+                    cover: movieCoverInput.value.trim(),
+                    trailer: movieTrailerInput.value.trim() ? { url: movieTrailerInput.value.trim() } : null,
                     sources: currentMovieSources,
                     genres: [],
                     actors: [],
@@ -1195,18 +1242,35 @@
                     comments: []
                 };
                 
+                console.log('Movie data to save:', entryData);
+                
                 if (id) {
+                    // Update existing entry
                     const index = jsonData.movies.findIndex(m => m.id == id);
                     if (index > -1) {
                         jsonData.movies[index] = { ...jsonData.movies[index], ...entryData };
+                        console.log('Updated existing movie at index:', index);
+                    } else {
+                        console.error('Movie with ID not found:', id);
+                        throw new Error('Movie not found for update');
                     }
                 } else {
+                    // Add new entry
                     const newId = generateNewId();
                     jsonData.movies.push({ id: newId, ...entryData });
+                    console.log('Added new movie with ID:', newId);
                 }
             }
             
             function saveSeries(id) {
+                console.log('Saving series with ID:', id);
+                
+                // Validation
+                const title = seriesTitleInput.value.trim();
+                if (!title) {
+                    throw new Error('Series title is required');
+                }
+                
                 // Collect season/episode data from the form
                 const seasons = [];
                 const seasonElements = document.querySelectorAll('.season-card');
@@ -1242,54 +1306,85 @@
                 
                 const entryData = {
                     type: 'series',
-                    title: seriesTitleInput.value,
-                    year: seriesYearInput.value,
-                    description: seriesDescriptionInput.value,
-                    image: seriesImageInput.value,
-                    cover: seriesCoverInput.value,
-                    trailer: seriesTrailerInput.value ? { url: seriesTrailerInput.value } : null,
+                    title: title,
+                    year: seriesYearInput.value.trim(),
+                    description: seriesDescriptionInput.value.trim(),
+                    image: seriesImageInput.value.trim(),
+                    cover: seriesCoverInput.value.trim(),
+                    trailer: seriesTrailerInput.value.trim() ? { url: seriesTrailerInput.value.trim() } : null,
                     seasons: seasons
                 };
                 
+                console.log('Series data to save:', entryData);
+                
                 if (id) {
+                    // Update existing entry
                     const index = jsonData.movies.findIndex(m => m.id == id);
                     if (index > -1) {
                         jsonData.movies[index] = { ...jsonData.movies[index], ...entryData };
+                        console.log('Updated existing series at index:', index);
+                    } else {
+                        console.error('Series with ID not found:', id);
+                        throw new Error('Series not found for update');
                     }
                 } else {
+                    // Add new entry
                     const newId = generateNewId();
                     jsonData.movies.push({ id: newId, ...entryData });
+                    console.log('Added new series with ID:', newId);
                 }
             }
             
             function saveChannel(id) {
-                const sources = [];
-                if (channelStreamUrlInput.value.trim()) {
-                    sources.push({ url: channelStreamUrlInput.value.trim(), type: 'live' });
+                console.log('Saving channel with ID:', id);
+                
+                // Validation
+                const title = channelTitleInput.value.trim();
+                if (!title) {
+                    throw new Error('Channel title is required');
                 }
-                if (channelBackupUrlInput.value.trim()) {
-                    sources.push({ url: channelBackupUrlInput.value.trim(), type: 'live' });
+                
+                const streamUrl = channelStreamUrlInput.value.trim();
+                if (!streamUrl) {
+                    throw new Error('Stream URL is required');
+                }
+                
+                const sources = [];
+                sources.push({ url: streamUrl, type: 'live' });
+                
+                const backupUrl = channelBackupUrlInput.value.trim();
+                if (backupUrl) {
+                    sources.push({ url: backupUrl, type: 'live' });
                 }
                 
                 const entryData = {
-                    title: channelTitleInput.value,
-                    image: channelImageInput.value,
+                    title: title,
+                    image: channelImageInput.value.trim(),
                     rating: parseFloat(channelRatingInput.value) || 0,
-                    category: channelCategoryInput.value || '',
-                    description: channelDescriptionInput.value,
+                    category: channelCategoryInput.value.trim() || '',
+                    description: channelDescriptionInput.value.trim(),
                     sources: sources,
                     countries: [],
                     comments: []
                 };
                 
+                console.log('Channel data to save:', entryData);
+                
                 if (id) {
+                    // Update existing entry
                     const index = jsonData.channels.findIndex(c => c.id == id);
                     if (index > -1) {
                         jsonData.channels[index] = { ...jsonData.channels[index], ...entryData };
+                        console.log('Updated existing channel at index:', index);
+                    } else {
+                        console.error('Channel with ID not found:', id);
+                        throw new Error('Channel not found for update');
                     }
                 } else {
+                    // Add new entry
                     const newId = generateNewId();
                     jsonData.channels.push({ id: newId, ...entryData });
+                    console.log('Added new channel with ID:', newId);
                 }
             }
             
