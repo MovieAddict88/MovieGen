@@ -124,6 +124,21 @@
             margin-left: 10px;
         }
         
+        .btn-secondary {
+            background-color: var(--gray);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
         label {
             display: block;
             margin-bottom: 8px;
@@ -619,6 +634,19 @@
 
         <div class="card">
             <h2><i class="fas fa-download"></i> 1. Load Data</h2>
+            
+            <div class="auto-gen-toggle">
+                <input type="checkbox" id="autoGenToggle" checked>
+                <label for="autoGenToggle">Auto-generate slides, featured, actors, and genres</label>
+                <span class="help-text">When enabled, automatically creates related content when you add movies/series</span>
+                <button id="manualGenButton" class="btn btn-secondary" style="margin-left: 20px;">
+                    <i class="fas fa-magic"></i> Generate Now
+                </button>
+                <div id="autoGenStatus" style="margin-left: 20px; font-size: 0.9rem; color: var(--success); display: none;">
+                    <i class="fas fa-check-circle"></i> Auto-generation active
+                </div>
+            </div>
+            
             <div class="load-section">
                 <div class="load-file">
                     <label for="fileInput">Load JSON file:</label>
@@ -1021,6 +1049,7 @@
             let currentSeriesData = { seasons: [] };
             let currentSeriesGenres = [];
             let currentSeriesActors = [];
+            let autoGenerationEnabled = true; // Global control for auto-generation
 
             // SIMPLE CLICK TEST
             console.log('🧪 Setting up simple click tests...');
@@ -1286,8 +1315,61 @@
             };
             console.log('✅ You can test auto-generation with: testAutoGeneration() in console');
             
+            // --- Auto-Generation Control ---
+            const autoGenToggle = document.getElementById('autoGenToggle');
+            const manualGenButton = document.getElementById('manualGenButton');
+            
+            if (autoGenToggle) {
+                autoGenToggle.addEventListener('change', (e) => {
+                    autoGenerationEnabled = e.target.checked;
+                    console.log(`Auto-generation ${autoGenerationEnabled ? 'enabled' : 'disabled'}`);
+                    showNotification(`Auto-generation ${autoGenerationEnabled ? 'enabled' : 'disabled'}`, true);
+                    
+                    // Update status indicator
+                    const statusElement = document.getElementById('autoGenStatus');
+                    if (statusElement) {
+                        statusElement.style.display = autoGenerationEnabled ? 'inline-block' : 'none';
+                    }
+                });
+                
+                // Initialize status indicator
+                const statusElement = document.getElementById('autoGenStatus');
+                if (statusElement && autoGenerationEnabled) {
+                    statusElement.style.display = 'inline-block';
+                }
+            }
+            
+            if (manualGenButton) {
+                manualGenButton.addEventListener('click', () => {
+                    if (!jsonData) {
+                        showNotification('Please load data first before generating content', false);
+                        return;
+                    }
+                    
+                    console.log('🔧 Manual generation triggered...');
+                    showNotification('Generating related content...', true);
+                    
+                    // Temporarily enable auto-generation for manual trigger
+                    const wasEnabled = autoGenerationEnabled;
+                    autoGenerationEnabled = true;
+                    
+                    autoGenerateRelatedContent();
+                    renderEntries();
+                    
+                    // Restore previous state
+                    autoGenerationEnabled = wasEnabled;
+                    
+                    showNotification('Content generation completed!', true);
+                });
+            }
+            
             // --- Auto-Generation Functions ---
             function autoGenerateRelatedContent() {
+                if (!autoGenerationEnabled) {
+                    console.log('⏸️ Auto-generation disabled, skipping...');
+                    return;
+                }
+                
                 console.log('🔄 Auto-generating slides, featured content, actors, and genres...');
                 
                 try {
@@ -1336,10 +1418,16 @@
                     ...(jsonData.channels || []).map(c => ({...c, contentType: 'channel', url: `channels/${c.id}`}))
                 ];
                 
-                // Filter content with images and sort by rating
+                // Filter content with images and sort by rating, then by year (newer first)
                 const slideContent = allContent
                     .filter(item => item.image && item.title)
-                    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+                    .sort((a, b) => {
+                        // First sort by rating (high to low)
+                        const ratingDiff = (b.rating || 0) - (a.rating || 0);
+                        if (ratingDiff !== 0) return ratingDiff;
+                        // Then by year (newer first)
+                        return (b.year || 0) - (a.year || 0);
+                    })
                     .slice(0, 5); // Top 5 for slides
                 
                 // Generate slides - create at least one default slide if no content
@@ -1367,7 +1455,12 @@
                         type: item.contentType,
                         image: item.image,
                         url: item.url,
-                        poster: item.contentType === 'movie' ? { ...item } : null,
+                        poster: item.contentType === 'movie' ? { 
+                            ...item,
+                            label: item.contentType === 'movie' ? 'Latest Movie' : 'Featured Content',
+                            sublabel: item.year ? `Released ${item.year}` : 'New Release',
+                            description: item.description || item.overview || 'Check out this amazing content!'
+                        } : null,
                         channel: item.contentType === 'channel' ? { ...item } : null
                     }));
                 }
@@ -1378,27 +1471,40 @@
             function autoGenerateFeaturedMovies() {
                 console.log('⭐ Generating featured movies...');
                 
-                // Get movies with rating >= 7 or recent movies
+                // Get movies with rating >= 7 or recent movies (last 3 years)
+                const currentYear = new Date().getFullYear();
                 const featuredMovies = (jsonData.movies || [])
-                    .filter(movie => (movie.rating >= 7 || movie.year >= 2020) && movie.image)
-                    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-                    .slice(0, 10); // Top 10 featured
+                    .filter(movie => {
+                        const hasGoodRating = movie.rating >= 7;
+                        const isRecent = movie.year >= (currentYear - 3);
+                        const hasImage = movie.image;
+                        return (hasGoodRating || isRecent) && hasImage;
+                    })
+                    .sort((a, b) => {
+                        // First sort by rating (high to low)
+                        const ratingDiff = (b.rating || 0) - (a.rating || 0);
+                        if (ratingDiff !== 0) return ratingDiff;
+                        // Then by year (newer first)
+                        return (b.year || 0) - (a.year || 0);
+                    })
+                    .slice(0, 12); // Top 12 featured
                 
                 // If no featured movies, use all available movies
                 if (featuredMovies.length === 0 && jsonData.movies.length > 0) {
                     const fallbackMovies = jsonData.movies
+                        .filter(movie => movie.image) // Only movies with images
                         .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-                        .slice(0, 5); // Top 5 as fallback
+                        .slice(0, 8); // Top 8 as fallback
                     
                     jsonData.home.featured_movies = fallbackMovies.map(movie => ({
                         ...movie,
-                        views: movie.views || 0,
+                        views: movie.views || Math.floor(Math.random() * 10000) + 1000, // Random views
                         created_at: movie.created_at || new Date().toISOString().split('T')[0]
                     }));
                 } else {
                     jsonData.home.featured_movies = featuredMovies.map(movie => ({
                         ...movie,
-                        views: movie.views || 0,
+                        views: movie.views || Math.floor(Math.random() * 10000) + 1000, // Random views
                         created_at: movie.created_at || new Date().toISOString().split('T')[0]
                     }));
                 }
@@ -2495,12 +2601,13 @@
                     
                     // Auto-generate related content after TMDB fetch
                     console.log('🔄 Auto-generating related content after TMDB movie fetch...');
+                    showNotification('Fetching movie data and generating related content...', true);
+                    
                     setTimeout(() => {
                         autoGenerateRelatedContent();
                         renderEntries();
+                        showNotification(`✅ Movie "${movieData.title}" added with auto-generated slides, featured, actors, and genres!`, true);
                     }, 500);
-                    
-                    showNotification('Movie data fetched successfully! Related content auto-generated.', true);
                 } catch (error) {
                     showNotification(`Error: ${error.message}`, false);
                 }
@@ -2597,12 +2704,13 @@
                     
                     // Auto-generate related content after TMDB fetch
                     console.log('🔄 Auto-generating related content after TMDB series fetch...');
+                    showNotification('Fetching series data and generating related content...', true);
+                    
                     setTimeout(() => {
                         autoGenerateRelatedContent();
                         renderEntries();
+                        showNotification(`✅ Series "${seriesData.name}" added with auto-generated slides, featured, actors, and genres!`, true);
                     }, 500);
-                    
-                    showNotification('Series data fetched successfully! Related content auto-generated.', true);
                 } catch (error) {
                     showNotification(`Error: ${error.message}`, false);
                 }
