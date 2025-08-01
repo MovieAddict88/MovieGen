@@ -910,13 +910,10 @@
             const testForm = document.querySelector('#entryForm');
             if (testForm) {
                 console.log('✅ Entry form found!');
-                testForm.addEventListener('submit', (e) => {
-                    console.log('🎯 FORM WAS SUBMITTED!');
-                    alert('Form submitted! Event listeners are working.');
-                    e.preventDefault();
-                });
+                // We'll add the real form handler later - this is just for testing if the form exists
             } else {
                 console.log('❌ Entry form NOT found!');
+                alert('CRITICAL ERROR: Entry form not found! Modal form is missing.');
             }
 
             // Test 3: Add new entry button
@@ -929,6 +926,122 @@
                 });
             } else {
                 console.log('❌ Add new entry button NOT found!');
+            }
+
+            // REAL FORM SUBMIT HANDLER - This is the important one!
+            console.log('🔧 Setting up REAL form submit handler...');
+            if (testForm) {
+                testForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    
+                    console.log('🔥 REAL FORM SUBMIT TRIGGERED! 🔥');
+                    alert('REAL form submit working! Now processing...');
+                    
+                    try {
+                        console.log('=== FORM SUBMIT STARTED ===');
+                        console.log('Event:', event);
+                        
+                        // Prevent double submission
+                        const submitButton = event.target.querySelector('button[type="submit"]');
+                        if (submitButton.disabled) {
+                            console.log('Button already disabled - preventing double submit');
+                            alert('Please wait, saving in progress...');
+                            return;
+                        }
+                        
+                        // Disable submit button temporarily
+                        submitButton.disabled = true;
+                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                        
+                        console.log('=== CHECKING BASIC ELEMENTS ===');
+                        
+                        if (!jsonData) {
+                            throw new Error('No JSON data loaded. Please load a JSON file first.');
+                        }
+                        
+                        const id = entryIdInput.value;
+                        console.log('Entry ID:', id);
+                        
+                        const activeTabElement = document.querySelector('.tab-btn.active');
+                        if (!activeTabElement) {
+                            throw new Error('No active tab found');
+                        }
+                        
+                        const activeTab = activeTabElement.dataset.type;
+                        console.log('Active tab:', activeTab);
+                        
+                        // Validate required fields
+                        console.log('=== VALIDATING FIELDS ===');
+                        let isValid = true;
+                        let errorMessage = '';
+                        
+                        if (activeTab === 'movie') {
+                            console.log('Movie title value:', movieTitleInput.value);
+                            if (!movieTitleInput.value.trim()) {
+                                isValid = false;
+                                errorMessage = 'Movie title is required';
+                            }
+                        } else if (activeTab === 'series') {
+                            console.log('Series title value:', seriesTitleInput.value);
+                            if (!seriesTitleInput.value.trim()) {
+                                isValid = false;
+                                errorMessage = 'Series title is required';
+                            }
+                        } else if (activeTab === 'channel') {
+                            console.log('Channel title value:', channelTitleInput.value);
+                            console.log('Channel stream URL value:', channelStreamUrlInput.value);
+                            if (!channelTitleInput.value.trim()) {
+                                isValid = false;
+                                errorMessage = 'Channel name is required';
+                            }
+                            if (!channelStreamUrlInput.value.trim()) {
+                                isValid = false;
+                                errorMessage = 'Stream URL is required';
+                            }
+                        }
+                        
+                        if (!isValid) {
+                            console.log('Validation failed:', errorMessage);
+                            alert('Validation failed: ' + errorMessage);
+                            return;
+                        }
+                        
+                        console.log('=== SAVING DATA ===');
+                        // Save the data
+                        if (activeTab === 'channel') {
+                            console.log('Calling saveChannel...');
+                            saveChannel(id);
+                        } else if (activeTab === 'series') {
+                            console.log('Calling saveSeries...');
+                            saveSeries(id);
+                        } else {
+                            console.log('Calling saveMovie...');
+                            saveMovie(id);
+                        }
+                        
+                        console.log('=== UPDATING UI ===');
+                        renderEntries();
+                        closeModal();
+                        alert(`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} saved successfully!`);
+                        console.log('=== SAVE COMPLETED SUCCESSFULLY ===');
+                        
+                    } catch (error) {
+                        console.error('=== SAVE ERROR ===', error);
+                        console.error('Error stack:', error.stack);
+                        alert(`Error saving content: ${error.message}`);
+                    } finally {
+                        // Re-enable submit button
+                        const submitButton = event.target.querySelector('button[type="submit"]');
+                        if (submitButton) {
+                            submitButton.disabled = false;
+                            submitButton.innerHTML = '<i class="fas fa-save"></i> Save Content';
+                        }
+                    }
+                });
+                console.log('✅ Real form submit handler attached successfully!');
+            } else {
+                console.log('❌ Cannot attach form handler - form not found!');
+                alert('CRITICAL: Cannot attach form submit handler!');
             }
             
             // --- Utility Functions ---
@@ -1295,109 +1408,7 @@
                 }
             }
             
-            entryForm.addEventListener('submit', (event) => {
-                event.preventDefault();
-                
-                console.log('=== FORM SUBMIT STARTED ===');
-                console.log('Event:', event);
-                
-                // Prevent double submission
-                const submitButton = event.target.querySelector('button[type="submit"]');
-                if (submitButton.disabled) {
-                    console.log('Button already disabled - preventing double submit');
-                    showNotification('Please wait, saving in progress...', false);
-                    return;
-                }
-                
-                // Disable submit button temporarily
-                submitButton.disabled = true;
-                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-                
-                try {
-                    console.log('=== CHECKING BASIC ELEMENTS ===');
-                    
-                    if (!jsonData) {
-                        throw new Error('No JSON data loaded. Please load a JSON file first.');
-                    }
-                    
-                    const id = entryIdInput.value;
-                    console.log('Entry ID:', id);
-                    
-                    const activeTabElement = document.querySelector('.tab-btn.active');
-                    if (!activeTabElement) {
-                        throw new Error('No active tab found');
-                    }
-                    
-                    const activeTab = activeTabElement.dataset.type;
-                    console.log('Active tab:', activeTab);
-                    
-                    // Validate required fields
-                    console.log('=== VALIDATING FIELDS ===');
-                    let isValid = true;
-                    let errorMessage = '';
-                    
-                    if (activeTab === 'movie') {
-                        console.log('Movie title value:', movieTitleInput.value);
-                        if (!movieTitleInput.value.trim()) {
-                            isValid = false;
-                            errorMessage = 'Movie title is required';
-                        }
-                    } else if (activeTab === 'series') {
-                        console.log('Series title value:', seriesTitleInput.value);
-                        if (!seriesTitleInput.value.trim()) {
-                            isValid = false;
-                            errorMessage = 'Series title is required';
-                        }
-                    } else if (activeTab === 'channel') {
-                        console.log('Channel title value:', channelTitleInput.value);
-                        console.log('Channel stream URL value:', channelStreamUrlInput.value);
-                        if (!channelTitleInput.value.trim()) {
-                            isValid = false;
-                            errorMessage = 'Channel name is required';
-                        }
-                        if (!channelStreamUrlInput.value.trim()) {
-                            isValid = false;
-                            errorMessage = 'Stream URL is required';
-                        }
-                    }
-                    
-                    if (!isValid) {
-                        console.log('Validation failed:', errorMessage);
-                        showNotification(errorMessage, false);
-                        return;
-                    }
-                    
-                    console.log('=== SAVING DATA ===');
-                    // Save the data
-                    if (activeTab === 'channel') {
-                        console.log('Calling saveChannel...');
-                        saveChannel(id);
-                    } else if (activeTab === 'series') {
-                        console.log('Calling saveSeries...');
-                        saveSeries(id);
-                    } else {
-                        console.log('Calling saveMovie...');
-                        saveMovie(id);
-                    }
-                    
-                    console.log('=== UPDATING UI ===');
-                    renderEntries();
-                    closeModal();
-                    showNotification(`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} saved successfully!`, true);
-                    console.log('=== SAVE COMPLETED SUCCESSFULLY ===');
-                    
-                } catch (error) {
-                    console.error('=== SAVE ERROR ===', error);
-                    console.error('Error stack:', error.stack);
-                    showNotification(`Error saving content: ${error.message}`, false);
-                } finally {
-                    // Re-enable submit button
-                    if (submitButton) {
-                        submitButton.disabled = false;
-                        submitButton.innerHTML = '<i class="fas fa-save"></i> Save Content';
-                    }
-                }
-            });
+            // OLD DUPLICATE FORM HANDLER REMOVED - Using the new one above
             
             function saveMovie(id) {
                 console.log('Saving movie with ID:', id);
