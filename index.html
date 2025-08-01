@@ -1242,6 +1242,19 @@
             };
             console.log('✅ You can now test with: testFormSubmit() in console');
             
+            // Add manual test for auto-generation
+            window.testAutoGeneration = function() {
+                console.log('🧪 MANUAL TEST: Running auto-generation...');
+                if (jsonData) {
+                    autoGenerateRelatedContent();
+                    renderEntries();
+                    alert('Auto-generation test completed! Check console and filters.');
+                } else {
+                    alert('ERROR: No JSON data loaded. Load data first.');
+                }
+            };
+            console.log('✅ You can test auto-generation with: testAutoGeneration() in console');
+            
             // --- Auto-Generation Functions ---
             function autoGenerateRelatedContent() {
                 console.log('🔄 Auto-generating slides, featured content, actors, and genres...');
