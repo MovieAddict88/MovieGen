@@ -95,6 +95,35 @@
             flex: 1;
         }
         
+        .auto-gen-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .auto-gen-toggle label {
+            margin: 0;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .auto-gen-toggle input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+        }
+        
+        .auto-gen-toggle .help-text {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-left: 10px;
+        }
+        
         label {
             display: block;
             margin-bottom: 8px;
@@ -990,6 +1019,8 @@
             let currentMovieGenres = [];
             let currentFilter = 'all';
             let currentSeriesData = { seasons: [] };
+            let currentSeriesGenres = [];
+            let currentSeriesActors = [];
 
             // SIMPLE CLICK TEST
             console.log('🧪 Setting up simple click tests...');
@@ -2408,6 +2439,38 @@
                     currentMovieGenres = movieData.genres || [];
                     console.log('Auto-added genres:', currentMovieGenres);
                     
+                    // Auto-add actors from TMDb credits
+                    try {
+                        const creditsUrl = `https://api.themoviedb.org/3/movie/${tmdbId}/credits?api_key=${tmdbApiKey}`;
+                        const creditsRes = await fetch(creditsUrl);
+                        const creditsData = creditsRes.ok ? await creditsRes.json() : { cast: [], crew: [] };
+                        
+                        // Add top 5 cast members as actors
+                        const topActors = creditsData.cast.slice(0, 5).map(actor => ({
+                            name: actor.name,
+                            type: 'actor',
+                            role: actor.character || 'Actor',
+                            image: actor.profile_path ? `https://image.tmdb.org/t/p/w200${actor.profile_path}` : ''
+                        }));
+                        
+                        // Add director from crew
+                        const director = creditsData.crew.find(person => person.job === 'Director');
+                        if (director) {
+                            topActors.push({
+                                name: director.name,
+                                type: 'director',
+                                role: 'Director',
+                                image: director.profile_path ? `https://image.tmdb.org/t/p/w200${director.profile_path}` : ''
+                            });
+                        }
+                        
+                        // Update current movie actors
+                        currentMovieActors = topActors;
+                        console.log('Auto-added actors from TMDb:', currentMovieActors);
+                    } catch (error) {
+                        console.warn('Could not fetch credits:', error);
+                    }
+                    
                     // Fetch trailer
                     const videosUrl = `https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=${tmdbApiKey}`;
                     const videosRes = await fetch(videosUrl);
@@ -2430,7 +2493,14 @@
                     }];
                     renderMovieSources();
                     
-                    showNotification('Movie data fetched successfully!', true);
+                    // Auto-generate related content after TMDB fetch
+                    console.log('🔄 Auto-generating related content after TMDB movie fetch...');
+                    setTimeout(() => {
+                        autoGenerateRelatedContent();
+                        renderEntries();
+                    }, 500);
+                    
+                    showNotification('Movie data fetched successfully! Related content auto-generated.', true);
                 } catch (error) {
                     showNotification(`Error: ${error.message}`, false);
                 }
@@ -2455,6 +2525,42 @@
                     seriesCoverInput.value = seriesData.backdrop_path ? 
                         `https://image.tmdb.org/t/p/original${seriesData.backdrop_path}` : '';
                     seriesTrailerInput.value = seriesData.trailer || '';
+                    
+                    // Auto-add genres from TMDb
+                    currentSeriesGenres = seriesData.genres || [];
+                    console.log('Auto-added series genres:', currentSeriesGenres);
+                    
+                    // Auto-add actors from TMDb credits
+                    try {
+                        const creditsUrl = `https://api.themoviedb.org/3/tv/${tmdbId}/credits?api_key=${tmdbApiKey}`;
+                        const creditsRes = await fetch(creditsUrl);
+                        const creditsData = creditsRes.ok ? await creditsRes.json() : { cast: [], crew: [] };
+                        
+                        // Add top 5 cast members as actors
+                        const topActors = creditsData.cast.slice(0, 5).map(actor => ({
+                            name: actor.name,
+                            type: 'actor',
+                            role: actor.character || 'Actor',
+                            image: actor.profile_path ? `https://image.tmdb.org/t/p/w200${actor.profile_path}` : ''
+                        }));
+                        
+                        // Add creator from crew
+                        const creator = creditsData.crew.find(person => person.job === 'Creator');
+                        if (creator) {
+                            topActors.push({
+                                name: creator.name,
+                                type: 'creator',
+                                role: 'Creator',
+                                image: creator.profile_path ? `https://image.tmdb.org/t/p/w200${creator.profile_path}` : ''
+                            });
+                        }
+                        
+                        // Update current series actors
+                        currentSeriesActors = topActors;
+                        console.log('Auto-added series actors from TMDb:', currentSeriesActors);
+                    } catch (error) {
+                        console.warn('Could not fetch series credits:', error);
+                    }
                     
                     // Prepare seasons data with auto vidsrc URLs
                     currentSeriesData = {
@@ -2489,7 +2595,14 @@
                     // Render seasons
                     renderSeasons(currentSeriesData.seasons);
                     
-                    showNotification('Series data fetched successfully!', true);
+                    // Auto-generate related content after TMDB fetch
+                    console.log('🔄 Auto-generating related content after TMDB series fetch...');
+                    setTimeout(() => {
+                        autoGenerateRelatedContent();
+                        renderEntries();
+                    }, 500);
+                    
+                    showNotification('Series data fetched successfully! Related content auto-generated.', true);
                 } catch (error) {
                     showNotification(`Error: ${error.message}`, false);
                 }
