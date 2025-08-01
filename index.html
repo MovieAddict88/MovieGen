@@ -590,6 +590,14 @@
         <header>
             <h1><i class="fas fa-film"></i> Enhanced Movie API Editor</h1>
             <p class="subtitle">Create and manage your movie, series, and live TV content with TMDb integration</p>
+            <div style="margin-top: 15px;">
+                <button id="clearDataButton" style="background-color: var(--danger); padding: 8px 15px; font-size: 0.9rem;">
+                    <i class="fas fa-trash-alt"></i> Clear All Data
+                </button>
+                <span id="autoSaveStatus" style="margin-left: 15px; color: rgba(255,255,255,0.8); font-size: 0.85rem;">
+                    <i class="fas fa-save"></i> Auto-save enabled
+                </span>
+            </div>
         </header>
 
         <div class="card">
@@ -629,6 +637,13 @@
                 <h2><i class="fas fa-save"></i> 3. Save Data</h2>
                 <div class="save-section">
                     <button id="saveButton"><i class="fas fa-download"></i> Save and Download JSON</button>
+                    <button id="exportButton" style="margin-left: 10px; background-color: var(--primary);">
+                        <i class="fas fa-file-export"></i> Export Current Work
+                    </button>
+                    <input type="file" id="importInput" accept=".json" style="display: none;">
+                    <button id="importButton" style="margin-left: 10px; background-color: var(--warning);">
+                        <i class="fas fa-file-import"></i> Import Backup
+                    </button>
                 </div>
             </div>
         </div>
@@ -827,7 +842,12 @@
             const entryListDiv = document.getElementById('entryList');
             const addNewEntryButton = document.getElementById('addNewEntry');
             const saveButton = document.getElementById('saveButton');
+            const exportButton = document.getElementById('exportButton');
+            const importButton = document.getElementById('importButton');
+            const importInput = document.getElementById('importInput');
             const filterButtons = document.querySelectorAll('.filter-btn');
+            const clearDataButton = document.getElementById('clearDataButton');
+            const autoSaveStatus = document.getElementById('autoSaveStatus');
             
             // Modal elements
             const modal = document.getElementById('entryModal');
@@ -878,6 +898,86 @@
             let currentMovieSources = [];
             let currentFilter = 'all';
             let currentSeriesData = { seasons: [] };
+            
+            // --- Persistence Functions ---
+            function saveToLocalStorage(showIndicator = false) {
+                if (jsonData) {
+                    try {
+                        localStorage.setItem('movieApiData', JSON.stringify(jsonData));
+                        localStorage.setItem('movieApiDataTimestamp', Date.now().toString());
+                        console.log('Data saved to localStorage');
+                        
+                        if (showIndicator && autoSaveStatus) {
+                            const originalText = autoSaveStatus.innerHTML;
+                            autoSaveStatus.innerHTML = '<i class="fas fa-check"></i> Auto-saved just now';
+                            autoSaveStatus.style.color = '#2ecc71';
+                            
+                            setTimeout(() => {
+                                autoSaveStatus.innerHTML = '<i class="fas fa-save"></i> Auto-save enabled';
+                                autoSaveStatus.style.color = 'rgba(255,255,255,0.8)';
+                            }, 2000);
+                        }
+                    } catch (error) {
+                        console.warn('Failed to save to localStorage:', error);
+                        if (autoSaveStatus) {
+                            autoSaveStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Auto-save failed';
+                            autoSaveStatus.style.color = '#e74c3c';
+                        }
+                    }
+                }
+            }
+            
+            function loadFromLocalStorage() {
+                try {
+                    const savedData = localStorage.getItem('movieApiData');
+                    const timestamp = localStorage.getItem('movieApiDataTimestamp');
+                    
+                    if (savedData) {
+                        const parsedData = JSON.parse(savedData);
+                        const savedTime = new Date(parseInt(timestamp || '0'));
+                        
+                        // Auto-load if data exists
+                        jsonData = parsedData;
+                        if (!jsonData.movies) jsonData.movies = [];
+                        if (!jsonData.channels) jsonData.channels = [];
+                        
+                        editorDiv.style.display = 'block';
+                        saveSectionDiv.style.display = 'block';
+                        renderEntries();
+                        
+                        const timeAgo = Math.round((Date.now() - savedTime.getTime()) / (1000 * 60));
+                        showNotification(`Previous work restored! Last saved ${timeAgo} minutes ago.`, true);
+                        console.log('Data loaded from localStorage');
+                        return true;
+                    }
+                } catch (error) {
+                    console.warn('Failed to load from localStorage:', error);
+                    localStorage.removeItem('movieApiData');
+                    localStorage.removeItem('movieApiDataTimestamp');
+                }
+                return false;
+            }
+            
+            function clearLocalStorage() {
+                localStorage.removeItem('movieApiData');
+                localStorage.removeItem('movieApiDataTimestamp');
+                console.log('localStorage cleared');
+            }
+            
+            // Auto-save functionality
+            function setupAutoSave() {
+                // Save data every 30 seconds if there are changes
+                setInterval(() => {
+                    if (jsonData && (jsonData.movies?.length > 0 || jsonData.channels?.length > 0)) {
+                        saveToLocalStorage(true); // Show indicator for auto-save
+                    }
+                }, 30000);
+                
+                // Save before page unload
+                window.addEventListener('beforeunload', () => {
+                    saveToLocalStorage();
+                });
+            }
             
             // --- Utility Functions ---
             function showNotification(message, isSuccess = true) {
@@ -1002,6 +1102,9 @@
                 editorDiv.style.display = 'block';
                 saveSectionDiv.style.display = 'block';
                 renderEntries();
+                
+                // Save to localStorage after loading new data
+                saveToLocalStorage();
             }
             
             // --- Render Entries ---
@@ -1197,6 +1300,9 @@
                 if (index > -1) {
                     showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully!`, true);
                     renderEntries();
+                    
+                    // Save to localStorage after deletion
+                    saveToLocalStorage();
                 }
             }
             
@@ -1241,10 +1347,13 @@
                             saveMovie(id);
                         }
                         
-                        console.log('Content saved successfully');
-                        renderEntries();
-                        closeModal();
-                        showNotification('Content saved successfully!', true);
+                                            console.log('Content saved successfully');
+                    renderEntries();
+                    closeModal();
+                    
+                    // Save to localStorage after successful save
+                    saveToLocalStorage();
+                    showNotification('Content saved successfully!', true);
                         
                     } catch (error) {
                         console.error('Error saving content:', error);
@@ -1979,6 +2088,88 @@
                 showNotification('File downloaded successfully!', true);
             });
             
+            // --- Export Current Work ---
+            exportButton.addEventListener('click', () => {
+                if (!jsonData) {
+                    showNotification('No data to export', false);
+                    return;
+                }
+                
+                const exportData = {
+                    exported_at: new Date().toISOString(),
+                    version: '1.0',
+                    data: jsonData
+                };
+                
+                const jsonString = JSON.stringify(exportData, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `movie_api_backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showNotification('Backup exported successfully!', true);
+            });
+            
+            // --- Import Backup ---
+            importButton.addEventListener('click', () => {
+                importInput.click();
+            });
+            
+            importInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const importedData = JSON.parse(e.target.result);
+                            
+                            // Check if it's a backup file or regular data
+                            const dataToLoad = importedData.data ? importedData.data : importedData;
+                            
+                            // Confirm before loading
+                            const existingItems = (jsonData?.movies?.length || 0) + (jsonData?.channels?.length || 0);
+                            if (existingItems > 0) {
+                                if (!confirm('This will replace your current data. Continue?')) {
+                                    importInput.value = '';
+                                    return;
+                                }
+                            }
+                            
+                            loadData(JSON.stringify(dataToLoad));
+                            showNotification('Backup imported successfully!', true);
+                            
+                        } catch (error) {
+                            showNotification(`Error importing backup: ${error.message}`, false);
+                        }
+                        importInput.value = '';
+                    };
+                    reader.readAsText(file);
+                }
+            });
+            
+            // --- Clear Data Functionality ---
+            clearDataButton.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                    jsonData = { movies: [], channels: [] };
+                    clearLocalStorage();
+                    editorDiv.style.display = 'none';
+                    saveSectionDiv.style.display = 'none';
+                    entryListDiv.innerHTML = '';
+                    
+                    // Clear form inputs
+                    fileInput.value = '';
+                    jsonTextInput.value = '';
+                    fileInfo.innerHTML = '';
+                    
+                    showNotification('All data cleared successfully!', true);
+                }
+            });
+            
             // --- Event Listeners ---
             closeModalButton.addEventListener('click', closeModal);
             window.addEventListener('click', (event) => {
@@ -1986,6 +2177,17 @@
                     closeModal();
                 }
             });
+            
+            // --- Initialize Application ---
+            // Try to load saved data on page load
+            const dataLoaded = loadFromLocalStorage();
+            if (!dataLoaded) {
+                // Show helpful message if no saved data
+                autoSaveStatus.innerHTML = '<i class="fas fa-info-circle"></i> Load data or add content to enable auto-save';
+            }
+            
+            // Setup auto-save functionality
+            setupAutoSave();
         });
     </script>
 </body>
