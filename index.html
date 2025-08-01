@@ -533,6 +533,37 @@
             border-radius: 4px;
         }
         
+        .no-results, .no-seasons {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .no-results h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .add-episode-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        
+        .add-episode-btn:hover {
+            background-color: #2980b9;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .load-section {
@@ -960,9 +991,13 @@
                 jsonData = JSON.parse(jsonString);
                 if (!jsonData.movies) jsonData.movies = [];
                 if (!jsonData.channels) jsonData.channels = [];
+                
                 editorDiv.style.display = 'block';
                 saveSectionDiv.style.display = 'block';
                 renderEntries();
+                
+                const totalItems = (jsonData.movies?.length || 0) + (jsonData.channels?.length || 0);
+                showNotification(`Data loaded successfully! Found ${totalItems} items.`, true);
             }
             
             // --- Render Entries ---
@@ -989,9 +1024,9 @@
                 
                 if (filteredEntries.length === 0) {
                     entryListDiv.innerHTML = `
-                        <div class="no-results">
-                            <i class="fas fa-film"></i>
-                            <h3>No content found</h3>
+                        <div class="no-results" style="text-align: center; padding: 40px 20px; color: var(--gray);">
+                            <i class="fas fa-film" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <h3 style="margin-bottom: 10px; color: var(--dark);">No content found</h3>
                             <p>Try changing your filter or add new content</p>
                         </div>
                     `;
@@ -1158,6 +1193,8 @@
                 if (index > -1) {
                     showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully!`, true);
                     renderEntries();
+                } else {
+                    showNotification(`Failed to delete ${type}. Please try again.`, false);
                 }
             }
             
@@ -1176,19 +1213,37 @@
                 
                 renderEntries();
                 closeModal();
-                showNotification('Content saved successfully!', true);
+                showNotification(`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} saved successfully!`, true);
             });
             
             function saveMovie(id) {
                 const entryData = {
                     type: 'movie',
-                    title: movieTitleInput.value,
-                    year: movieYearInput.value,
-                    description: movieDescriptionInput.value,
-                    image: movieImageInput.value,
-                    cover: movieCoverInput.value,
-                    trailer: movieTrailerInput.value ? { url: movieTrailerInput.value } : null,
-                    sources: currentMovieSources,
+                    title: movieTitleInput.value.trim(),
+                    year: movieYearInput.value.trim(),
+                    description: movieDescriptionInput.value.trim(),
+                    image: movieImageInput.value.trim(),
+                    cover: movieCoverInput.value.trim(),
+                    trailer: movieTrailerInput.value.trim() ? { 
+                        id: generateNewId(),
+                        type: 'video',
+                        title: `${movieTitleInput.value.trim()} Trailer`,
+                        url: movieTrailerInput.value.trim() 
+                    } : null,
+                    sources: currentMovieSources.length > 0 ? currentMovieSources : [],
+                    label: 'Movie',
+                    sublabel: movieYearInput.value.trim() || 'N/A',
+                    imdb: '0.0',
+                    downloadas: movieTitleInput.value.trim().toLowerCase().replace(/[^a-z0-9]/g, '-'),
+                    comment: true,
+                    playas: 'video',
+                    classification: 'N/A',
+                    duration: '00:00',
+                    rating: 0,
+                    views: 0,
+                    downloads: 0,
+                    shares: 0,
+                    created_at: new Date().toISOString().split('T')[0],
                     genres: [],
                     actors: [],
                     subtitles: [],
@@ -1225,16 +1280,29 @@
                             const episodeTitle = titleElement ? titleElement.textContent.replace(/^Episode \d+: /, '') : `Episode ${episodeNumber}`;
                             
                             episodes.push({
-                                episode: episodeNumber,
+                                id: generateNewId(),
                                 title: episodeTitle,
-                                sources: [{ url: sourceUrl, type: 'video' }]
+                                episode_number: episodeNumber,
+                                image: '',
+                                duration: '45:00',
+                                views: 0,
+                                downloads: 0,
+                                sources: [{ 
+                                    id: generateNewId(),
+                                    type: 'video', 
+                                    title: `${episodeTitle} 1080p`,
+                                    quality: '1080p',
+                                    url: sourceUrl 
+                                }],
+                                subtitles: []
                             });
                         }
                     }
                     
                     if (episodes.length > 0) {
                         seasons.push({
-                            season: seasonNumber,
+                            id: generateNewId(),
+                            title: `Season ${seasonNumber}`,
                             episodes: episodes
                         });
                     }
@@ -1242,12 +1310,35 @@
                 
                 const entryData = {
                     type: 'series',
-                    title: seriesTitleInput.value,
-                    year: seriesYearInput.value,
-                    description: seriesDescriptionInput.value,
-                    image: seriesImageInput.value,
-                    cover: seriesCoverInput.value,
-                    trailer: seriesTrailerInput.value ? { url: seriesTrailerInput.value } : null,
+                    title: seriesTitleInput.value.trim(),
+                    year: seriesYearInput.value.trim(),
+                    description: seriesDescriptionInput.value.trim(),
+                    image: seriesImageInput.value.trim(),
+                    cover: seriesCoverInput.value.trim(),
+                    trailer: seriesTrailerInput.value.trim() ? { 
+                        id: generateNewId(),
+                        type: 'video',
+                        title: `${seriesTitleInput.value.trim()} Trailer`,
+                        url: seriesTrailerInput.value.trim() 
+                    } : null,
+                    label: 'Series',
+                    sublabel: `${seasons.length} Season${seasons.length !== 1 ? 's' : ''}`,
+                    imdb: '0.0',
+                    downloadas: seriesTitleInput.value.trim().toLowerCase().replace(/[^a-z0-9]/g, '-'),
+                    comment: true,
+                    playas: 'video',
+                    classification: 'TV-PG',
+                    duration: '45:00',
+                    rating: 0,
+                    views: 0,
+                    downloads: 0,
+                    shares: 0,
+                    created_at: new Date().toISOString().split('T')[0],
+                    genres: [],
+                    actors: [],
+                    subtitles: [],
+                    comments: [],
+                    sources: [],
                     seasons: seasons
                 };
                 
@@ -1265,20 +1356,56 @@
             function saveChannel(id) {
                 const sources = [];
                 if (channelStreamUrlInput.value.trim()) {
-                    sources.push({ url: channelStreamUrlInput.value.trim(), type: 'live' });
+                    sources.push({ 
+                        id: generateNewId(),
+                        type: 'live',
+                        title: 'Live Stream',
+                        quality: 'HD',
+                        size: 'Live',
+                        kind: 'play',
+                        premium: 'false',
+                        external: false,
+                        url: channelStreamUrlInput.value.trim() 
+                    });
                 }
                 if (channelBackupUrlInput.value.trim()) {
-                    sources.push({ url: channelBackupUrlInput.value.trim(), type: 'live' });
+                    sources.push({ 
+                        id: generateNewId(),
+                        type: 'live',
+                        title: 'Backup Stream',
+                        quality: 'HD',
+                        size: 'Live',
+                        kind: 'play',
+                        premium: 'false',
+                        external: false,
+                        url: channelBackupUrlInput.value.trim() 
+                    });
                 }
                 
+                const categoryTitle = channelCategoryInput.value.trim() || 'General';
+                
                 const entryData = {
-                    title: channelTitleInput.value,
-                    image: channelImageInput.value,
+                    title: channelTitleInput.value.trim(),
+                    label: categoryTitle,
+                    sublabel: 'Live TV',
+                    description: channelDescriptionInput.value.trim(),
+                    website: 'https://example.com',
+                    classification: categoryTitle,
+                    views: 0,
+                    shares: 0,
                     rating: parseFloat(channelRatingInput.value) || 0,
-                    category: channelCategoryInput.value || '',
-                    description: channelDescriptionInput.value,
+                    comment: true,
+                    image: channelImageInput.value.trim(),
+                    playas: 'live',
                     sources: sources,
-                    countries: [],
+                    categories: [{
+                        id: generateNewId(),
+                        title: categoryTitle
+                    }],
+                    countries: [{
+                        id: 1,
+                        title: 'US'
+                    }],
                     comments: []
                 };
                 
@@ -1295,10 +1422,55 @@
             
             function generateNewId() {
                 const allIds = [
-                    ...jsonData.movies.map(m => m.id),
-                    ...jsonData.channels.map(c => c.id)
+                    ...(jsonData.movies || []).map(m => m.id),
+                    ...(jsonData.channels || []).map(c => c.id),
+                    // Also check for IDs in sources, episodes, etc.
+                    ...getAllNestedIds()
                 ];
                 return allIds.length > 0 ? Math.max(...allIds) + 1 : 1;
+            }
+            
+            function getAllNestedIds() {
+                const ids = [];
+                
+                // Collect IDs from movie sources
+                if (jsonData.movies) {
+                    jsonData.movies.forEach(movie => {
+                        if (movie.sources) {
+                            movie.sources.forEach(source => {
+                                if (source.id) ids.push(source.id);
+                            });
+                        }
+                        if (movie.seasons) {
+                            movie.seasons.forEach(season => {
+                                if (season.id) ids.push(season.id);
+                                if (season.episodes) {
+                                    season.episodes.forEach(episode => {
+                                        if (episode.id) ids.push(episode.id);
+                                        if (episode.sources) {
+                                            episode.sources.forEach(source => {
+                                                if (source.id) ids.push(source.id);
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+                
+                // Collect IDs from channel sources
+                if (jsonData.channels) {
+                    jsonData.channels.forEach(channel => {
+                        if (channel.sources) {
+                            channel.sources.forEach(source => {
+                                if (source.id) ids.push(source.id);
+                            });
+                        }
+                    });
+                }
+                
+                return ids;
             }
             
             // --- Movie Source Management ---
@@ -1324,7 +1496,17 @@
                 const name = movieSourceNameInput.value.trim() || 'Source';
                 const url = movieSourceUrlInput.value.trim();
                 if (url) {
-                    currentMovieSources.push({ title: name, url: url, type: 'video' });
+                    currentMovieSources.push({ 
+                        id: generateNewId(),
+                        type: 'video',
+                        title: name,
+                        quality: name.includes('1080') ? '1080p' : name.includes('720') ? '720p' : name.includes('480') ? '480p' : 'HD',
+                        size: '0MB',
+                        kind: 'both',
+                        premium: 'false',
+                        external: false,
+                        url: url 
+                    });
                     movieSourceNameInput.value = '';
                     movieSourceUrlInput.value = '';
                     renderMovieSources();
@@ -1343,31 +1525,67 @@
             async function renderSeasons(seasonsData) {
                 seasonContainerDiv.innerHTML = '';
                 
-                for (const season of seasonsData) {
+                if (!seasonsData || seasonsData.length === 0) {
+                    // Add default season if none exist
+                    seasonContainerDiv.innerHTML = `
+                        <div class="no-seasons">
+                            <p>No seasons configured. <button type="button" id="addSeasonButton" style="margin-left: 10px; padding: 5px 10px;">Add Season 1</button></p>
+                        </div>
+                    `;
+                    
+                    document.getElementById('addSeasonButton').addEventListener('click', () => {
+                        const newSeason = {
+                            id: generateNewId(),
+                            title: 'Season 1',
+                            episodes: [{
+                                id: generateNewId(),
+                                title: 'Episode 1',
+                                episode_number: 1,
+                                image: '',
+                                duration: '45:00',
+                                views: 0,
+                                downloads: 0,
+                                sources: [],
+                                subtitles: []
+                            }]
+                        };
+                        renderSeasons([newSeason]);
+                    });
+                    return;
+                }
+                
+                for (let seasonIndex = 0; seasonIndex < seasonsData.length; seasonIndex++) {
+                    const season = seasonsData[seasonIndex];
+                    const seasonNumber = seasonIndex + 1;
                     const seasonCard = document.createElement('div');
                     seasonCard.className = 'season-card';
-                    seasonCard.dataset.season = season.season;
+                    seasonCard.dataset.season = seasonNumber;
                     seasonCard.innerHTML = `
                         <div class="season-header">
-                            <h3>Season ${season.season}</h3>
-                            <span>${season.episodes.length} episodes</span>
+                            <h3>${season.title || `Season ${seasonNumber}`}</h3>
+                            <div>
+                                <span>${season.episodes.length} episodes</span>
+                                <button type="button" class="add-episode-btn" data-season="${seasonNumber}" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;">Add Episode</button>
+                            </div>
                         </div>
                         <div class="episode-list"></div>
                     `;
                     
                     const episodeList = seasonCard.querySelector('.episode-list');
-                    for (const episode of season.episodes) {
+                    for (let episodeIndex = 0; episodeIndex < season.episodes.length; episodeIndex++) {
+                        const episode = season.episodes[episodeIndex];
+                        const episodeNumber = episodeIndex + 1;
                         const episodeItem = document.createElement('div');
                         episodeItem.className = 'episode-item';
-                        episodeItem.dataset.episode = episode.episode;
+                        episodeItem.dataset.episode = episodeNumber;
                         episodeItem.innerHTML = `
                             <div class="episode-header">
-                                <div class="episode-title">Episode ${episode.episode}: ${episode.title}</div>
-                                <div class="episode-meta">${episode.sources.length} source(s)</div>
+                                <div class="episode-title">Episode ${episodeNumber}: ${episode.title || `Episode ${episodeNumber}`}</div>
+                                <div class="episode-meta">${episode.sources?.length || 0} source(s)</div>
                             </div>
                             <div class="episode-sources">
                                 <input type="text" class="episode-source-input" 
-                                       value="${episode.sources[0]?.url || ''}" 
+                                       value="${episode.sources?.[0]?.url || ''}" 
                                        placeholder="Episode source URL">
                             </div>
                         `;
@@ -1376,6 +1594,30 @@
                     
                     seasonContainerDiv.appendChild(seasonCard);
                 }
+                
+                // Add event listeners for adding episodes
+                document.querySelectorAll('.add-episode-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const seasonNumber = parseInt(e.target.dataset.season);
+                        const seasonIndex = seasonNumber - 1;
+                        const season = seasonsData[seasonIndex];
+                        const newEpisodeNumber = season.episodes.length + 1;
+                        
+                        season.episodes.push({
+                            id: generateNewId(),
+                            title: `Episode ${newEpisodeNumber}`,
+                            episode_number: newEpisodeNumber,
+                            image: '',
+                            duration: '45:00',
+                            views: 0,
+                            downloads: 0,
+                            sources: [],
+                            subtitles: []
+                        });
+                        
+                        renderSeasons(seasonsData);
+                    });
+                });
             }
             
             // --- TMDb Integration ---
@@ -1444,7 +1686,17 @@
                     
                     // Auto-add vidsrc source
                     const vidsrcUrl = `https://vidsrc.net/embed/movie/${tmdbId}`;
-                    currentMovieSources = [{ title: 'vidsrc.net', url: vidsrcUrl, type: 'video' }];
+                    currentMovieSources = [{ 
+                        id: generateNewId(),
+                        type: 'video',
+                        title: 'vidsrc.net 1080p',
+                        quality: '1080p',
+                        size: '0MB',
+                        kind: 'both',
+                        premium: 'false',
+                        external: false,
+                        url: vidsrcUrl 
+                    }];
                     renderMovieSources();
                     
                     showNotification('Movie data fetched successfully!', true);
@@ -1477,8 +1729,19 @@
                     currentSeriesData = {
                         ...seriesData,
                         seasons: seriesData.seasons.filter(s => s.season_number > 0).map(season => ({
-                            season: season.season_number,
-                            episodes: []
+                            id: generateNewId(),
+                            title: `Season ${season.season_number}`,
+                            episodes: Array.from({length: season.episode_count || 1}, (_, i) => ({
+                                id: generateNewId(),
+                                title: `Episode ${i + 1}`,
+                                episode_number: i + 1,
+                                image: '',
+                                duration: '45:00',
+                                views: 0,
+                                downloads: 0,
+                                sources: [],
+                                subtitles: []
+                            }))
                         }))
                     };
                     
