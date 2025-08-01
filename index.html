@@ -651,6 +651,9 @@
                 <div class="export-info" style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 0.9em;">
                     <p><strong>Complete API:</strong> Full structure with home section, slides, featured movies, actors, and genres</p>
                     <p><strong>Simple JSON:</strong> Just movies and channels data</p>
+                    <button id="testSaveButton" style="margin-top: 10px; padding: 8px 15px; background: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        <i class="fas fa-vial"></i> Test Save Function
+                    </button>
                 </div>
             </div>
         </div>
@@ -908,31 +911,35 @@
             
             // --- Persistence Functions ---
             function saveToLocalStorage(showIndicator = false) {
-                if (jsonData) {
-                    try {
-                        // Generate complete API structure with home section
-                        const completeApiData = generateCompleteApiStructure(jsonData);
+                try {
+                    // Ensure jsonData exists, create empty structure if not
+                    if (!jsonData) {
+                        console.log('No jsonData found, creating empty structure');
+                        jsonData = { movies: [], channels: [] };
+                    }
+                    
+                    // Generate complete API structure with home section
+                    const completeApiData = generateCompleteApiStructure(jsonData);
+                    
+                    localStorage.setItem('movieApiData', JSON.stringify(completeApiData));
+                    localStorage.setItem('movieApiDataTimestamp', Date.now().toString());
+                    console.log('Complete API data saved to localStorage');
+                    
+                    if (showIndicator && autoSaveStatus) {
+                        const originalText = autoSaveStatus.innerHTML;
+                        autoSaveStatus.innerHTML = '<i class="fas fa-check"></i> Auto-saved just now';
+                        autoSaveStatus.style.color = '#2ecc71';
                         
-                        localStorage.setItem('movieApiData', JSON.stringify(completeApiData));
-                        localStorage.setItem('movieApiDataTimestamp', Date.now().toString());
-                        console.log('Complete API data saved to localStorage');
-                        
-                        if (showIndicator && autoSaveStatus) {
-                            const originalText = autoSaveStatus.innerHTML;
-                            autoSaveStatus.innerHTML = '<i class="fas fa-check"></i> Auto-saved just now';
-                            autoSaveStatus.style.color = '#2ecc71';
-                            
-                            setTimeout(() => {
-                                autoSaveStatus.innerHTML = '<i class="fas fa-save"></i> Auto-save enabled';
-                                autoSaveStatus.style.color = 'rgba(255,255,255,0.8)';
-                            }, 2000);
-                        }
-                    } catch (error) {
-                        console.warn('Failed to save to localStorage:', error);
-                        if (autoSaveStatus) {
-                            autoSaveStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Auto-save failed';
-                            autoSaveStatus.style.color = '#e74c3c';
-                        }
+                        setTimeout(() => {
+                            autoSaveStatus.innerHTML = '<i class="fas fa-save"></i> Auto-save enabled';
+                            autoSaveStatus.style.color = 'rgba(255,255,255,0.8)';
+                        }, 2000);
+                    }
+                } catch (error) {
+                    console.warn('Failed to save to localStorage:', error);
+                    if (autoSaveStatus) {
+                        autoSaveStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Auto-save failed';
+                        autoSaveStatus.style.color = '#e74c3c';
                     }
                 }
             }
@@ -987,8 +994,19 @@
             
             // Generate complete API structure with home section, slides, and metadata
             function generateCompleteApiStructure(data) {
+                // Ensure data is valid
+                if (!data) {
+                    console.warn('No data provided to generateCompleteApiStructure');
+                    data = { movies: [], channels: [] };
+                }
+                
                 const movies = data.movies || [];
                 const channels = data.channels || [];
+                
+                console.log('Generating API structure with:', {
+                    moviesCount: movies.length,
+                    channelsCount: channels.length
+                });
                 
                 // Generate slides for home section (featured content)
                 const slides = [];
@@ -1173,9 +1191,9 @@
                         version: "2.0",
                         description: "Enhanced Free Movie & TV Streaming JSON API with Full Actor Support",
                         last_updated: new Date().toISOString().split('T')[0],
-                        total_movies: movies.length,
-                        total_channels: channels.length,
-                        total_actors: actors.length
+                        total_movies: movies ? movies.length : 0,
+                        total_channels: channels ? channels.length : 0,
+                        total_actors: actors ? actors.length : 0
                     },
                     home: {
                         slides: slides,
@@ -1573,6 +1591,12 @@
                             jsonData = { movies: [], channels: [] };
                             editorDiv.style.display = 'block';
                             saveSectionDiv.style.display = 'block';
+                        }
+                        
+                        // Validate that we have some data to save
+                        if (!jsonData.movies && !jsonData.channels) {
+                            jsonData.movies = [];
+                            jsonData.channels = [];
                         }
                         
                         const id = entryIdInput.value;
@@ -2467,6 +2491,55 @@
             window.addEventListener('click', (event) => {
                 if (event.target === modal) {
                     closeModal();
+                }
+            });
+            
+            // --- Test Save Function ---
+            const testSaveButton = document.getElementById('testSaveButton');
+            testSaveButton.addEventListener('click', () => {
+                console.log('Testing save function...');
+                
+                // Create test data
+                const testData = {
+                    movies: [
+                        {
+                            id: 1,
+                            title: "Test Movie",
+                            type: "movie",
+                            year: "2024",
+                            description: "A test movie",
+                            image: "https://example.com/test.jpg",
+                            cover: "https://example.com/test-cover.jpg",
+                            rating: 7.5,
+                            genres: [{ id: 1, title: "Action" }],
+                            actors: [{ id: 1, name: "Test Actor", type: "actor" }],
+                            sources: [{ id: 1, type: "video", title: "1080p", url: "https://example.com/test.mp4" }]
+                        }
+                    ],
+                    channels: [
+                        {
+                            id: 1,
+                            title: "Test Channel",
+                            type: "channel",
+                            image: "https://example.com/channel.jpg",
+                            sources: [{ id: 1, type: "live", title: "HD", url: "https://example.com/live.m3u8" }]
+                        }
+                    ]
+                };
+                
+                try {
+                    // Test the generateCompleteApiStructure function
+                    const completeApiData = generateCompleteApiStructure(testData);
+                    console.log('Test API structure generated successfully:', completeApiData);
+                    
+                    // Test saving to localStorage
+                    localStorage.setItem('testMovieApiData', JSON.stringify(completeApiData));
+                    console.log('Test data saved to localStorage successfully');
+                    
+                    showNotification('Test save function working! Check console for details.', true);
+                } catch (error) {
+                    console.error('Test save function failed:', error);
+                    showNotification(`Test save function failed: ${error.message}`, false);
                 }
             });
             
