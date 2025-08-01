@@ -798,7 +798,7 @@
                 </div>
                 
                 <div class="form-group" style="margin-top: 20px; text-align: center;">
-                    <button type="submit" style="padding: 12px 30px; font-size: 1.1rem;">
+                    <button type="submit" id="modalSaveButton" style="padding: 12px 30px; font-size: 1.1rem;">
                         <i class="fas fa-save"></i> Save Content
                     </button>
                 </div>
@@ -928,6 +928,19 @@
                 console.log('❌ Add new entry button NOT found!');
             }
 
+            // Test 4: Modal Save Button (the one that's not working)
+            const modalSaveButton = document.querySelector('#modalSaveButton');
+            if (modalSaveButton) {
+                console.log('✅ Modal Save button found!');
+                modalSaveButton.addEventListener('click', () => {
+                    console.log('🎯 MODAL SAVE BUTTON WAS CLICKED DIRECTLY!');
+                    alert('Modal Save button clicked directly! This means the button works.');
+                });
+            } else {
+                console.log('❌ Modal Save button NOT found!');
+                alert('CRITICAL: Modal Save button not found!');
+            }
+
             // REAL FORM SUBMIT HANDLER - This is the important one!
             console.log('🔧 Setting up REAL form submit handler...');
             if (testForm) {
@@ -1043,6 +1056,20 @@
                 console.log('❌ Cannot attach form handler - form not found!');
                 alert('CRITICAL: Cannot attach form submit handler!');
             }
+
+            // Test 5: Manual Form Submit Test
+            console.log('🧪 Adding manual form submit test...');
+            window.testFormSubmit = function() {
+                console.log('🔥 MANUAL TEST: Triggering form submit...');
+                if (testForm) {
+                    const event = new Event('submit', { bubbles: true, cancelable: true });
+                    testForm.dispatchEvent(event);
+                    console.log('✅ Manual form submit triggered');
+                } else {
+                    console.log('❌ Cannot test - form not found');
+                }
+            };
+            console.log('✅ You can now test with: testFormSubmit() in console');
             
             // --- Utility Functions ---
             function showNotification(message, isSuccess = true) {
