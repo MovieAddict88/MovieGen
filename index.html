@@ -638,12 +638,19 @@
                 <div class="save-section">
                     <button id="saveButton"><i class="fas fa-download"></i> Save and Download JSON</button>
                     <button id="exportButton" style="margin-left: 10px; background-color: var(--primary);">
-                        <i class="fas fa-file-export"></i> Export Current Work
+                        <i class="fas fa-file-export"></i> Export Complete API
+                    </button>
+                    <button id="exportSimpleButton" style="margin-left: 10px; background-color: var(--success);">
+                        <i class="fas fa-file-code"></i> Export Simple JSON
                     </button>
                     <input type="file" id="importInput" accept=".json" style="display: none;">
                     <button id="importButton" style="margin-left: 10px; background-color: var(--warning);">
                         <i class="fas fa-file-import"></i> Import Backup
                     </button>
+                </div>
+                <div class="export-info" style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 0.9em;">
+                    <p><strong>Complete API:</strong> Full structure with home section, slides, featured movies, actors, and genres</p>
+                    <p><strong>Simple JSON:</strong> Just movies and channels data</p>
                 </div>
             </div>
         </div>
@@ -903,9 +910,12 @@
             function saveToLocalStorage(showIndicator = false) {
                 if (jsonData) {
                     try {
-                        localStorage.setItem('movieApiData', JSON.stringify(jsonData));
+                        // Generate complete API structure with home section
+                        const completeApiData = generateCompleteApiStructure(jsonData);
+                        
+                        localStorage.setItem('movieApiData', JSON.stringify(completeApiData));
                         localStorage.setItem('movieApiDataTimestamp', Date.now().toString());
-                        console.log('Data saved to localStorage');
+                        console.log('Complete API data saved to localStorage');
                         
                         if (showIndicator && autoSaveStatus) {
                             const originalText = autoSaveStatus.innerHTML;
@@ -936,10 +946,21 @@
                         const parsedData = JSON.parse(savedData);
                         const savedTime = new Date(parseInt(timestamp || '0'));
                         
-                        // Auto-load if data exists
-                        jsonData = parsedData;
-                        if (!jsonData.movies) jsonData.movies = [];
-                        if (!jsonData.channels) jsonData.channels = [];
+                        // Handle both old format (just movies/channels) and new complete API format
+                        if (parsedData.home && parsedData.api_info) {
+                            // New complete API format
+                            jsonData = {
+                                movies: parsedData.movies || [],
+                                channels: parsedData.channels || []
+                            };
+                            console.log('Loaded complete API structure from localStorage');
+                        } else {
+                            // Old format - just movies and channels
+                            jsonData = parsedData;
+                            if (!jsonData.movies) jsonData.movies = [];
+                            if (!jsonData.channels) jsonData.channels = [];
+                            console.log('Loaded legacy format from localStorage');
+                        }
                         
                         editorDiv.style.display = 'block';
                         saveSectionDiv.style.display = 'block';
@@ -962,6 +983,232 @@
                 localStorage.removeItem('movieApiData');
                 localStorage.removeItem('movieApiDataTimestamp');
                 console.log('localStorage cleared');
+            }
+            
+            // Generate complete API structure with home section, slides, and metadata
+            function generateCompleteApiStructure(data) {
+                const movies = data.movies || [];
+                const channels = data.channels || [];
+                
+                // Generate slides for home section (featured content)
+                const slides = [];
+                
+                // Add featured movies to slides (first 3 movies)
+                movies.slice(0, 3).forEach((movie, index) => {
+                    slides.push({
+                        id: movie.id,
+                        title: movie.title,
+                        type: movie.type || 'movie',
+                        image: movie.image || movie.cover,
+                        url: `${movie.type === 'series' ? 'series' : 'movies'}/${movie.id}`,
+                        poster: {
+                            id: movie.id,
+                            title: movie.title,
+                            type: movie.type || 'movie',
+                            label: movie.label || movie.genres?.[0]?.title || 'Movie',
+                            sublabel: movie.type === 'series' ? 'TV Series' : 'Feature Film',
+                            imdb: movie.imdb || '',
+                            downloadas: movie.downloadas || `${movie.title.toLowerCase().replace(/\s+/g, '-')}.mp4`,
+                            comment: movie.comment !== false,
+                            playas: movie.playas || 'video',
+                            description: movie.description || '',
+                            classification: movie.classification || 'PG-13',
+                            year: movie.year || '',
+                            duration: movie.duration || '120:00',
+                            rating: movie.rating || 7.0,
+                            image: movie.image || movie.cover,
+                            cover: movie.cover || movie.image,
+                            genres: movie.genres || [],
+                            sources: movie.sources || [],
+                            trailer: movie.trailer,
+                            actors: movie.actors || [],
+                            subtitles: movie.subtitles || [],
+                            comments: movie.comments || [],
+                            views: movie.views || 0,
+                            downloads: movie.downloads || 0,
+                            shares: movie.shares || 0
+                        }
+                    });
+                });
+                
+                // Add featured channels to slides
+                channels.slice(0, 2).forEach((channel, index) => {
+                    slides.push({
+                        id: channel.id,
+                        title: channel.title,
+                        type: 'channel',
+                        image: channel.image,
+                        url: `channels/${channel.id}`,
+                        channel: {
+                            id: channel.id,
+                            title: channel.title,
+                            label: channel.label || channel.categories?.[0]?.title || 'Entertainment',
+                            sublabel: channel.countries?.[0]?.title || 'Live',
+                            description: channel.description || '',
+                            website: channel.website || '',
+                            classification: channel.classification || 'General',
+                            views: channel.views || 0,
+                            shares: channel.shares || 0,
+                            rating: channel.rating || 0,
+                            comment: channel.comment !== false,
+                            image: channel.image,
+                            playas: channel.playas || 'live',
+                            sources: channel.sources || [],
+                            categories: channel.categories || [],
+                            countries: channel.countries || [],
+                            comments: channel.comments || []
+                        }
+                    });
+                });
+                
+                // Generate featured movies for home section
+                const featuredMovies = movies.slice(0, 5).map(movie => ({
+                    id: movie.id,
+                    title: movie.title,
+                    type: movie.type || 'movie',
+                    label: movie.label || movie.genres?.[0]?.title || 'Movie',
+                    sublabel: movie.type === 'series' ? 'TV Series' : 'Feature Film',
+                    imdb: movie.imdb || '',
+                    downloadas: movie.downloadas || `${movie.title.toLowerCase().replace(/\s+/g, '-')}.mp4`,
+                    comment: movie.comment !== false,
+                    playas: movie.playas || 'video',
+                    description: movie.description || '',
+                    classification: movie.classification || 'PG-13',
+                    year: movie.year || '',
+                    duration: movie.duration || '120:00',
+                    rating: movie.rating || 7.0,
+                    views: movie.views || 0,
+                    created_at: movie.created_at || new Date().toISOString().split('T')[0],
+                    image: movie.image || movie.cover,
+                    cover: movie.cover || movie.image,
+                    genres: movie.genres || [],
+                    sources: movie.sources || [],
+                    trailer: movie.trailer,
+                    actors: movie.actors || [],
+                    subtitles: movie.subtitles || [],
+                    comments: movie.comments || [],
+                    views: movie.views || 0,
+                    downloads: movie.downloads || 0,
+                    shares: movie.shares || 0
+                }));
+                
+                // Generate actors array with movie relationships
+                const actors = [];
+                const actorMap = new Map();
+                
+                movies.forEach(movie => {
+                    if (movie.actors && Array.isArray(movie.actors)) {
+                        movie.actors.forEach(actor => {
+                            if (!actorMap.has(actor.id)) {
+                                actorMap.set(actor.id, {
+                                    ...actor,
+                                    movies: []
+                                });
+                            }
+                            actorMap.get(actor.id).movies.push({
+                                id: movie.id,
+                                title: movie.title,
+                                image: movie.image || movie.cover,
+                                year: movie.year || ''
+                            });
+                        });
+                    }
+                });
+                
+                actors.push(...actorMap.values());
+                
+                // Generate genres with poster associations
+                const genres = [];
+                const genreMap = new Map();
+                
+                movies.forEach(movie => {
+                    if (movie.genres && Array.isArray(movie.genres)) {
+                        movie.genres.forEach(genre => {
+                            if (!genreMap.has(genre.id)) {
+                                genreMap.set(genre.id, {
+                                    id: genre.id,
+                                    title: genre.title,
+                                    posters: []
+                                });
+                            }
+                            genreMap.get(genre.id).posters.push({
+                                id: movie.id,
+                                title: movie.title,
+                                image: movie.image || movie.cover
+                            });
+                        });
+                    }
+                });
+                
+                genres.push(...genreMap.values());
+                
+                // Generate categories and countries
+                const categories = [];
+                const countries = [];
+                const categoryMap = new Map();
+                const countryMap = new Map();
+                
+                channels.forEach(channel => {
+                    if (channel.categories) {
+                        channel.categories.forEach(cat => {
+                            if (!categoryMap.has(cat.id)) {
+                                categoryMap.set(cat.id, cat);
+                                categories.push(cat);
+                            }
+                        });
+                    }
+                    if (channel.countries) {
+                        channel.countries.forEach(country => {
+                            if (!countryMap.has(country.id)) {
+                                countryMap.set(country.id, country);
+                                countries.push(country);
+                            }
+                        });
+                    }
+                });
+                
+                // Complete API structure
+                const completeApiData = {
+                    api_info: {
+                        version: "2.0",
+                        description: "Enhanced Free Movie & TV Streaming JSON API with Full Actor Support",
+                        last_updated: new Date().toISOString().split('T')[0],
+                        total_movies: movies.length,
+                        total_channels: channels.length,
+                        total_actors: actors.length
+                    },
+                    home: {
+                        slides: slides,
+                        featured_movies: featuredMovies,
+                        channels: channels,
+                        actors: actors,
+                        genres: genres
+                    },
+                    movies: movies,
+                    channels: channels,
+                    actors: actors,
+                    genres: genres,
+                    categories: categories,
+                    countries: countries,
+                    subscription_plans: [],
+                    subscription_config: {
+                        enabled: false,
+                        monthly_billing_enabled: false,
+                        free_trial_days: 0,
+                        grace_period_days: 0,
+                        auto_renewal_enabled: false,
+                        payment_methods: [],
+                        currency_default: "USD",
+                        subscription_required_for: []
+                    },
+                    video_sources: {},
+                    ads_config: {
+                        enabled: false
+                    }
+                };
+                
+                console.log('Generated complete API structure:', completeApiData);
+                return completeApiData;
             }
             
             // Auto-save functionality
@@ -2074,22 +2321,57 @@
                     return;
                 }
                 
-                const jsonString = JSON.stringify(jsonData, null, 2);
+                // Generate complete API structure for download
+                const completeApiData = generateCompleteApiStructure(jsonData);
+                
+                const jsonString = JSON.stringify(completeApiData, null, 2);
                 const blob = new Blob([jsonString], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'movie_api_data.json';
+                a.download = 'complete_movie_api.json';
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
-                showNotification('File downloaded successfully!', true);
+                showNotification('Complete API downloaded successfully with slides, featured movies, and metadata!', true);
             });
             
-            // --- Export Current Work ---
+            // --- Export Complete API ---
             exportButton.addEventListener('click', () => {
+                if (!jsonData) {
+                    showNotification('No data to export', false);
+                    return;
+                }
+                
+                // Generate complete API structure for export
+                const completeApiData = generateCompleteApiStructure(jsonData);
+                
+                const exportData = {
+                    exported_at: new Date().toISOString(),
+                    version: '2.0',
+                    description: 'Complete Movie API with Home Section, Slides, and Metadata',
+                    data: completeApiData
+                };
+                
+                const jsonString = JSON.stringify(exportData, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `complete_movie_api_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showNotification('Complete API exported successfully with slides, featured movies, and metadata!', true);
+            });
+            
+            // --- Export Simple JSON ---
+            const exportSimpleButton = document.getElementById('exportSimpleButton');
+            exportSimpleButton.addEventListener('click', () => {
                 if (!jsonData) {
                     showNotification('No data to export', false);
                     return;
@@ -2098,6 +2380,7 @@
                 const exportData = {
                     exported_at: new Date().toISOString(),
                     version: '1.0',
+                    description: 'Simple Movie API with Movies and Channels',
                     data: jsonData
                 };
                 
@@ -2106,13 +2389,13 @@
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `movie_api_backup_${new Date().toISOString().split('T')[0]}.json`;
+                a.download = `simple_movie_api_${new Date().toISOString().split('T')[0]}.json`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
-                showNotification('Backup exported successfully!', true);
+                showNotification('Simple JSON exported successfully!', true);
             });
             
             // --- Import Backup ---
