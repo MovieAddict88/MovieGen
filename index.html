@@ -1486,7 +1486,7 @@
                     throw new Error('Invalid content type');
                 }
                 
-                const url = `${baseUrl}/${endpoint}?api_key=${tmdbApiKey}`;
+                const url = `${baseUrl}/${endpoint}?api_key=${tmdbApiKey}&append_to_response=credits,videos,images`;
                 const res = await fetch(url);
                 
                 if (!res.ok) {
@@ -1494,6 +1494,107 @@
                 }
                 
                 return await res.json();
+            }
+            
+            async function fetchComprehensiveMovieData(tmdbId) {
+                try {
+                    console.log('Fetching comprehensive movie data for TMDB ID:', tmdbId);
+                    
+                    // Fetch main movie data with credits, videos, and images
+                    const movieData = await fetchTMDbData('movie', tmdbId);
+                    
+                    // Extract trailer
+                    const trailer = movieData.videos?.results?.find(v => 
+                        v.site === 'YouTube' && v.type === 'Trailer'
+                    );
+                    
+                    // Extract main actors (first 10)
+                    const actors = movieData.credits?.cast?.slice(0, 10).map((actor, index) => ({
+                        id: actor.id,
+                        name: actor.name,
+                        type: 'actor',
+                        role: actor.character || 'Actor',
+                        image: actor.profile_path ? 
+                            `https://image.tmdb.org/t/p/w185${actor.profile_path}` : null,
+                        order: index + 1
+                    })) || [];
+                    
+                    // Extract genres
+                    const genres = movieData.genres?.map(genre => ({
+                        id: genre.id,
+                        title: genre.name
+                    })) || [];
+                    
+                    return {
+                        ...movieData,
+                        extractedActors: actors,
+                        extractedGenres: genres,
+                        extractedTrailer: trailer ? {
+                            id: trailer.id,
+                            type: 'video',
+                            title: trailer.name || 'Trailer',
+                            url: `https://www.youtube.com/watch?v=${trailer.key}`
+                        } : null
+                    };
+                } catch (error) {
+                    console.error('Error fetching comprehensive movie data:', error);
+                    throw error;
+                }
+            }
+            
+            async function fetchComprehensiveSeriesData(tmdbId) {
+                try {
+                    console.log('Fetching comprehensive series data for TMDB ID:', tmdbId);
+                    
+                    // Fetch main series data with credits, videos, and images
+                    const seriesData = await fetchTMDbData('series', tmdbId);
+                    
+                    // Extract trailer
+                    const trailer = seriesData.videos?.results?.find(v => 
+                        v.site === 'YouTube' && v.type === 'Trailer'
+                    );
+                    
+                    // Extract main actors (first 10)
+                    const actors = seriesData.credits?.cast?.slice(0, 10).map((actor, index) => ({
+                        id: actor.id,
+                        name: actor.name,
+                        type: 'actor',
+                        role: actor.character || 'Actor',
+                        image: actor.profile_path ? 
+                            `https://image.tmdb.org/t/p/w185${actor.profile_path}` : null,
+                        order: index + 1
+                    })) || [];
+                    
+                    // Extract genres
+                    const genres = seriesData.genres?.map(genre => ({
+                        id: genre.id,
+                        title: genre.name
+                    })) || [];
+                    
+                    // Prepare seasons data for series
+                    const seasonsData = seriesData.seasons?.filter(s => s.season_number > 0).map(season => ({
+                        season: season.season_number,
+                        name: season.name,
+                        episode_count: season.episode_count,
+                        episodes: [] // Will be populated with manual episode data entry
+                    })) || [];
+                    
+                    return {
+                        ...seriesData,
+                        extractedActors: actors,
+                        extractedGenres: genres,
+                        extractedTrailer: trailer ? {
+                            id: trailer.id,
+                            type: 'video',
+                            title: trailer.name || 'Trailer',
+                            url: `https://www.youtube.com/watch?v=${trailer.key}`
+                        } : null,
+                        seasonsData: seasonsData
+                    };
+                } catch (error) {
+                    console.error('Error fetching comprehensive series data:', error);
+                    throw error;
+                }
             }
             
             async function fetchSeriesDetails(tmdbId) {
