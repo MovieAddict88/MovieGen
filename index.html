@@ -533,6 +533,37 @@
             border-radius: 4px;
         }
         
+        .no-results, .no-seasons {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .no-results h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .add-episode-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        
+        .add-episode-btn:hover {
+            background-color: #2980b9;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .load-section {
@@ -583,6 +614,10 @@
                         <button class="filter-btn" data-filter="movie">Movies</button>
                         <button class="filter-btn" data-filter="series">Series</button>
                         <button class="filter-btn" data-filter="channel">Live TV</button>
+                        <button class="filter-btn" data-filter="slides">Slides</button>
+                        <button class="filter-btn" data-filter="featured">Featured</button>
+                        <button class="filter-btn" data-filter="actors">Actors</button>
+                        <button class="filter-btn" data-filter="genres">Genres</button>
                     </div>
                 </div>
                 <div id="entryList"></div>
@@ -614,6 +649,15 @@
                 </button>
                 <button class="tab-btn" data-type="channel">
                     <i class="fas fa-satellite-dish"></i> Live TV
+                </button>
+                <button class="tab-btn" data-type="slide">
+                    <i class="fas fa-images"></i> Slide
+                </button>
+                <button class="tab-btn" data-type="actor">
+                    <i class="fas fa-user"></i> Actor
+                </button>
+                <button class="tab-btn" data-type="genre">
+                    <i class="fas fa-tags"></i> Genre
                 </button>
             </div>
             
@@ -766,8 +810,94 @@
                     </div>
                 </div>
                 
+                <!-- Slide Content -->
+                <div class="category-content" data-type="slide">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="slideTitle">Slide Title:</label>
+                            <input type="text" id="slideTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="slideType">Type:</label>
+                            <select id="slideType">
+                                <option value="movie">Movie</option>
+                                <option value="series">Series</option>
+                                <option value="channel">Channel</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="slideImage">Image URL:</label>
+                        <input type="text" id="slideImage">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="slideUrl">URL:</label>
+                        <input type="text" id="slideUrl" placeholder="e.g., movies/1">
+                    </div>
+                </div>
+                
+                <!-- Actor Content -->
+                <div class="category-content" data-type="actor">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="actorName">Name:</label>
+                            <input type="text" id="actorName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="actorType">Type:</label>
+                            <select id="actorType">
+                                <option value="actor">Actor</option>
+                                <option value="actress">Actress</option>
+                                <option value="director">Director</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="actorRole">Role:</label>
+                            <input type="text" id="actorRole" placeholder="e.g., Lead Actor">
+                        </div>
+                        <div class="form-group">
+                            <label for="actorBorn">Born:</label>
+                            <input type="date" id="actorBorn">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="actorHeight">Height:</label>
+                            <input type="text" id="actorHeight" placeholder="e.g., 5'10\"">
+                        </div>
+                        <div class="form-group">
+                            <label for="actorImage">Image URL:</label>
+                            <input type="text" id="actorImage">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="actorBio">Biography:</label>
+                        <textarea id="actorBio" rows="3"></textarea>
+                    </div>
+                </div>
+                
+                <!-- Genre Content -->
+                <div class="category-content" data-type="genre">
+                    <div class="form-group">
+                        <label for="genreTitle">Genre Name:</label>
+                        <input type="text" id="genreTitle" required placeholder="e.g., Action, Comedy, Drama">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="genreDescription">Description (Optional):</label>
+                        <textarea id="genreDescription" rows="2" placeholder="Brief description of the genre"></textarea>
+                    </div>
+                </div>
+                
                 <div class="form-group" style="margin-top: 20px; text-align: center;">
-                    <button type="submit" style="padding: 12px 30px; font-size: 1.1rem;">
+                    <button type="submit" id="modalSaveButton" style="padding: 12px 30px; font-size: 1.1rem;">
                         <i class="fas fa-save"></i> Save Content
                     </button>
                 </div>
@@ -776,7 +906,27 @@
     </div>
 
     <script>
+        // Global error handler to prevent white screen
+        window.addEventListener('error', (event) => {
+            console.error('Global error caught:', event.error);
+            showNotification(`Unexpected error: ${event.error.message}`, false);
+            return true; // Prevent default browser error handling
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
+            showNotification(`Promise error: ${event.reason}`, false);
+            event.preventDefault();
+        });
+
+        // IMMEDIATE TEST - This should show up first
+        console.log('🔥 JAVASCRIPT IS LOADING! 🔥');
+        alert('JavaScript is working! Check console for details.');
+
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 DOM Content Loaded - Initializing app...');
+            alert('DOM loaded! App is starting...');
+            
             // --- Constants and Config ---
             const tmdbApiKey = 'ec926176bf467b3f7735e3154238c161';
             
@@ -837,42 +987,566 @@
             // --- State Management ---
             let jsonData = null;
             let currentMovieSources = [];
+            let currentMovieGenres = [];
             let currentFilter = 'all';
             let currentSeriesData = { seasons: [] };
+
+            // SIMPLE CLICK TEST
+            console.log('🧪 Setting up simple click tests...');
+            
+            // Test 1: Save button
+            const testButton = document.querySelector('#saveButton');
+            if (testButton) {
+                console.log('✅ Save button found!');
+                testButton.addEventListener('click', () => {
+                    console.log('🎯 SAVE BUTTON WAS CLICKED!');
+                    alert('Save button clicked! This means event listeners work.');
+                });
+            } else {
+                console.log('❌ Save button NOT found!');
+            }
+
+            // Test 2: Form
+            const testForm = document.querySelector('#entryForm');
+            if (testForm) {
+                console.log('✅ Entry form found!');
+                // We'll add the real form handler later - this is just for testing if the form exists
+            } else {
+                console.log('❌ Entry form NOT found!');
+                alert('CRITICAL ERROR: Entry form not found! Modal form is missing.');
+            }
+
+            // Test 3: Add new entry button
+            const addButton = document.querySelector('#addNewEntry');
+            if (addButton) {
+                console.log('✅ Add new entry button found!');
+                addButton.addEventListener('click', () => {
+                    console.log('🎯 ADD NEW ENTRY BUTTON CLICKED!');
+                    alert('Add new entry clicked! Modal should open.');
+                });
+            } else {
+                console.log('❌ Add new entry button NOT found!');
+            }
+
+            // Test 4: Modal Save Button (the one that's not working)
+            const modalSaveButton = document.querySelector('#modalSaveButton');
+            if (modalSaveButton) {
+                console.log('✅ Modal Save button found!');
+                modalSaveButton.addEventListener('click', (e) => {
+                    console.log('🎯 MODAL SAVE BUTTON WAS CLICKED DIRECTLY!');
+                    console.log('Button type:', modalSaveButton.type);
+                    console.log('Form element:', modalSaveButton.form);
+                    
+                    // The issue is likely that the form isn't submitting
+                    // Let's manually trigger the form submit
+                    e.preventDefault(); // Prevent default button behavior
+                    
+                    if (modalSaveButton.form) {
+                        console.log('🚀 Manually triggering form submit...');
+                        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                        modalSaveButton.form.dispatchEvent(submitEvent);
+                    } else {
+                        console.log('❌ Button is not associated with a form! Calling save directly...');
+                        
+                        // Direct save as fallback
+                        try {
+                            console.log('🔧 DIRECT SAVE FALLBACK TRIGGERED!');
+                            
+                            if (!jsonData) {
+                                alert('ERROR: No JSON data loaded. Please load a JSON file first.');
+                                return;
+                            }
+                            
+                            const activeTabElement = document.querySelector('.tab-btn.active');
+                            if (!activeTabElement) {
+                                alert('ERROR: No active tab found. Please select Movie, Series, or Channel.');
+                                return;
+                            }
+                            
+                            const activeTab = activeTabElement.dataset.type;
+                            console.log('Active tab for direct save:', activeTab);
+                            
+                            // Get form data and save
+                            const id = entryIdInput.value;
+                            
+                            if (activeTab === 'movie') {
+                                if (!movieTitleInput.value.trim()) {
+                                    alert('ERROR: Movie title is required');
+                                    return;
+                                }
+                                saveMovie(id);
+                                alert('Movie saved successfully!');
+                            } else if (activeTab === 'series') {
+                                if (!seriesTitleInput.value.trim()) {
+                                    alert('ERROR: Series title is required');
+                                    return;
+                                }
+                                saveSeries(id);
+                                alert('Series saved successfully!');
+                            } else if (activeTab === 'channel') {
+                                if (!channelTitleInput.value.trim()) {
+                                    alert('ERROR: Channel name is required');
+                                    return;
+                                }
+                                if (!channelStreamUrlInput.value.trim()) {
+                                    alert('ERROR: Stream URL is required');
+                                    return;
+                                }
+                                saveChannel(id);
+                                alert('Channel saved successfully!');
+                            }
+                            
+                            // Update UI and auto-generate related content
+                            autoGenerateRelatedContent();
+                            renderEntries();
+                            closeModal();
+                            
+                        } catch (error) {
+                            console.error('Direct save error:', error);
+                            alert('Save error: ' + error.message);
+                        }
+                    }
+                });
+            } else {
+                console.log('❌ Modal Save button NOT found!');
+                alert('CRITICAL: Modal Save button not found!');
+            }
+
+            // REAL FORM SUBMIT HANDLER - This is the important one!
+            console.log('🔧 Setting up REAL form submit handler...');
+            if (testForm) {
+                testForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    
+                    console.log('🔥 REAL FORM SUBMIT TRIGGERED! 🔥');
+                    alert('REAL form submit working! Now processing...');
+                    
+                    try {
+                        console.log('=== FORM SUBMIT STARTED ===');
+                        console.log('Event:', event);
+                        
+                        // Prevent double submission
+                        const submitButton = event.target.querySelector('button[type="submit"]');
+                        if (submitButton.disabled) {
+                            console.log('Button already disabled - preventing double submit');
+                            alert('Please wait, saving in progress...');
+                            return;
+                        }
+                        
+                        // Disable submit button temporarily
+                        submitButton.disabled = true;
+                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                        
+                        console.log('=== CHECKING BASIC ELEMENTS ===');
+                        
+                        if (!jsonData) {
+                            throw new Error('No JSON data loaded. Please load a JSON file first.');
+                        }
+                        
+                        const id = entryIdInput.value;
+                        console.log('Entry ID:', id);
+                        
+                        const activeTabElement = document.querySelector('.tab-btn.active');
+                        if (!activeTabElement) {
+                            throw new Error('No active tab found');
+                        }
+                        
+                        const activeTab = activeTabElement.dataset.type;
+                        console.log('Active tab:', activeTab);
+                        
+                        // Validate required fields
+                        console.log('=== VALIDATING FIELDS ===');
+                        let isValid = true;
+                        let errorMessage = '';
+                        
+                        if (activeTab === 'movie') {
+                            console.log('Movie title value:', movieTitleInput.value);
+                            if (!movieTitleInput.value.trim()) {
+                                isValid = false;
+                                errorMessage = 'Movie title is required';
+                            }
+                        } else if (activeTab === 'series') {
+                            console.log('Series title value:', seriesTitleInput.value);
+                            if (!seriesTitleInput.value.trim()) {
+                                isValid = false;
+                                errorMessage = 'Series title is required';
+                            }
+                        } else if (activeTab === 'channel') {
+                            console.log('Channel title value:', channelTitleInput.value);
+                            console.log('Channel stream URL value:', channelStreamUrlInput.value);
+                            if (!channelTitleInput.value.trim()) {
+                                isValid = false;
+                                errorMessage = 'Channel name is required';
+                            }
+                            if (!channelStreamUrlInput.value.trim()) {
+                                isValid = false;
+                                errorMessage = 'Stream URL is required';
+                            }
+                        }
+                        
+                        if (!isValid) {
+                            console.log('Validation failed:', errorMessage);
+                            alert('Validation failed: ' + errorMessage);
+                            return;
+                        }
+                        
+                        console.log('=== SAVING DATA ===');
+                        // Save the data
+                        if (activeTab === 'channel') {
+                            console.log('Calling saveChannel...');
+                            saveChannel(id);
+                        } else if (activeTab === 'series') {
+                            console.log('Calling saveSeries...');
+                            saveSeries(id);
+                        } else {
+                            console.log('Calling saveMovie...');
+                            saveMovie(id);
+                        }
+                        
+                        console.log('=== UPDATING UI ===');
+                        renderEntries();
+                        closeModal();
+                        alert(`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} saved successfully!`);
+                        console.log('=== SAVE COMPLETED SUCCESSFULLY ===');
+                        
+                    } catch (error) {
+                        console.error('=== SAVE ERROR ===', error);
+                        console.error('Error stack:', error.stack);
+                        alert(`Error saving content: ${error.message}`);
+                    } finally {
+                        // Re-enable submit button
+                        const submitButton = event.target.querySelector('button[type="submit"]');
+                        if (submitButton) {
+                            submitButton.disabled = false;
+                            submitButton.innerHTML = '<i class="fas fa-save"></i> Save Content';
+                        }
+                    }
+                });
+                console.log('✅ Real form submit handler attached successfully!');
+            } else {
+                console.log('❌ Cannot attach form handler - form not found!');
+                alert('CRITICAL: Cannot attach form submit handler!');
+            }
+
+            // Test 5: Manual Form Submit Test
+            console.log('🧪 Adding manual form submit test...');
+            window.testFormSubmit = function() {
+                console.log('🔥 MANUAL TEST: Triggering form submit...');
+                if (testForm) {
+                    const event = new Event('submit', { bubbles: true, cancelable: true });
+                    testForm.dispatchEvent(event);
+                    console.log('✅ Manual form submit triggered');
+                } else {
+                    console.log('❌ Cannot test - form not found');
+                }
+            };
+            console.log('✅ You can now test with: testFormSubmit() in console');
+            
+            // Add manual test for auto-generation
+            window.testAutoGeneration = function() {
+                console.log('🧪 MANUAL TEST: Running auto-generation...');
+                if (jsonData) {
+                    autoGenerateRelatedContent();
+                    renderEntries();
+                    alert('Auto-generation test completed! Check console and filters.');
+                } else {
+                    alert('ERROR: No JSON data loaded. Load data first.');
+                }
+            };
+            console.log('✅ You can test auto-generation with: testAutoGeneration() in console');
+            
+            // --- Auto-Generation Functions ---
+            function autoGenerateRelatedContent() {
+                console.log('🔄 Auto-generating slides, featured content, actors, and genres...');
+                
+                try {
+                    // Initialize structures
+                    if (!jsonData.home) jsonData.home = {};
+                    if (!jsonData.home.slides) jsonData.home.slides = [];
+                    if (!jsonData.home.featured_movies) jsonData.home.featured_movies = [];
+                    if (!jsonData.actors) jsonData.actors = [];
+                    if (!jsonData.genres) jsonData.genres = [];
+                    if (!jsonData.api_info) jsonData.api_info = {
+                        version: "2.0",
+                        description: "Enhanced Free Movie & TV Streaming JSON API",
+                        last_updated: new Date().toISOString().split('T')[0],
+                        total_movies: 0,
+                        total_channels: 0,
+                        total_actors: 0
+                    };
+                    
+                    // Auto-generate slides from top-rated content
+                    autoGenerateSlides();
+                    
+                    // Auto-generate featured movies (high-rated movies)
+                    autoGenerateFeaturedMovies();
+                    
+                    // Auto-generate actors from movie/series data
+                    autoGenerateActors();
+                    
+                    // Auto-generate genres from movie/series data
+                    autoGenerateGenres();
+                    
+                    // Update API info
+                    updateApiInfo();
+                    
+                    console.log('✅ Auto-generation completed successfully');
+                } catch (error) {
+                    console.error('❌ Error in auto-generation:', error);
+                }
+            }
+            
+            function autoGenerateSlides() {
+                console.log('📸 Generating slides...');
+                
+                // Get top content for slides (movies, series, channels with images)
+                const allContent = [
+                    ...(jsonData.movies || []).map(m => ({...m, contentType: 'movie', url: `movies/${m.id}`})),
+                    ...(jsonData.channels || []).map(c => ({...c, contentType: 'channel', url: `channels/${c.id}`}))
+                ];
+                
+                // Filter content with images and sort by rating
+                const slideContent = allContent
+                    .filter(item => item.image && item.title)
+                    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+                    .slice(0, 5); // Top 5 for slides
+                
+                // Generate slides - create at least one default slide if no content
+                if (slideContent.length === 0) {
+                    jsonData.home.slides = [{
+                        id: 1,
+                        title: "Welcome to Movie API",
+                        type: "movie",
+                        image: "https://via.placeholder.com/800x400/2c3e50/ffffff?text=Add+Your+First+Movie",
+                        url: "movies/1",
+                        poster: {
+                            id: 1,
+                            title: "Welcome to Movie API",
+                            type: "movie",
+                            label: "Getting Started",
+                            sublabel: "Add Content",
+                            description: "Start by adding your first movie or TV show!",
+                            image: "https://via.placeholder.com/800x400/2c3e50/ffffff?text=Add+Your+First+Movie"
+                        }
+                    }];
+                } else {
+                    jsonData.home.slides = slideContent.map((item, index) => ({
+                        id: index + 1,
+                        title: item.title,
+                        type: item.contentType,
+                        image: item.image,
+                        url: item.url,
+                        poster: item.contentType === 'movie' ? { ...item } : null,
+                        channel: item.contentType === 'channel' ? { ...item } : null
+                    }));
+                }
+                
+                console.log(`✅ Generated ${jsonData.home.slides.length} slides`);
+            }
+            
+            function autoGenerateFeaturedMovies() {
+                console.log('⭐ Generating featured movies...');
+                
+                // Get movies with rating >= 7 or recent movies
+                const featuredMovies = (jsonData.movies || [])
+                    .filter(movie => (movie.rating >= 7 || movie.year >= 2020) && movie.image)
+                    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+                    .slice(0, 10); // Top 10 featured
+                
+                // If no featured movies, use all available movies
+                if (featuredMovies.length === 0 && jsonData.movies.length > 0) {
+                    const fallbackMovies = jsonData.movies
+                        .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+                        .slice(0, 5); // Top 5 as fallback
+                    
+                    jsonData.home.featured_movies = fallbackMovies.map(movie => ({
+                        ...movie,
+                        views: movie.views || 0,
+                        created_at: movie.created_at || new Date().toISOString().split('T')[0]
+                    }));
+                } else {
+                    jsonData.home.featured_movies = featuredMovies.map(movie => ({
+                        ...movie,
+                        views: movie.views || 0,
+                        created_at: movie.created_at || new Date().toISOString().split('T')[0]
+                    }));
+                }
+                
+                console.log(`✅ Generated ${jsonData.home.featured_movies.length} featured movies`);
+            }
+            
+            function autoGenerateActors() {
+                console.log('👥 Generating actors...');
+                
+                const actorMap = new Map();
+                
+                // Collect actors from movies and series
+                (jsonData.movies || []).forEach(movie => {
+                    if (movie.actors && movie.actors.length > 0) {
+                        movie.actors.forEach(actor => {
+                            if (actor.name && actor.name.trim() !== '') {
+                                const key = actor.name.toLowerCase();
+                                if (!actorMap.has(key)) {
+                                    actorMap.set(key, {
+                                        id: actorMap.size + 1,
+                                        name: actor.name,
+                                        type: actor.type || 'actor',
+                                        role: actor.role || 'Actor',
+                                        image: actor.image || '',
+                                        born: actor.born || '',
+                                        height: actor.height || '',
+                                        bio: actor.bio || '',
+                                        movies: []
+                                    });
+                                }
+                                
+                                // Add movie to actor's filmography
+                                const actorData = actorMap.get(key);
+                                actorData.movies.push({
+                                    id: movie.id,
+                                    title: movie.title,
+                                    image: movie.image,
+                                    year: movie.year
+                                });
+                            }
+                        });
+                    }
+                });
+                
+                // Add default actors if none exist
+                if (actorMap.size === 0) {
+                    const defaultActors = [
+                        { name: 'Unknown Actor', type: 'actor', role: 'Lead Actor' },
+                        { name: 'Unknown Actress', type: 'actress', role: 'Lead Actress' }
+                    ];
+                    defaultActors.forEach((actor, index) => {
+                        actorMap.set(actor.name.toLowerCase(), {
+                            id: index + 1,
+                            name: actor.name,
+                            type: actor.type,
+                            role: actor.role,
+                            image: '',
+                            born: '',
+                            height: '',
+                            bio: 'Add actor details when creating movies',
+                            movies: []
+                        });
+                    });
+                }
+                
+                jsonData.actors = Array.from(actorMap.values());
+                console.log(`✅ Generated ${jsonData.actors.length} actors`);
+            }
+            
+            function autoGenerateGenres() {
+                console.log('🏷️ Generating genres...');
+                
+                const genreMap = new Map();
+                
+                // Collect genres from movies and series
+                (jsonData.movies || []).forEach(movie => {
+                    if (movie.genres && movie.genres.length > 0) {
+                        movie.genres.forEach(genre => {
+                            if (genre.title && genre.title.trim() !== '') {
+                                const key = genre.title.toLowerCase();
+                                if (!genreMap.has(key)) {
+                                    genreMap.set(key, {
+                                        id: genreMap.size + 1,
+                                        title: genre.title,
+                                        posters: []
+                                    });
+                                }
+                                
+                                // Add movie poster to genre
+                                const genreData = genreMap.get(key);
+                                if (movie.image && !genreData.posters.find(p => p.id === movie.id)) {
+                                    genreData.posters.push({
+                                        id: movie.id,
+                                        title: movie.title,
+                                        image: movie.image
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+                
+                // Add default genres if none exist
+                if (genreMap.size === 0) {
+                    const defaultGenres = ['Action', 'Comedy', 'Drama', 'Horror', 'Sci-Fi', 'Animation'];
+                    defaultGenres.forEach((genreName, index) => {
+                        genreMap.set(genreName.toLowerCase(), {
+                            id: index + 1,
+                            title: genreName,
+                            posters: []
+                        });
+                    });
+                }
+                
+                jsonData.genres = Array.from(genreMap.values());
+                console.log(`✅ Generated ${jsonData.genres.length} genres`);
+            }
+            
+            function updateApiInfo() {
+                console.log('📊 Updating API info...');
+                
+                jsonData.api_info.total_movies = (jsonData.movies || []).length;
+                jsonData.api_info.total_channels = (jsonData.channels || []).length;
+                jsonData.api_info.total_actors = (jsonData.actors || []).length;
+                jsonData.api_info.last_updated = new Date().toISOString().split('T')[0];
+                
+                console.log(`✅ Updated API info: ${jsonData.api_info.total_movies} movies, ${jsonData.api_info.total_channels} channels, ${jsonData.api_info.total_actors} actors`);
+            }
             
             // --- Utility Functions ---
             function showNotification(message, isSuccess = true) {
-                const notification = document.createElement('div');
-                notification.textContent = message;
-                notification.style.position = 'fixed';
-                notification.style.top = '20px';
-                notification.style.right = '20px';
-                notification.style.padding = '15px 25px';
-                notification.style.background = isSuccess ? '#2ecc71' : '#e74c3c';
-                notification.style.color = 'white';
-                notification.style.borderRadius = '6px';
-                notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                notification.style.zIndex = '10000';
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateX(100px)';
-                notification.style.transition = 'all 0.3s ease';
-                
-                document.body.appendChild(notification);
-                
-                // Animate in
-                setTimeout(() => {
-                    notification.style.opacity = '1';
-                    notification.style.transform = 'translateX(0)';
-                }, 10);
-                
-                // Remove after delay
-                setTimeout(() => {
+                try {
+                    console.log('Showing notification:', message, 'Success:', isSuccess);
+                    
+                    const notification = document.createElement('div');
+                    notification.textContent = message;
+                    notification.style.position = 'fixed';
+                    notification.style.top = '20px';
+                    notification.style.right = '20px';
+                    notification.style.padding = '15px 25px';
+                    notification.style.background = isSuccess ? '#2ecc71' : '#e74c3c';
+                    notification.style.color = 'white';
+                    notification.style.borderRadius = '6px';
+                    notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                    notification.style.zIndex = '10000';
                     notification.style.opacity = '0';
                     notification.style.transform = 'translateX(100px)';
+                    notification.style.transition = 'all 0.3s ease';
+                    notification.style.maxWidth = '400px';
+                    notification.style.wordWrap = 'break-word';
+                    
+                    document.body.appendChild(notification);
+                    
+                    // Animate in
                     setTimeout(() => {
-                        document.body.removeChild(notification);
-                    }, 300);
-                }, 3000);
+                        notification.style.opacity = '1';
+                        notification.style.transform = 'translateX(0)';
+                    }, 10);
+                    
+                    // Remove after delay
+                    setTimeout(() => {
+                        notification.style.opacity = '0';
+                        notification.style.transform = 'translateX(100px)';
+                        setTimeout(() => {
+                            try {
+                                if (notification.parentNode) {
+                                    document.body.removeChild(notification);
+                                }
+                            } catch (e) {
+                                console.warn('Could not remove notification:', e);
+                            }
+                        }, 300);
+                    }, 5000); // Increased to 5 seconds so you can read error messages
+                } catch (error) {
+                    console.error('Error showing notification:', error);
+                    // Fallback to alert if notification fails
+                    alert(`${isSuccess ? 'SUCCESS' : 'ERROR'}: ${message}`);
+                }
             }
             
             function openModal(title = 'Add New Content') {
@@ -957,12 +1631,61 @@
             });
             
             function loadData(jsonString) {
-                jsonData = JSON.parse(jsonString);
-                if (!jsonData.movies) jsonData.movies = [];
-                if (!jsonData.channels) jsonData.channels = [];
-                editorDiv.style.display = 'block';
-                saveSectionDiv.style.display = 'block';
-                renderEntries();
+                try {
+                    console.log('Loading JSON data...');
+                    console.log('JSON string length:', jsonString.length);
+                    
+                    jsonData = JSON.parse(jsonString);
+                    console.log('Parsed JSON data:', jsonData);
+                    
+                    if (!jsonData.movies) {
+                        console.log('No movies array found, creating empty array');
+                        jsonData.movies = [];
+                    }
+                    if (!jsonData.channels) {
+                        console.log('No channels array found, creating empty array');
+                        jsonData.channels = [];
+                    }
+                    
+                    // CLEAN EMPTY ENTRIES IMMEDIATELY to prevent crashes
+                    console.log('🧹 Cleaning empty entries from loaded data...');
+                    jsonData.movies = jsonData.movies.filter(m => m.title && m.title.trim() !== '');
+                    jsonData.channels = jsonData.channels.filter(c => c.title && c.title.trim() !== '');
+                    
+                    if (jsonData.home) {
+                        if (jsonData.home.slides) {
+                            jsonData.home.slides = jsonData.home.slides.filter(s => s.title && s.title.trim() !== '');
+                        }
+                        if (jsonData.home.featured_movies) {
+                            jsonData.home.featured_movies = jsonData.home.featured_movies.filter(f => f.title && f.title.trim() !== '');
+                        }
+                    }
+                    if (jsonData.actors) {
+                        jsonData.actors = jsonData.actors.filter(a => a.name && a.name.trim() !== '');
+                    }
+                    if (jsonData.genres) {
+                        jsonData.genres = jsonData.genres.filter(g => g.title && g.title.trim() !== '');
+                    }
+                    
+                    console.log('Movies count:', jsonData.movies.length);
+                    console.log('Channels count:', jsonData.channels.length);
+                    
+                    // AUTO-GENERATE IMMEDIATELY AFTER LOADING DATA
+                    console.log('🔄 Auto-generating related content after data load...');
+                    autoGenerateRelatedContent();
+                    
+                    editorDiv.style.display = 'block';
+                    saveSectionDiv.style.display = 'block';
+                    renderEntries();
+                    
+                    const totalItems = (jsonData.movies?.length || 0) + (jsonData.channels?.length || 0);
+                    showNotification(`Data loaded successfully! Found ${totalItems} items.`, true);
+                    console.log('Data loading completed successfully');
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    showNotification(`Failed to load data: ${error.message}`, false);
+                    throw error;
+                }
             }
             
             // --- Render Entries ---
@@ -970,9 +1693,31 @@
                 if (!jsonData) return;
                 
                 entryListDiv.innerHTML = '';
+                
+                // Initialize missing arrays and clean empty entries
+                if (!jsonData.home) jsonData.home = {};
+                if (!jsonData.home.slides) jsonData.home.slides = [];
+                if (!jsonData.home.featured_movies) jsonData.home.featured_movies = [];
+                if (!jsonData.actors) jsonData.actors = [];
+                if (!jsonData.genres) jsonData.genres = [];
+                
+                // CLEAN EMPTY/INVALID ENTRIES to prevent crashes
+                jsonData.movies = (jsonData.movies || []).filter(m => m.title && m.title.trim() !== '');
+                jsonData.channels = (jsonData.channels || []).filter(c => c.title && c.title.trim() !== '');
+                jsonData.home.slides = (jsonData.home.slides || []).filter(s => s.title && s.title.trim() !== '');
+                jsonData.home.featured_movies = (jsonData.home.featured_movies || []).filter(f => f.title && f.title.trim() !== '');
+                jsonData.actors = (jsonData.actors || []).filter(a => a.name && a.name.trim() !== '');
+                jsonData.genres = (jsonData.genres || []).filter(g => g.title && g.title.trim() !== '');
+                
+                console.log('🧹 Cleaned empty entries from JSON data');
+                
                 const allEntries = [
                     ...(jsonData.movies || []).map(e => ({ ...e, entryType: e.type || (e.seasons ? 'series' : 'movie') })),
-                    ...(jsonData.channels || []).map(e => ({ ...e, entryType: 'channel' }))
+                    ...(jsonData.channels || []).map(e => ({ ...e, entryType: 'channel' })),
+                    ...(jsonData.home.slides || []).map(e => ({ ...e, entryType: 'slide' })),
+                    ...(jsonData.home.featured_movies || []).map(e => ({ ...e, entryType: 'featured' })),
+                    ...(jsonData.actors || []).map(e => ({ ...e, entryType: 'actor', title: e.name })),
+                    ...(jsonData.genres || []).map(e => ({ ...e, entryType: 'genre' }))
                 ];
                 
                 // Apply filter
@@ -981,27 +1726,52 @@
                     : allEntries.filter(entry => 
                         (currentFilter === 'movie' && entry.entryType === 'movie') ||
                         (currentFilter === 'series' && entry.entryType === 'series') ||
-                        (currentFilter === 'channel' && entry.entryType === 'channel')
+                        (currentFilter === 'channel' && entry.entryType === 'channel') ||
+                        (currentFilter === 'slides' && entry.entryType === 'slide') ||
+                        (currentFilter === 'featured' && entry.entryType === 'featured') ||
+                        (currentFilter === 'actors' && entry.entryType === 'actor') ||
+                        (currentFilter === 'genres' && entry.entryType === 'genre')
                     );
                 
-                // Sort by title
-                filteredEntries.sort((a, b) => a.title.localeCompare(b.title));
+                // Filter out entries with empty titles and sort by title
+                const validEntries = filteredEntries.filter(entry => entry.title && entry.title.trim() !== '');
+                validEntries.sort((a, b) => a.title.localeCompare(b.title));
                 
-                if (filteredEntries.length === 0) {
+                if (validEntries.length === 0) {
                     entryListDiv.innerHTML = `
-                        <div class="no-results">
-                            <i class="fas fa-film"></i>
-                            <h3>No content found</h3>
+                        <div class="no-results" style="text-align: center; padding: 40px 20px; color: var(--gray);">
+                            <i class="fas fa-film" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <h3 style="margin-bottom: 10px; color: var(--dark);">No content found</h3>
                             <p>Try changing your filter or add new content</p>
                         </div>
                     `;
                     return;
                 }
                 
-                filteredEntries.forEach(entry => {
+                validEntries.forEach(entry => {
                     const typeClass = `type-${entry.entryType}`;
-                    const typeLabel = entry.entryType === 'movie' ? 'Movie' : 
-                                     entry.entryType === 'series' ? 'Series' : 'Live TV';
+                    const typeLabel = {
+                        'movie': 'Movie',
+                        'series': 'Series', 
+                        'channel': 'Live TV',
+                        'slide': 'Slide',
+                        'featured': 'Featured',
+                        'actor': 'Actor',
+                        'genre': 'Genre'
+                    }[entry.entryType] || entry.entryType;
+                    
+                    // Get appropriate metadata based on type
+                    let metaInfo = '';
+                    if (entry.entryType === 'actor') {
+                        metaInfo = `${entry.type || 'Actor'} • ${entry.role || 'N/A'}`;
+                    } else if (entry.entryType === 'genre') {
+                        const posterCount = entry.posters ? entry.posters.length : 0;
+                        metaInfo = `${posterCount} poster${posterCount !== 1 ? 's' : ''}`;
+                    } else if (entry.entryType === 'slide') {
+                        metaInfo = `Type: ${entry.type || 'N/A'}`;
+                    } else {
+                        metaInfo = `${entry.year ? `Year: ${entry.year} • ` : ''}${entry.rating ? `Rating: ${entry.rating}/10` : ''}`;
+                    }
                     
                     const item = document.createElement('div');
                     item.className = 'entry-item';
@@ -1012,8 +1782,7 @@
                         </div>
                         <div class="entry-item-title">${entry.title}</div>
                         <div class="entry-item-meta">
-                            ${entry.year ? `Year: ${entry.year} • ` : ''}
-                            ${entry.rating ? `Rating: ${entry.rating}/10` : ''}
+                            ${metaInfo}
                         </div>
                         <div class="entry-item-actions">
                             <button class="edit-btn" data-id="${entry.id}" data-type="${entry.entryType}">
@@ -1158,52 +1927,65 @@
                 if (index > -1) {
                     showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully!`, true);
                     renderEntries();
+                } else {
+                    showNotification(`Failed to delete ${type}. Please try again.`, false);
                 }
             }
             
-            entryForm.addEventListener('submit', (event) => {
-                event.preventDefault();
-                const id = entryIdInput.value;
-                const activeTab = document.querySelector('.tab-btn.active').dataset.type;
-                
-                if (activeTab === 'channel') {
-                    saveChannel(id);
-                } else if (activeTab === 'series') {
-                    saveSeries(id);
-                } else {
-                    saveMovie(id);
-                }
-                
-                renderEntries();
-                closeModal();
-                showNotification('Content saved successfully!', true);
-            });
+            // OLD DUPLICATE FORM HANDLER REMOVED - Using the new one above
             
             function saveMovie(id) {
+                console.log('Saving movie with ID:', id);
+                console.log('Current movie sources:', currentMovieSources);
+                
                 const entryData = {
                     type: 'movie',
-                    title: movieTitleInput.value,
-                    year: movieYearInput.value,
-                    description: movieDescriptionInput.value,
-                    image: movieImageInput.value,
-                    cover: movieCoverInput.value,
-                    trailer: movieTrailerInput.value ? { url: movieTrailerInput.value } : null,
-                    sources: currentMovieSources,
-                    genres: [],
+                    title: movieTitleInput.value.trim(),
+                    year: movieYearInput.value.trim(),
+                    description: movieDescriptionInput.value.trim(),
+                    image: movieImageInput.value.trim(),
+                    cover: movieCoverInput.value.trim(),
+                    trailer: movieTrailerInput.value.trim() ? { 
+                        id: generateNewId(),
+                        type: 'video',
+                        title: `${movieTitleInput.value.trim()} Trailer`,
+                        url: movieTrailerInput.value.trim() 
+                    } : null,
+                    sources: currentMovieSources.length > 0 ? currentMovieSources : [],
+                    label: 'Movie',
+                    sublabel: movieYearInput.value.trim() || 'N/A',
+                    imdb: '0.0',
+                    downloadas: movieTitleInput.value.trim().toLowerCase().replace(/[^a-z0-9]/g, '-'),
+                    comment: true,
+                    playas: 'video',
+                    classification: 'N/A',
+                    duration: '00:00',
+                    rating: 0,
+                    views: 0,
+                    downloads: 0,
+                    shares: 0,
+                    created_at: new Date().toISOString().split('T')[0],
+                    genres: currentMovieGenres.length > 0 ? currentMovieGenres : [],
                     actors: [],
                     subtitles: [],
                     comments: []
                 };
                 
+                console.log('Movie data to save:', entryData);
+                
                 if (id) {
                     const index = jsonData.movies.findIndex(m => m.id == id);
                     if (index > -1) {
                         jsonData.movies[index] = { ...jsonData.movies[index], ...entryData };
+                        console.log('Updated existing movie at index:', index);
                     }
                 } else {
                     const newId = generateNewId();
                     jsonData.movies.push({ id: newId, ...entryData });
+                    console.log('Added new movie with ID:', newId);
                 }
+                
+                console.log('Total movies after save:', jsonData.movies.length);
             }
             
             function saveSeries(id) {
@@ -1225,16 +2007,29 @@
                             const episodeTitle = titleElement ? titleElement.textContent.replace(/^Episode \d+: /, '') : `Episode ${episodeNumber}`;
                             
                             episodes.push({
-                                episode: episodeNumber,
+                                id: generateNewId(),
                                 title: episodeTitle,
-                                sources: [{ url: sourceUrl, type: 'video' }]
+                                episode_number: episodeNumber,
+                                image: '',
+                                duration: '45:00',
+                                views: 0,
+                                downloads: 0,
+                                sources: [{ 
+                                    id: generateNewId(),
+                                    type: 'video', 
+                                    title: `${episodeTitle} 1080p`,
+                                    quality: '1080p',
+                                    url: sourceUrl 
+                                }],
+                                subtitles: []
                             });
                         }
                     }
                     
                     if (episodes.length > 0) {
                         seasons.push({
-                            season: seasonNumber,
+                            id: generateNewId(),
+                            title: `Season ${seasonNumber}`,
                             episodes: episodes
                         });
                     }
@@ -1242,12 +2037,35 @@
                 
                 const entryData = {
                     type: 'series',
-                    title: seriesTitleInput.value,
-                    year: seriesYearInput.value,
-                    description: seriesDescriptionInput.value,
-                    image: seriesImageInput.value,
-                    cover: seriesCoverInput.value,
-                    trailer: seriesTrailerInput.value ? { url: seriesTrailerInput.value } : null,
+                    title: seriesTitleInput.value.trim(),
+                    year: seriesYearInput.value.trim(),
+                    description: seriesDescriptionInput.value.trim(),
+                    image: seriesImageInput.value.trim(),
+                    cover: seriesCoverInput.value.trim(),
+                    trailer: seriesTrailerInput.value.trim() ? { 
+                        id: generateNewId(),
+                        type: 'video',
+                        title: `${seriesTitleInput.value.trim()} Trailer`,
+                        url: seriesTrailerInput.value.trim() 
+                    } : null,
+                    label: 'Series',
+                    sublabel: `${seasons.length} Season${seasons.length !== 1 ? 's' : ''}`,
+                    imdb: '0.0',
+                    downloadas: seriesTitleInput.value.trim().toLowerCase().replace(/[^a-z0-9]/g, '-'),
+                    comment: true,
+                    playas: 'video',
+                    classification: 'TV-PG',
+                    duration: '45:00',
+                    rating: 0,
+                    views: 0,
+                    downloads: 0,
+                    shares: 0,
+                    created_at: new Date().toISOString().split('T')[0],
+                    genres: [],
+                    actors: [],
+                    subtitles: [],
+                    comments: [],
+                    sources: [],
                     seasons: seasons
                 };
                 
@@ -1265,20 +2083,56 @@
             function saveChannel(id) {
                 const sources = [];
                 if (channelStreamUrlInput.value.trim()) {
-                    sources.push({ url: channelStreamUrlInput.value.trim(), type: 'live' });
+                    sources.push({ 
+                        id: generateNewId(),
+                        type: 'live',
+                        title: 'Live Stream',
+                        quality: 'HD',
+                        size: 'Live',
+                        kind: 'play',
+                        premium: 'false',
+                        external: false,
+                        url: channelStreamUrlInput.value.trim() 
+                    });
                 }
                 if (channelBackupUrlInput.value.trim()) {
-                    sources.push({ url: channelBackupUrlInput.value.trim(), type: 'live' });
+                    sources.push({ 
+                        id: generateNewId(),
+                        type: 'live',
+                        title: 'Backup Stream',
+                        quality: 'HD',
+                        size: 'Live',
+                        kind: 'play',
+                        premium: 'false',
+                        external: false,
+                        url: channelBackupUrlInput.value.trim() 
+                    });
                 }
                 
+                const categoryTitle = channelCategoryInput.value.trim() || 'General';
+                
                 const entryData = {
-                    title: channelTitleInput.value,
-                    image: channelImageInput.value,
+                    title: channelTitleInput.value.trim(),
+                    label: categoryTitle,
+                    sublabel: 'Live TV',
+                    description: channelDescriptionInput.value.trim(),
+                    website: 'https://example.com',
+                    classification: categoryTitle,
+                    views: 0,
+                    shares: 0,
                     rating: parseFloat(channelRatingInput.value) || 0,
-                    category: channelCategoryInput.value || '',
-                    description: channelDescriptionInput.value,
+                    comment: true,
+                    image: channelImageInput.value.trim(),
+                    playas: 'live',
                     sources: sources,
-                    countries: [],
+                    categories: [{
+                        id: generateNewId(),
+                        title: categoryTitle
+                    }],
+                    countries: [{
+                        id: 1,
+                        title: 'US'
+                    }],
                     comments: []
                 };
                 
@@ -1295,10 +2149,55 @@
             
             function generateNewId() {
                 const allIds = [
-                    ...jsonData.movies.map(m => m.id),
-                    ...jsonData.channels.map(c => c.id)
+                    ...(jsonData.movies || []).map(m => m.id),
+                    ...(jsonData.channels || []).map(c => c.id),
+                    // Also check for IDs in sources, episodes, etc.
+                    ...getAllNestedIds()
                 ];
                 return allIds.length > 0 ? Math.max(...allIds) + 1 : 1;
+            }
+            
+            function getAllNestedIds() {
+                const ids = [];
+                
+                // Collect IDs from movie sources
+                if (jsonData.movies) {
+                    jsonData.movies.forEach(movie => {
+                        if (movie.sources) {
+                            movie.sources.forEach(source => {
+                                if (source.id) ids.push(source.id);
+                            });
+                        }
+                        if (movie.seasons) {
+                            movie.seasons.forEach(season => {
+                                if (season.id) ids.push(season.id);
+                                if (season.episodes) {
+                                    season.episodes.forEach(episode => {
+                                        if (episode.id) ids.push(episode.id);
+                                        if (episode.sources) {
+                                            episode.sources.forEach(source => {
+                                                if (source.id) ids.push(source.id);
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+                
+                // Collect IDs from channel sources
+                if (jsonData.channels) {
+                    jsonData.channels.forEach(channel => {
+                        if (channel.sources) {
+                            channel.sources.forEach(source => {
+                                if (source.id) ids.push(source.id);
+                            });
+                        }
+                    });
+                }
+                
+                return ids;
             }
             
             // --- Movie Source Management ---
@@ -1324,7 +2223,17 @@
                 const name = movieSourceNameInput.value.trim() || 'Source';
                 const url = movieSourceUrlInput.value.trim();
                 if (url) {
-                    currentMovieSources.push({ title: name, url: url, type: 'video' });
+                    currentMovieSources.push({ 
+                        id: generateNewId(),
+                        type: 'video',
+                        title: name,
+                        quality: name.includes('1080') ? '1080p' : name.includes('720') ? '720p' : name.includes('480') ? '480p' : 'HD',
+                        size: '0MB',
+                        kind: 'both',
+                        premium: 'false',
+                        external: false,
+                        url: url 
+                    });
                     movieSourceNameInput.value = '';
                     movieSourceUrlInput.value = '';
                     renderMovieSources();
@@ -1343,31 +2252,67 @@
             async function renderSeasons(seasonsData) {
                 seasonContainerDiv.innerHTML = '';
                 
-                for (const season of seasonsData) {
+                if (!seasonsData || seasonsData.length === 0) {
+                    // Add default season if none exist
+                    seasonContainerDiv.innerHTML = `
+                        <div class="no-seasons">
+                            <p>No seasons configured. <button type="button" id="addSeasonButton" style="margin-left: 10px; padding: 5px 10px;">Add Season 1</button></p>
+                        </div>
+                    `;
+                    
+                    document.getElementById('addSeasonButton').addEventListener('click', () => {
+                        const newSeason = {
+                            id: generateNewId(),
+                            title: 'Season 1',
+                            episodes: [{
+                                id: generateNewId(),
+                                title: 'Episode 1',
+                                episode_number: 1,
+                                image: '',
+                                duration: '45:00',
+                                views: 0,
+                                downloads: 0,
+                                sources: [],
+                                subtitles: []
+                            }]
+                        };
+                        renderSeasons([newSeason]);
+                    });
+                    return;
+                }
+                
+                for (let seasonIndex = 0; seasonIndex < seasonsData.length; seasonIndex++) {
+                    const season = seasonsData[seasonIndex];
+                    const seasonNumber = seasonIndex + 1;
                     const seasonCard = document.createElement('div');
                     seasonCard.className = 'season-card';
-                    seasonCard.dataset.season = season.season;
+                    seasonCard.dataset.season = seasonNumber;
                     seasonCard.innerHTML = `
                         <div class="season-header">
-                            <h3>Season ${season.season}</h3>
-                            <span>${season.episodes.length} episodes</span>
+                            <h3>${season.title || `Season ${seasonNumber}`}</h3>
+                            <div>
+                                <span>${season.episodes.length} episodes</span>
+                                <button type="button" class="add-episode-btn" data-season="${seasonNumber}" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;">Add Episode</button>
+                            </div>
                         </div>
                         <div class="episode-list"></div>
                     `;
                     
                     const episodeList = seasonCard.querySelector('.episode-list');
-                    for (const episode of season.episodes) {
+                    for (let episodeIndex = 0; episodeIndex < season.episodes.length; episodeIndex++) {
+                        const episode = season.episodes[episodeIndex];
+                        const episodeNumber = episodeIndex + 1;
                         const episodeItem = document.createElement('div');
                         episodeItem.className = 'episode-item';
-                        episodeItem.dataset.episode = episode.episode;
+                        episodeItem.dataset.episode = episodeNumber;
                         episodeItem.innerHTML = `
                             <div class="episode-header">
-                                <div class="episode-title">Episode ${episode.episode}: ${episode.title}</div>
-                                <div class="episode-meta">${episode.sources.length} source(s)</div>
+                                <div class="episode-title">Episode ${episodeNumber}: ${episode.title || `Episode ${episodeNumber}`}</div>
+                                <div class="episode-meta">${episode.sources?.length || 0} source(s)</div>
                             </div>
                             <div class="episode-sources">
                                 <input type="text" class="episode-source-input" 
-                                       value="${episode.sources[0]?.url || ''}" 
+                                       value="${episode.sources?.[0]?.url || ''}" 
                                        placeholder="Episode source URL">
                             </div>
                         `;
@@ -1376,6 +2321,30 @@
                     
                     seasonContainerDiv.appendChild(seasonCard);
                 }
+                
+                // Add event listeners for adding episodes
+                document.querySelectorAll('.add-episode-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const seasonNumber = parseInt(e.target.dataset.season);
+                        const seasonIndex = seasonNumber - 1;
+                        const season = seasonsData[seasonIndex];
+                        const newEpisodeNumber = season.episodes.length + 1;
+                        
+                        season.episodes.push({
+                            id: generateNewId(),
+                            title: `Episode ${newEpisodeNumber}`,
+                            episode_number: newEpisodeNumber,
+                            image: '',
+                            duration: '45:00',
+                            views: 0,
+                            downloads: 0,
+                            sources: [],
+                            subtitles: []
+                        });
+                        
+                        renderSeasons(seasonsData);
+                    });
+                });
             }
             
             // --- TMDb Integration ---
@@ -1435,6 +2404,10 @@
                     movieCoverInput.value = movieData.backdrop_path ? 
                         `https://image.tmdb.org/t/p/original${movieData.backdrop_path}` : '';
                     
+                    // Auto-add genres from TMDb
+                    currentMovieGenres = movieData.genres || [];
+                    console.log('Auto-added genres:', currentMovieGenres);
+                    
                     // Fetch trailer
                     const videosUrl = `https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=${tmdbApiKey}`;
                     const videosRes = await fetch(videosUrl);
@@ -1444,7 +2417,17 @@
                     
                     // Auto-add vidsrc source
                     const vidsrcUrl = `https://vidsrc.net/embed/movie/${tmdbId}`;
-                    currentMovieSources = [{ title: 'vidsrc.net', url: vidsrcUrl, type: 'video' }];
+                    currentMovieSources = [{ 
+                        id: generateNewId(),
+                        type: 'video',
+                        title: 'vidsrc.net 1080p',
+                        quality: '1080p',
+                        size: '0MB',
+                        kind: 'both',
+                        premium: 'false',
+                        external: false,
+                        url: vidsrcUrl 
+                    }];
                     renderMovieSources();
                     
                     showNotification('Movie data fetched successfully!', true);
@@ -1473,12 +2456,33 @@
                         `https://image.tmdb.org/t/p/original${seriesData.backdrop_path}` : '';
                     seriesTrailerInput.value = seriesData.trailer || '';
                     
-                    // Prepare seasons data
+                    // Prepare seasons data with auto vidsrc URLs
                     currentSeriesData = {
                         ...seriesData,
                         seasons: seriesData.seasons.filter(s => s.season_number > 0).map(season => ({
-                            season: season.season_number,
-                            episodes: []
+                            id: generateNewId(),
+                            title: `Season ${season.season_number}`,
+                            episodes: Array.from({length: season.episode_count || 1}, (_, i) => {
+                                const episodeNumber = i + 1;
+                                const vidsrcEpisodeUrl = `https://vidsrc.net/embed/tv/${tmdbId}/${season.season_number}/${episodeNumber}`;
+                                return {
+                                    id: generateNewId(),
+                                    title: `Episode ${episodeNumber}`,
+                                    episode_number: episodeNumber,
+                                    image: '',
+                                    duration: '45:00',
+                                    views: 0,
+                                    downloads: 0,
+                                    sources: [{
+                                        id: generateNewId(),
+                                        type: 'video',
+                                        title: `Episode ${episodeNumber} 1080p`,
+                                        quality: '1080p',
+                                        url: vidsrcEpisodeUrl
+                                    }],
+                                    subtitles: []
+                                };
+                            })
                         }))
                     };
                     
