@@ -1730,8 +1730,19 @@
                     const trailer = videosData.results.find(v => v.site === 'YouTube' && v.type === 'Trailer');
                     movieTrailerInput.value = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : '';
                     
-                    // Clear any existing sources - user will add manually
-                    currentMovieSources = [];
+                    // Auto-add vidsrc source
+                    const vidsrcUrl = `https://vidsrc.net/embed/movie/${tmdbId}`;
+                    currentMovieSources = [{ 
+                        id: generateNewId(),
+                        type: 'video',
+                        title: 'vidsrc.net 1080p',
+                        quality: '1080p',
+                        size: '0MB',
+                        kind: 'both',
+                        premium: 'false',
+                        external: false,
+                        url: vidsrcUrl 
+                    }];
                     renderMovieSources();
                     
                     showNotification('Movie data fetched successfully!', true);
@@ -1760,23 +1771,33 @@
                         `https://image.tmdb.org/t/p/original${seriesData.backdrop_path}` : '';
                     seriesTrailerInput.value = seriesData.trailer || '';
                     
-                    // Prepare seasons data
+                    // Prepare seasons data with auto vidsrc URLs
                     currentSeriesData = {
                         ...seriesData,
                         seasons: seriesData.seasons.filter(s => s.season_number > 0).map(season => ({
                             id: generateNewId(),
                             title: `Season ${season.season_number}`,
-                            episodes: Array.from({length: season.episode_count || 1}, (_, i) => ({
-                                id: generateNewId(),
-                                title: `Episode ${i + 1}`,
-                                episode_number: i + 1,
-                                image: '',
-                                duration: '45:00',
-                                views: 0,
-                                downloads: 0,
-                                sources: [],
-                                subtitles: []
-                            }))
+                            episodes: Array.from({length: season.episode_count || 1}, (_, i) => {
+                                const episodeNumber = i + 1;
+                                const vidsrcEpisodeUrl = `https://vidsrc.net/embed/tv/${tmdbId}/${season.season_number}/${episodeNumber}`;
+                                return {
+                                    id: generateNewId(),
+                                    title: `Episode ${episodeNumber}`,
+                                    episode_number: episodeNumber,
+                                    image: '',
+                                    duration: '45:00',
+                                    views: 0,
+                                    downloads: 0,
+                                    sources: [{
+                                        id: generateNewId(),
+                                        type: 'video',
+                                        title: `Episode ${episodeNumber} 1080p`,
+                                        quality: '1080p',
+                                        url: vidsrcEpisodeUrl
+                                    }],
+                                    subtitles: []
+                                };
+                            })
                         }))
                     };
                     
