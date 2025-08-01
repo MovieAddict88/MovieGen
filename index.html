@@ -820,8 +820,13 @@
             event.preventDefault();
         });
 
+        // IMMEDIATE TEST - This should show up first
+        console.log('🔥 JAVASCRIPT IS LOADING! 🔥');
+        alert('JavaScript is working! Check console for details.');
+
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM Content Loaded - Initializing app...');
+            console.log('🚀 DOM Content Loaded - Initializing app...');
+            alert('DOM loaded! App is starting...');
             
             // --- Constants and Config ---
             const tmdbApiKey = 'ec926176bf467b3f7735e3154238c161';
@@ -885,6 +890,46 @@
             let currentMovieSources = [];
             let currentFilter = 'all';
             let currentSeriesData = { seasons: [] };
+
+            // SIMPLE CLICK TEST
+            console.log('🧪 Setting up simple click tests...');
+            
+            // Test 1: Save button
+            const testButton = document.querySelector('#saveButton');
+            if (testButton) {
+                console.log('✅ Save button found!');
+                testButton.addEventListener('click', () => {
+                    console.log('🎯 SAVE BUTTON WAS CLICKED!');
+                    alert('Save button clicked! This means event listeners work.');
+                });
+            } else {
+                console.log('❌ Save button NOT found!');
+            }
+
+            // Test 2: Form
+            const testForm = document.querySelector('#entryForm');
+            if (testForm) {
+                console.log('✅ Entry form found!');
+                testForm.addEventListener('submit', (e) => {
+                    console.log('🎯 FORM WAS SUBMITTED!');
+                    alert('Form submitted! Event listeners are working.');
+                    e.preventDefault();
+                });
+            } else {
+                console.log('❌ Entry form NOT found!');
+            }
+
+            // Test 3: Add new entry button
+            const addButton = document.querySelector('#addNewEntry');
+            if (addButton) {
+                console.log('✅ Add new entry button found!');
+                addButton.addEventListener('click', () => {
+                    console.log('🎯 ADD NEW ENTRY BUTTON CLICKED!');
+                    alert('Add new entry clicked! Modal should open.');
+                });
+            } else {
+                console.log('❌ Add new entry button NOT found!');
+            }
             
             // --- Utility Functions ---
             function showNotification(message, isSuccess = true) {
