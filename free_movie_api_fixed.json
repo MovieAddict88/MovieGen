@@ -1,0 +1,853 @@
+{
+  "api_info": {
+    "version": "2.0",
+    "description": "Enhanced Free Movie & TV Streaming JSON API with Full Actor Support",
+    "last_updated": "2024-01-15",
+    "total_movies": 2,
+    "total_channels": 26,
+    "total_actors": 2
+  },
+  "home": {
+    "slides": [
+      {
+        "id": 1,
+        "title": "Big Buck Bunny",
+        "type": "movie",
+        "image": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+        "url": "movies/1",
+        "poster": {
+          "id": 1,
+          "title": "Big Buck Bunny",
+          "type": "movie",
+          "label": "Animation",
+          "sublabel": "Short Film",
+          "imdb": "8.5",
+          "downloadas": "big-buck-bunny.mp4",
+          "comment": true,
+          "playas": "video",
+          "description": "Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself. When one sunny day three rodents rudely harass him by throwing nuts, hitting his flowers, and destroying his home, he snaps and goes after them.",
+          "classification": "G",
+          "year": "2008",
+          "duration": "10:00",
+          "rating": 8.5,
+          "image": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+          "cover": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+          "genres": [
+            {
+              "id": 6,
+              "title": "Animation"
+            }
+          ],
+          "sources": [
+            {
+              "id": 1,
+              "type": "video",
+              "title": "Big Buck Bunny 1080p",
+              "quality": "1080p",
+              "size": "264MB",
+              "kind": "both",
+              "premium": "false",
+              "external": false,
+              "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+            },
+            {
+              "id": 2,
+              "type": "video",
+              "title": "Big Buck Bunny 720p",
+              "quality": "720p",
+              "size": "128MB",
+              "kind": "both",
+              "premium": "false",
+              "external": false,
+              "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+            },
+            {
+              "id": 3,
+              "type": "video",
+              "title": "Big Buck Bunny 480p",
+              "quality": "480p",
+              "size": "64MB",
+              "kind": "both",
+              "premium": "false",
+              "external": false,
+              "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+            }
+          ],
+          "trailer": {
+            "id": 4,
+            "type": "video",
+            "title": "Big Buck Bunny Trailer",
+            "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+          },
+          "actors": [
+            {
+              "id": 1,
+              "name": "Tom Hanks",
+              "type": "actor",
+              "role": "Lead Actor",
+              "image": "https://example.com/tom-hanks.jpg",
+              "born": "1956-07-09",
+              "height": "6'0\"",
+              "bio": "American actor and filmmaker"
+            }
+          ],
+          "subtitles": [
+            {
+              "id": 1,
+              "title": "English",
+              "language": "en",
+              "url": "https://example.com/subtitles/big-buck-bunny-en.vtt"
+            },
+            {
+              "id": 2,
+              "title": "Spanish",
+              "language": "es",
+              "url": "https://example.com/subtitles/big-buck-bunny-es.vtt"
+            }
+          ],
+          "comments": [
+            {
+              "id": 1,
+              "user": "John Doe",
+              "comment": "Amazing animation! Love this movie.",
+              "created_at": "2024-01-15T10:30:00Z"
+            },
+            {
+              "id": 2,
+              "user": "Jane Smith",
+              "comment": "Great for kids and adults alike!",
+              "created_at": "2024-01-14T15:45:00Z"
+            }
+          ],
+          "views": 15000,
+          "downloads": 5000,
+          "shares": 1200
+        }
+      },
+      {
+        "id": 2,
+        "title": "AZ2",
+        "type": "channel",
+        "image": "https://i.imgur.com/1zsdloF.png",
+        "url": "channels/1",
+        "channel": {
+          "id": 1,
+          "title": "AZ2",
+          "label": "Entertainment",
+          "sublabel": "Philippines",
+          "description": "AZ2",
+          "website": "https://example-news.com",
+          "classification": "News",
+          "views": 25000,
+          "shares": 800,
+          "rating": 7.8,
+          "comment": true,
+          "image": "https://i.imgur.com/1zsdloF.png",
+          "playas": "live",
+          "sources": [
+            {
+              "id": 6,
+              "type": "live",
+              "title": "720p",
+              "quality": "720p",
+              "size": "Live",
+              "kind": "play",
+              "premium": "false",
+              "external": false,
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_5.m3u8"
+            },
+            {
+              "id": 7,
+              "type": "live",
+              "title": "480p",
+              "quality": "480p",
+              "size": "Live",
+              "kind": "play",
+              "premium": "false",
+              "external": false,
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_4.m3u8"
+            },
+            {
+              "id": 8,
+              "type": "live",
+              "title": "360p",
+              "quality": "360p",
+              "size": "Live",
+              "kind": "play",
+              "premium": "false",
+              "external": false,
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_3.m3u8"
+            },
+            {
+              "id": 9,
+              "type": "live",
+              "title": "240p",
+              "quality": "240p",
+              "size": "Live",
+              "kind": "play",
+              "premium": "false",
+              "external": false,
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_2.m3u8"
+            },
+            {
+              "id": 10,
+              "type": "live",
+              "title": "144p",
+              "quality": "144p",
+              "size": "Live",
+              "kind": "play",
+              "premium": "false",
+              "external": false,
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_1.m3u8"
+            }
+          ],
+          "categories": [
+            {
+              "id": 6,
+              "title": "General"
+            }
+          ],
+          "countries": [
+            {
+              "id": 1,
+              "title": "PH"
+            }
+          ],
+          "comments": []
+        }
+      }
+    ],
+    "featured_movies": [
+      {
+        "id": 1,
+        "title": "Big Buck Bunny",
+        "type": "movie",
+        "label": "Animation",
+        "sublabel": "Short Film",
+        "imdb": "8.5",
+        "downloadas": "big-buck-bunny.mp4",
+        "comment": true,
+        "playas": "video",
+        "description": "Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself. When one sunny day three rodents rudely harass him by throwing nuts, hitting his flowers, and destroying his home, he snaps and goes after them.",
+        "classification": "G",
+        "year": "2008",
+        "duration": "10:00",
+        "rating": 8.5,
+        "views": 15000,
+        "created_at": "2024-01-01",
+        "image": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+        "cover": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+        "genres": [
+          {
+            "id": 6,
+            "title": "Animation"
+          }
+        ],
+        "sources": [
+          {
+            "id": 1,
+            "type": "video",
+            "title": "Big Buck Bunny 1080p",
+            "quality": "1080p",
+            "size": "264MB",
+            "kind": "both",
+            "premium": "false",
+            "external": false,
+            "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+          },
+          {
+            "id": 2,
+            "type": "video",
+            "title": "Big Buck Bunny 720p",
+            "quality": "720p",
+            "size": "128MB",
+            "kind": "both",
+            "premium": "false",
+            "external": false,
+            "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+          },
+          {
+            "id": 3,
+            "type": "video",
+            "title": "Big Buck Bunny 480p",
+            "quality": "480p",
+            "size": "64MB",
+            "kind": "both",
+            "premium": "false",
+            "external": false,
+            "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+          }
+        ],
+        "trailer": {
+          "id": 4,
+          "type": "video",
+          "title": "Big Buck Bunny Trailer",
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        },
+        "actors": [
+          {
+            "id": 1,
+            "name": "Tom Hanks",
+            "type": "actor",
+            "role": "Lead Actor",
+            "image": "https://example.com/tom-hanks.jpg",
+            "born": "1956-07-09",
+            "height": "6'0\"",
+            "bio": "American actor and filmmaker"
+          }
+        ],
+        "subtitles": [
+          {
+            "id": 1,
+            "title": "English",
+            "language": "en",
+            "url": "https://example.com/subtitles/big-buck-bunny-en.vtt"
+          },
+          {
+            "id": 2,
+            "title": "Spanish",
+            "language": "es",
+            "url": "https://example.com/subtitles/big-buck-bunny-es.vtt"
+          }
+        ],
+        "comments": [
+          {
+            "id": 1,
+            "user": "John Doe",
+            "comment": "Amazing animation! Love this movie.",
+            "created_at": "2024-01-15T10:30:00Z"
+          },
+          {
+            "id": 2,
+            "user": "Jane Smith",
+            "comment": "Great for kids and adults alike!",
+            "created_at": "2024-01-14T15:45:00Z"
+          }
+        ],
+        "views": 15000,
+        "downloads": 5000,
+        "shares": 1200
+      }
+    ]
+  },
+  "movies": [
+    {
+      "id": 1,
+      "title": "Big Buck Bunny",
+      "type": "movie",
+      "label": "Animation",
+      "sublabel": "Short Film",
+      "imdb": "8.5",
+      "downloadas": "big-buck-bunny.mp4",
+      "comment": true,
+      "playas": "video",
+      "description": "Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself. When one sunny day three rodents rudely harass him by throwing nuts, hitting his flowers, and destroying his home, he snaps and goes after them.",
+      "classification": "G",
+      "year": "2008",
+      "duration": "10:00",
+      "rating": 8.5,
+      "image": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+      "cover": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+      "genres": [
+        {
+          "id": 6,
+          "title": "Animation"
+        }
+      ],
+      "sources": [
+        {
+          "id": 1,
+          "type": "video",
+          "title": "Big Buck Bunny 1080p",
+          "quality": "1080p",
+          "size": "264MB",
+          "kind": "both",
+          "premium": "false",
+          "external": false,
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        },
+        {
+          "id": 2,
+          "type": "video",
+          "title": "Big Buck Bunny 720p",
+          "quality": "720p",
+          "size": "128MB",
+          "kind": "both",
+          "premium": "false",
+          "external": false,
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        },
+        {
+          "id": 3,
+          "type": "video",
+          "title": "Big Buck Bunny 480p",
+          "quality": "480p",
+          "size": "64MB",
+          "kind": "both",
+          "premium": "false",
+          "external": false,
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        }
+      ],
+      "trailer": {
+        "id": 4,
+        "type": "video",
+        "title": "Big Buck Bunny Trailer",
+        "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+      },
+      "actors": [
+        {
+          "id": 1,
+          "name": "Tom Hanks",
+          "type": "actor",
+          "role": "Lead Actor",
+          "image": "https://example.com/tom-hanks.jpg",
+          "born": "1956-07-09",
+          "height": "6'0\"",
+          "bio": "American actor and filmmaker"
+        }
+      ],
+      "subtitles": [
+        {
+          "id": 1,
+          "title": "English",
+          "language": "en",
+          "url": "https://example.com/subtitles/big-buck-bunny-en.vtt"
+        },
+        {
+          "id": 2,
+          "title": "Spanish",
+          "language": "es",
+          "url": "https://example.com/subtitles/big-buck-bunny-es.vtt"
+        }
+      ],
+      "comments": [
+        {
+          "id": 1,
+          "user": "John Doe",
+          "comment": "Amazing animation! Love this movie.",
+          "created_at": "2024-01-15T10:30:00Z"
+        },
+        {
+          "id": 2,
+          "user": "Jane Smith",
+          "comment": "Great for kids and adults alike!",
+          "created_at": "2024-01-14T15:45:00Z"
+        }
+      ],
+      "views": 15000,
+      "downloads": 5000,
+      "shares": 1200
+    },
+    {
+      "id": 2,
+      "title": "Sample TV Series",
+      "type": "series",
+      "label": "Drama",
+      "sublabel": "2 Seasons",
+      "imdb": "8.2",
+      "downloadas": "sample-series",
+      "comment": true,
+      "playas": "video",
+      "description": "A gripping drama series with 2 seasons. Each season contains 1 episode with multiple quality options and subtitles.",
+      "classification": "TV-14",
+      "year": "2023",
+      "duration": "45:00",
+      "rating": 8.2,
+      "views": 8000,
+      "created_at": "2024-01-02",
+      "image": "https://example.com/sample-series.jpg",
+      "cover": "https://example.com/sample-series-cover.jpg",
+      "genres": [
+        {
+          "id": 3,
+          "title": "Drama"
+        }
+      ],
+      "sources": [],
+      "trailer": null,
+      "actors": [
+        {
+          "id": 2,
+          "name": "Emma Watson",
+          "type": "actress",
+          "role": "Lead Actress",
+          "image": "https://example.com/emma-watson.jpg",
+          "born": "1990-04-15",
+          "height": "5'5\"",
+          "bio": "English actress and activist"
+        }
+      ],
+      "subtitles": [],
+      "comments": [
+        {
+          "id": 1,
+          "user": "Series Fan",
+          "comment": "Amazing series! Can't wait for season 2.",
+          "created_at": "2024-01-15T12:00:00Z"
+        }
+      ],
+      "views": 8000,
+      "downloads": 2000,
+      "shares": 500,
+      "seasons": [
+        {
+          "id": 1,
+          "title": "Season 1",
+          "episodes": [
+            {
+              "id": 1,
+              "title": "Episode 1",
+              "episode_number": 1,
+              "image": "https://example.com/ep1.jpg",
+              "duration": "45:00",
+              "sources": [
+                {
+                  "id": 5,
+                  "type": "video",
+                  "title": "Episode 1 1080p",
+                  "quality": "1080p",
+                  "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+                },
+                {
+                  "id": 6,
+                  "type": "video",
+                  "title": "Episode 1 720p",
+                  "quality": "720p",
+                  "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+                },
+                {
+                  "id": 7,
+                  "type": "video",
+                  "title": "Episode 1 480p",
+                  "quality": "480p",
+                  "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+                }
+              ],
+              "subtitles": [
+                {
+                  "id": 1,
+                  "title": "English",
+                  "language": "en",
+                  "url": "https://example.com/subtitles/ep1-en.vtt"
+                },
+                {
+                  "id": 2,
+                  "title": "Spanish",
+                  "language": "es",
+                  "url": "https://example.com/subtitles/ep1-es.vtt"
+                }
+              ],
+              "views": 5000,
+              "downloads": 1200
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "Season 2",
+          "episodes": [
+            {
+              "id": 2,
+              "title": "Episode 1",
+              "episode_number": 1,
+              "image": "https://example.com/ep2.jpg",
+              "duration": "45:00",
+              "sources": [
+                {
+                  "id": 8,
+                  "type": "video",
+                  "title": "Episode 1 1080p",
+                  "quality": "1080p",
+                  "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                },
+                {
+                  "id": 9,
+                  "type": "video",
+                  "title": "Episode 1 720p",
+                  "quality": "720p",
+                  "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                },
+                {
+                  "id": 10,
+                  "type": "video",
+                  "title": "Episode 1 480p",
+                  "quality": "480p",
+                  "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                }
+              ],
+              "subtitles": [
+                {
+                  "id": 3,
+                  "title": "English",
+                  "language": "en",
+                  "url": "https://example.com/subtitles/ep2-en.vtt"
+                },
+                {
+                  "id": 4,
+                  "title": "Spanish",
+                  "language": "es",
+                  "url": "https://example.com/subtitles/ep2-es.vtt"
+                }
+              ],
+              "views": 3000,
+              "downloads": 800
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "channels": [
+    {
+      "id": 1,
+      "title": "AZ2",
+      "label": "Entertainment",
+      "sublabel": "Philippines",
+      "description": "AZ2",
+      "website": "https://example-news.com",
+      "classification": "News",
+      "views": 25000,
+      "shares": 800,
+      "rating": 7.8,
+      "comment": true,
+      "image": "https://i.imgur.com/1zsdloF.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 6,
+          "type": "live",
+          "title": "720p",
+          "quality": "720p",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_5.m3u8"
+        },
+        {
+          "id": 7,
+          "type": "live",
+          "title": "480p",
+          "quality": "480p",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_4.m3u8"
+        },
+        {
+          "id": 8,
+          "type": "live",
+          "title": "360p",
+          "quality": "360p",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_3.m3u8"
+        },
+        {
+          "id": 9,
+          "type": "live",
+          "title": "240p",
+          "quality": "240p",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_2.m3u8"
+        },
+        {
+          "id": 10,
+          "type": "live",
+          "title": "144p",
+          "quality": "144p",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_1.m3u8"
+        }
+      ],
+      "categories": [
+        {
+          "id": 6,
+          "title": "General"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "PH"
+        }
+      ],
+      "comments": []
+    }
+  ],
+  "actors": [
+    {
+      "id": 1,
+      "name": "Tom Hanks",
+      "type": "actor",
+      "role": "Lead Actor",
+      "image": "https://example.com/tom-hanks.jpg",
+      "born": "1956-07-09",
+      "height": "6'0\"",
+      "bio": "American actor and filmmaker",
+      "filmography": [
+        {
+          "id": 1,
+          "title": "Big Buck Bunny",
+          "image": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+          "year": "2008"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Emma Watson",
+      "type": "actress",
+      "role": "Lead Actress",
+      "image": "https://example.com/emma-watson.jpg",
+      "born": "1990-04-15",
+      "height": "5'5\"",
+      "bio": "English actress and activist",
+      "filmography": [
+        {
+          "id": 2,
+          "title": "Sample TV Series",
+          "image": "https://example.com/sample-series.jpg",
+          "year": "2023"
+        }
+      ]
+    }
+  ],
+  "genres": [
+    {
+      "id": 1,
+      "title": "Action",
+      "posters": []
+    },
+    {
+      "id": 2,
+      "title": "Comedy",
+      "posters": []
+    },
+    {
+      "id": 3,
+      "title": "Drama",
+      "posters": [
+        {
+          "id": 2,
+          "title": "Sample TV Series",
+          "image": "https://example.com/sample-series.jpg"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Horror",
+      "posters": []
+    },
+    {
+      "id": 5,
+      "title": "Sci-Fi",
+      "posters": []
+    },
+    {
+      "id": 6,
+      "title": "Animation",
+      "posters": [
+        {
+          "id": 1,
+          "title": "Big Buck Bunny",
+          "image": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "title": "News"
+    },
+    {
+      "id": 2,
+      "title": "Sports"
+    },
+    {
+      "id": 3,
+      "title": "Entertainment"
+    },
+    {
+      "id": 4,
+      "title": "Documentary"
+    }
+  ],
+  "countries": [
+    {
+      "id": 1,
+      "title": "USA"
+    },
+    {
+      "id": 2,
+      "title": "UK"
+    },
+    {
+      "id": 3,
+      "title": "France"
+    },
+    {
+      "id": 4,
+      "title": "Germany"
+    }
+  ],
+  "subscription_plans": [],
+  "subscription_config": {
+    "enabled": false,
+    "monthly_billing_enabled": false,
+    "free_trial_days": 0,
+    "grace_period_days": 0,
+    "auto_renewal_enabled": false,
+    "payment_methods": [],
+    "currency_default": "USD",
+    "subscription_required_for": []
+  },
+  "video_sources": {
+    "big_buck_bunny": {
+      "title": "Big Buck Bunny",
+      "description": "Famous open-source animation by Blender Foundation",
+      "urls": {
+        "1080p": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        "720p": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        "480p": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+      },
+      "duration": "10:00",
+      "size": "264MB (1080p)",
+      "license": "Creative Commons Attribution 3.0"
+    },
+    "elephants_dream": {
+      "title": "Elephants Dream",
+      "description": "The world's first open movie",
+      "urls": {
+        "1080p": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+      },
+      "duration": "11:00",
+      "size": "128MB",
+      "license": "Creative Commons Attribution 2.5"
+    },
+    "live_streams": {
+      "test_hls": {
+        "title": "Test HLS Stream",
+        "description": "Sample HLS live stream for testing",
+        "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+        "quality": "1080p",
+        "type": "live"
+      }
+    }
+  },
+  "ads_config": {
+    "enabled": false
+  }
+}
