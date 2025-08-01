@@ -1384,7 +1384,7 @@
                 (jsonData.movies || []).forEach(movie => {
                     if (movie.actors && movie.actors.length > 0) {
                         movie.actors.forEach(actor => {
-                            if (actor.name) {
+                            if (actor.name && actor.name.trim() !== '') {
                                 const key = actor.name.toLowerCase();
                                 if (!actorMap.has(key)) {
                                     actorMap.set(key, {
@@ -1447,7 +1447,7 @@
                 (jsonData.movies || []).forEach(movie => {
                     if (movie.genres && movie.genres.length > 0) {
                         movie.genres.forEach(genre => {
-                            if (genre.title) {
+                            if (genre.title && genre.title.trim() !== '') {
                                 const key = genre.title.toLowerCase();
                                 if (!genreMap.has(key)) {
                                     genreMap.set(key, {
@@ -1647,6 +1647,26 @@
                         jsonData.channels = [];
                     }
                     
+                    // CLEAN EMPTY ENTRIES IMMEDIATELY to prevent crashes
+                    console.log('🧹 Cleaning empty entries from loaded data...');
+                    jsonData.movies = jsonData.movies.filter(m => m.title && m.title.trim() !== '');
+                    jsonData.channels = jsonData.channels.filter(c => c.title && c.title.trim() !== '');
+                    
+                    if (jsonData.home) {
+                        if (jsonData.home.slides) {
+                            jsonData.home.slides = jsonData.home.slides.filter(s => s.title && s.title.trim() !== '');
+                        }
+                        if (jsonData.home.featured_movies) {
+                            jsonData.home.featured_movies = jsonData.home.featured_movies.filter(f => f.title && f.title.trim() !== '');
+                        }
+                    }
+                    if (jsonData.actors) {
+                        jsonData.actors = jsonData.actors.filter(a => a.name && a.name.trim() !== '');
+                    }
+                    if (jsonData.genres) {
+                        jsonData.genres = jsonData.genres.filter(g => g.title && g.title.trim() !== '');
+                    }
+                    
                     console.log('Movies count:', jsonData.movies.length);
                     console.log('Channels count:', jsonData.channels.length);
                     
@@ -1674,12 +1694,22 @@
                 
                 entryListDiv.innerHTML = '';
                 
-                // Initialize missing arrays
+                // Initialize missing arrays and clean empty entries
                 if (!jsonData.home) jsonData.home = {};
                 if (!jsonData.home.slides) jsonData.home.slides = [];
                 if (!jsonData.home.featured_movies) jsonData.home.featured_movies = [];
                 if (!jsonData.actors) jsonData.actors = [];
                 if (!jsonData.genres) jsonData.genres = [];
+                
+                // CLEAN EMPTY/INVALID ENTRIES to prevent crashes
+                jsonData.movies = (jsonData.movies || []).filter(m => m.title && m.title.trim() !== '');
+                jsonData.channels = (jsonData.channels || []).filter(c => c.title && c.title.trim() !== '');
+                jsonData.home.slides = (jsonData.home.slides || []).filter(s => s.title && s.title.trim() !== '');
+                jsonData.home.featured_movies = (jsonData.home.featured_movies || []).filter(f => f.title && f.title.trim() !== '');
+                jsonData.actors = (jsonData.actors || []).filter(a => a.name && a.name.trim() !== '');
+                jsonData.genres = (jsonData.genres || []).filter(g => g.title && g.title.trim() !== '');
+                
+                console.log('🧹 Cleaned empty entries from JSON data');
                 
                 const allEntries = [
                     ...(jsonData.movies || []).map(e => ({ ...e, entryType: e.type || (e.seasons ? 'series' : 'movie') })),
@@ -1703,10 +1733,11 @@
                         (currentFilter === 'genres' && entry.entryType === 'genre')
                     );
                 
-                // Sort by title
-                filteredEntries.sort((a, b) => a.title.localeCompare(b.title));
+                // Filter out entries with empty titles and sort by title
+                const validEntries = filteredEntries.filter(entry => entry.title && entry.title.trim() !== '');
+                validEntries.sort((a, b) => a.title.localeCompare(b.title));
                 
-                if (filteredEntries.length === 0) {
+                if (validEntries.length === 0) {
                     entryListDiv.innerHTML = `
                         <div class="no-results" style="text-align: center; padding: 40px 20px; color: var(--gray);">
                             <i class="fas fa-film" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
@@ -1717,7 +1748,7 @@
                     return;
                 }
                 
-                filteredEntries.forEach(entry => {
+                validEntries.forEach(entry => {
                     const typeClass = `type-${entry.entryType}`;
                     const typeLabel = {
                         'movie': 'Movie',
