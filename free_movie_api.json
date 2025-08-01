@@ -1,0 +1,2071 @@
+{
+  "api_info": {
+    "version": "2.0",
+    "description": "Enhanced Free Movie & TV Streaming JSON API with Full Actor Support",
+    "last_updated": "2024-01-15",
+    "total_movies": 2,
+    "total_channels": 26,
+    "total_actors": 2
+  },
+  "home": {
+    "slides": [
+      {
+        "id": 1,
+        "title": "Big Buck Bunny",
+        "type": "movie",
+        "image": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+        "url": "movies/1",
+        "poster": {
+          "id": 1,
+          "title": "Big Buck Bunny",
+          "type": "movie",
+          "label": "Animation",
+          "sublabel": "Short Film",
+          "imdb": "8.5",
+          "downloadas": "big-buck-bunny.mp4",
+          "comment": true,
+          "playas": "video",
+          "description": "Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself. When one sunny day three rodents rudely harass him by throwing nuts, hitting his flowers, and destroying his home, he snaps and goes after them.",
+          "classification": "G",
+          "year": "2008",
+          "duration": "10:00",
+          "rating": 8.5,
+          "image": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+          "cover": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+          "genres": [
+            {
+              "id": 6,
+              "title": "Animation"
+            }
+          ],
+          "sources": [
+            {
+              "id": 1,
+              "type": "video",
+              "title": "Big Buck Bunny 1080p",
+              "quality": "1080p",
+              "size": "264MB",
+              "kind": "both",
+              "premium": "false",
+              "external": false,
+              "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+            },
+            {
+              "id": 2,
+              "type": "video",
+              "title": "Big Buck Bunny 720p",
+              "quality": "720p",
+              "size": "128MB",
+              "kind": "both",
+              "premium": "false",
+              "external": false,
+              "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+            },
+            {
+              "id": 3,
+              "type": "video",
+              "title": "Big Buck Bunny 480p",
+              "quality": "480p",
+              "size": "64MB",
+              "kind": "both",
+              "premium": "false",
+              "external": false,
+              "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+            }
+          ],
+          "trailer": {
+            "id": 4,
+            "type": "video",
+            "title": "Big Buck Bunny Trailer",
+            "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+          },
+          "actors": [
+            {
+              "id": 1,
+              "name": "Tom Hanks",
+              "type": "actor",
+              "role": "Lead Actor",
+              "image": "https://example.com/tom-hanks.jpg",
+              "born": "1956-07-09",
+              "height": "6'0\"",
+              "bio": "American actor and filmmaker"
+            }
+          ],
+          "subtitles": [
+            {
+              "id": 1,
+              "title": "English",
+              "language": "en",
+              "url": "https://example.com/subtitles/big-buck-bunny-en.vtt"
+            },
+            {
+              "id": 2,
+              "title": "Spanish",
+              "language": "es",
+              "url": "https://example.com/subtitles/big-buck-bunny-es.vtt"
+            }
+          ],
+          "comments": [
+            {
+              "id": 1,
+              "user": "John Doe",
+              "comment": "Amazing animation! Love this movie.",
+              "created_at": "2024-01-15T10:30:00Z"
+            },
+            {
+              "id": 2,
+              "user": "Jane Smith",
+              "comment": "Great for kids and adults alike!",
+              "created_at": "2024-01-14T15:45:00Z"
+            }
+          ],
+          "views": 15000,
+          "downloads": 5000,
+          "shares": 1200
+        }
+      },
+      {
+        "id": 1,
+        "title": "AZ2",
+        "type": "channel",
+        "image": "https://i.imgur.com/1zsdloF.png",
+        "url": "channels/1",
+        "channel": {
+          "id": 1,
+          "title": "AZ2",
+          "label": "Entertainment",
+          "sublabel": "Philippines",
+          "description": "AZ2",
+          "website": "https://example-news.com",
+          "classification": "News",
+          "views": 25000,
+          "shares": 800,
+          "rating": 7.8,
+          "comment": true,
+          "image": "https://i.imgur.com/1zsdloF.png",
+          "playas": "live",
+          "sources": [
+            {
+              "id": 6,
+              "type": "live",
+              "title": "720p",
+              "quality": "720p",
+              "size": "Live",
+              "kind": "play",
+              "premium": "false",
+              "external": false,
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_5.m3u8"
+            },
+            {
+              "id": 7,
+              "type": "live",
+              "title": "480p",
+              "quality": "480p",
+              "size": "Live",
+              "kind": "play",
+              "premium": "false",
+              "external": false,
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_4.m3u8"
+            },
+            {
+              "id": 8,
+              "type": "live",
+              "title": "360p",
+              "quality": "360p",
+              "size": "Live",
+              "kind": "play",
+              "premium": "false",
+              "external": false,
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_3.m3u8"
+            },
+            {
+              "id": 9,
+              "type": "live",
+              "title": "240p",
+              "quality": "240p",
+              "size": "Live",
+              "kind": "play",
+              "premium": "false",
+              "external": false,
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_2.m3u8"
+            },
+            {
+              "id": 10,
+              "type": "live",
+              "title": "144p",
+              "quality": "144p",
+              "size": "Live",
+              "kind": "play",
+              "premium": "false",
+              "external": false,
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_1.m3u8"
+            }
+          ],
+          "categories": [
+            {
+              "id": 3,
+              "title": "Entertainment"
+            }
+          ],
+          "countries": [
+            {
+              "id": 1,
+              "title": "PH"
+            }
+          ],
+          "comments": []
+        }
+      },
+      {
+        "id": 2,
+        "title": "Cine Mo!",
+        "type": "channel",
+        "image": "https://i.imgur.com/KUwrSOH.png",
+        "url": "channels/2",
+        "channel": {
+          "id": 2,
+          "title": "Cine Mo!",
+          "label": "Movies",
+          "sublabel": "PH",
+          "description": "Cine Mo! is a Filipino pay television channel owned by ABS-CBN.",
+          "website": "https://example-news.com",
+          "classification": "Movies",
+          "views": 0,
+          "shares": 0,
+          "rating": 0,
+          "comment": true,
+          "image": "https://i.imgur.com/KUwrSOH.png",
+          "playas": "live",
+          "sources": [
+            {
+              "id": 11,
+              "type": "live",
+              "title": "HD",
+              "quality": "HD",
+              "size": "Live",
+              "kind": "play",
+              "premium": "false",
+              "external": false,
+              "url": "https://d1bail49udbz1k.cloudfront.net/out/v1/78e282e04f0944f3ad0aa1db7a1be645/index.m3u8"
+            }
+          ],
+          "categories": [
+            {
+              "id": 5,
+              "title": "Movies"
+            }
+          ],
+          "countries": [
+            {
+              "id": 1,
+              "title": "PH"
+            }
+          ],
+          "comments": []
+        }
+      },
+      {
+        "id": 3,
+        "title": "Kapamilya Channel",
+        "type": "channel",
+        "image": "https://i.imgur.com/Dcys2TG.png",
+        "url": "channels/3",
+        "channel": {
+          "id": 3,
+          "title": "Kapamilya Channel",
+          "label": "General",
+          "sublabel": "PH",
+          "description": "",
+          "website": "https://example-news.com",
+          "classification": "General",
+          "views": 0,
+          "shares": 0,
+          "rating": 8,
+          "comment": true,
+          "image": "https://i.imgur.com/Dcys2TG.png",
+          "playas": "live",
+          "sources": [
+            {
+              "id": 12,
+              "type": "live",
+              "title": "Live",
+              "quality": "HD",
+              "size": "Live",
+              "kind": "play",
+              "premium": "false",
+              "external": false,
+              "url": "https://live-faws.akamaized.net/out/v1/df7b60b4411f4270ab431913de807bf4/index.m3u8"
+            }
+          ],
+          "categories": [
+            {
+              "id": 6,
+              "title": "General"
+            }
+          ],
+          "countries": [
+            {
+              "id": 1,
+              "title": "PH"
+            }
+          ],
+          "comments": []
+        }
+      }
+    ],
+    "featured_movies": [
+      {
+        "id": 1,
+        "title": "Big Buck Bunny",
+        "type": "movie",
+        "label": "Animation",
+        "sublabel": "Short Film",
+        "imdb": "8.5",
+        "downloadas": "big-buck-bunny.mp4",
+        "comment": true,
+        "playas": "video",
+        "description": "Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself. When one sunny day three rodents rudely harass him by throwing nuts, hitting his flowers, and destroying his home, he snaps and goes after them.",
+        "classification": "G",
+        "year": "2008",
+        "duration": "10:00",
+        "rating": 8.5,
+        "views": 15000,
+        "created_at": "2024-01-01",
+        "image": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+        "cover": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+        "genres": [
+          {
+            "id": 6,
+            "title": "Animation"
+          }
+        ],
+        "sources": [
+          {
+            "id": 1,
+            "type": "video",
+            "title": "Big Buck Bunny 1080p",
+            "quality": "1080p",
+            "size": "264MB",
+            "kind": "both",
+            "premium": "false",
+            "external": false,
+            "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+          },
+          {
+            "id": 2,
+            "type": "video",
+            "title": "Big Buck Bunny 720p",
+            "quality": "720p",
+            "size": "128MB",
+            "kind": "both",
+            "premium": "false",
+            "external": false,
+            "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+          },
+          {
+            "id": 3,
+            "type": "video",
+            "title": "Big Buck Bunny 480p",
+            "quality": "480p",
+            "size": "64MB",
+            "kind": "both",
+            "premium": "false",
+            "external": false,
+            "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+          }
+        ],
+        "trailer": {
+          "id": 4,
+          "type": "video",
+          "title": "Big Buck Bunny Trailer",
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        },
+        "actors": [
+          {
+            "id": 1,
+            "name": "Tom Hanks",
+            "type": "actor",
+            "role": "Lead Actor",
+            "image": "https://example.com/tom-hanks.jpg",
+            "born": "1956-07-09",
+            "height": "6'0\"",
+            "bio": "American actor and filmmaker"
+          }
+        ],
+        "subtitles": [
+          {
+            "id": 1,
+            "title": "English",
+            "language": "en",
+            "url": "https://example.com/subtitles/big-buck-bunny-en.vtt"
+          },
+          {
+            "id": 2,
+            "title": "Spanish",
+            "language": "es",
+            "url": "https://example.com/subtitles/big-buck-bunny-es.vtt"
+          }
+        ],
+        "comments": [
+          {
+            "id": 1,
+            "user": "John Doe",
+            "comment": "Amazing animation! Love this movie.",
+            "created_at": "2024-01-15T10:30:00Z"
+          },
+          {
+            "id": 2,
+            "user": "Jane Smith",
+            "comment": "Great for kids and adults alike!",
+            "created_at": "2024-01-14T15:45:00Z"
+          }
+        ],
+        "views": 15000,
+        "downloads": 5000,
+        "shares": 1200
+      }
+    ],
+    "channels": [],
+    "actors": [
+      {
+        "id": 1,
+        "name": "Tom Hanks",
+        "type": "actor",
+        "role": "Lead Actor",
+        "image": "https://example.com/tom-hanks.jpg",
+        "born": "1956-07-09",
+        "height": "6'0\"",
+        "bio": "American actor and filmmaker",
+        "movies": [
+          {
+            "id": 1,
+            "title": "Big Buck Bunny",
+            "image": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+            "year": "2008"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "Emma Watson",
+        "type": "actress",
+        "role": "Lead Actress",
+        "image": "https://example.com/emma-watson.jpg",
+        "born": "1990-04-15",
+        "height": "5'5\"",
+        "bio": "English actress and activist",
+        "movies": [
+          {
+            "id": 2,
+            "title": "Sample TV Series",
+            "image": "https://example.com/sample-series.jpg",
+            "year": "2023"
+          }
+        ]
+      }
+    ],
+    "genres": [
+      {
+        "id": 1,
+        "title": "Action",
+        "posters": []
+      },
+      {
+        "id": 2,
+        "title": "Comedy",
+        "posters": []
+      },
+      {
+        "id": 3,
+        "title": "Drama",
+        "posters": [
+          {
+            "id": 2,
+            "title": "Sample TV Series",
+            "image": "https://example.com/sample-series.jpg"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Horror",
+        "posters": []
+      },
+      {
+        "id": 5,
+        "title": "Sci-Fi",
+        "posters": []
+      },
+      {
+        "id": 6,
+        "title": "Animation",
+        "posters": [
+          {
+            "id": 1,
+            "title": "Big Buck Bunny",
+            "image": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217"
+          }
+        ]
+      }
+    ]
+  },
+  "movies": [
+    {
+      "id": 1,
+      "title": "Big Buck Bunny",
+      "type": "movie",
+      "label": "Animation",
+      "sublabel": "Short Film",
+      "imdb": "8.5",
+      "downloadas": "big-buck-bunny.mp4",
+      "comment": true,
+      "playas": "video",
+      "description": "Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself. When one sunny day three rodents rudely harass him by throwing nuts, hitting his flowers, and destroying his home, he snaps and goes after them.",
+      "classification": "G",
+      "year": "2008",
+      "duration": "10:00",
+      "rating": 8.5,
+      "image": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+      "cover": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+      "genres": [
+        {
+          "id": 6,
+          "title": "Animation"
+        }
+      ],
+      "sources": [
+        {
+          "id": 1,
+          "type": "video",
+          "title": "Big Buck Bunny 1080p",
+          "quality": "1080p",
+          "size": "264MB",
+          "kind": "both",
+          "premium": "false",
+          "external": false,
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        },
+        {
+          "id": 2,
+          "type": "video",
+          "title": "Big Buck Bunny 720p",
+          "quality": "720p",
+          "size": "128MB",
+          "kind": "both",
+          "premium": "false",
+          "external": false,
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        },
+        {
+          "id": 3,
+          "type": "video",
+          "title": "Big Buck Bunny 480p",
+          "quality": "480p",
+          "size": "64MB",
+          "kind": "both",
+          "premium": "false",
+          "external": false,
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        }
+      ],
+      "trailer": {
+        "id": 4,
+        "type": "video",
+        "title": "Big Buck Bunny Trailer",
+        "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+      },
+      "actors": [
+        {
+          "id": 1,
+          "name": "Tom Hanks",
+          "type": "actor",
+          "role": "Lead Actor",
+          "image": "https://example.com/tom-hanks.jpg",
+          "born": "1956-07-09",
+          "height": "6'0\"",
+          "bio": "American actor and filmmaker"
+        }
+      ],
+      "subtitles": [
+        {
+          "id": 1,
+          "title": "English",
+          "language": "en",
+          "url": "https://example.com/subtitles/big-buck-bunny-en.vtt"
+        },
+        {
+          "id": 2,
+          "title": "Spanish",
+          "language": "es",
+          "url": "https://example.com/subtitles/big-buck-bunny-es.vtt"
+        }
+      ],
+      "comments": [
+        {
+          "id": 1,
+          "user": "John Doe",
+          "comment": "Amazing animation! Love this movie.",
+          "created_at": "2024-01-15T10:30:00Z"
+        },
+        {
+          "id": 2,
+          "user": "Jane Smith",
+          "comment": "Great for kids and adults alike!",
+          "created_at": "2024-01-14T15:45:00Z"
+        }
+      ],
+      "views": 15000,
+      "downloads": 5000,
+      "shares": 1200
+    },
+    {
+      "id": 2,
+      "title": "Sample TV Series",
+      "type": "series",
+      "label": "Drama",
+      "sublabel": "2 Seasons",
+      "imdb": "8.2",
+      "downloadas": "sample-series",
+      "comment": true,
+      "playas": "video",
+      "description": "A gripping drama series with 2 seasons. Each season contains 1 episode with multiple quality options and subtitles.",
+      "classification": "TV-14",
+      "year": "2023",
+      "duration": "45:00",
+              "rating": 8.2,
+        "views": 8000,
+        "created_at": "2024-01-02",
+        "image": "https://example.com/sample-series.jpg",
+      "cover": "https://example.com/sample-series-cover.jpg",
+      "genres": [
+        {
+          "id": 3,
+          "title": "Drama"
+        }
+      ],
+      "sources": [],
+      "trailer": null,
+      "actors": [
+        {
+          "id": 2,
+          "name": "Emma Watson",
+          "type": "actress",
+          "role": "Lead Actress",
+          "image": "https://example.com/emma-watson.jpg",
+          "born": "1990-04-15",
+          "height": "5'5\"",
+          "bio": "English actress and activist"
+        }
+      ],
+      "subtitles": [],
+      "comments": [
+        {
+          "id": 1,
+          "user": "Series Fan",
+          "comment": "Amazing series! Can't wait for season 2.",
+          "created_at": "2024-01-15T12:00:00Z"
+        }
+      ],
+      "views": 8000,
+      "downloads": 2000,
+      "shares": 500,
+      "seasons": [
+        {
+          "id": 1,
+          "title": "Season 1",
+          "episodes": [
+            {
+              "id": 1,
+              "title": "Episode 1",
+              "episode_number": 1,
+              "image": "https://example.com/ep1.jpg",
+              "duration": "45:00",
+              "sources": [
+                {
+                  "id": 5,
+                  "type": "video",
+                  "title": "Episode 1 1080p",
+                  "quality": "1080p",
+                  "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+                },
+                {
+                  "id": 6,
+                  "type": "video",
+                  "title": "Episode 1 720p",
+                  "quality": "720p",
+                  "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+                },
+                {
+                  "id": 7,
+                  "type": "video",
+                  "title": "Episode 1 480p",
+                  "quality": "480p",
+                  "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+                }
+              ],
+              "subtitles": [
+                {
+                  "id": 1,
+                  "title": "English",
+                  "language": "en",
+                  "url": "https://example.com/subtitles/ep1-en.vtt"
+                },
+                {
+                  "id": 2,
+                  "title": "Spanish",
+                  "language": "es",
+                  "url": "https://example.com/subtitles/ep1-es.vtt"
+                }
+              ],
+              "views": 5000,
+              "downloads": 1200
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "Season 2",
+          "episodes": [
+            {
+              "id": 2,
+              "title": "Episode 1",
+              "episode_number": 1,
+              "image": "https://example.com/ep2.jpg",
+              "duration": "45:00",
+              "sources": [
+                {
+                  "id": 8,
+                  "type": "video",
+                  "title": "Episode 1 1080p",
+                  "quality": "1080p",
+                  "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                },
+                {
+                  "id": 9,
+                  "type": "video",
+                  "title": "Episode 1 720p",
+                  "quality": "720p",
+                  "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                },
+                {
+                  "id": 10,
+                  "type": "video",
+                  "title": "Episode 1 480p",
+                  "quality": "480p",
+                  "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                }
+              ],
+              "subtitles": [
+                {
+                  "id": 3,
+                  "title": "English",
+                  "language": "en",
+                  "url": "https://example.com/subtitles/ep2-en.vtt"
+                },
+                {
+                  "id": 4,
+                  "title": "Spanish",
+                  "language": "es",
+                  "url": "https://example.com/subtitles/ep2-es.vtt"
+                }
+              ],
+              "views": 3000,
+              "downloads": 800
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "channels": [
+    {
+      "id": 1,
+      "title": "AZ2",
+      "label": "Entertainment",
+      "sublabel": "Philippines",
+      "description": "AZ2",
+      "website": "https://example-news.com",
+      "classification": "News",
+      "views": 25000,
+      "shares": 800,
+      "rating": 7.8,
+      "comment": true,
+      "image": "https://i.imgur.com/1zsdloF.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 6,
+          "type": "live",
+          "title": "720p",
+          "quality": "720p",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_5.m3u8"
+        },
+        {
+          "id": 7,
+          "type": "live",
+          "title": "480p",
+          "quality": "480p",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_4.m3u8"
+        },
+        {
+          "id": 8,
+          "type": "live",
+          "title": "360p",
+          "quality": "360p",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_3.m3u8"
+        },
+        {
+          "id": 9,
+          "type": "live",
+          "title": "240p",
+          "quality": "240p",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_2.m3u8"
+        },
+        {
+          "id": 10,
+          "type": "live",
+          "title": "144p",
+          "quality": "144p",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_1.m3u8"
+        }
+      ],
+      "categories": [
+        {
+          "id": 3,
+          "title": "Entertainment"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "PH"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 2,
+      "title": "Cine Mo!",
+      "label": "Movies",
+      "sublabel": "PH",
+      "description": "Cine Mo! is a Filipino pay television channel owned by ABS-CBN.",
+      "website": "https://example-news.com",
+      "classification": "Movies",
+      "views": 0,
+      "shares": 0,
+      "rating": 0,
+      "comment": true,
+      "image": "https://i.imgur.com/KUwrSOH.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 11,
+          "type": "live",
+          "title": "HD",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://d1bail49udbz1k.cloudfront.net/out/v1/78e282e04f0944f3ad0aa1db7a1be645/index.m3u8"
+        }
+      ],
+      "categories": [
+        {
+          "id": 5,
+          "title": "Movies"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "PH"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 3,
+      "title": "Kapamilya Channel",
+      "label": "General",
+      "sublabel": "PH",
+      "description": "",
+      "website": "https://example-news.com",
+      "classification": "General",
+      "views": 0,
+      "shares": 0,
+      "rating": 8,
+      "comment": true,
+      "image": "https://i.imgur.com/Dcys2TG.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 12,
+          "type": "live",
+          "title": "Live",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://live-faws.akamaized.net/out/v1/df7b60b4411f4270ab431913de807bf4/index.m3u8"
+        }
+      ],
+      "categories": [
+        {
+          "id": 6,
+          "title": "General"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "PH"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 4,
+      "title": "Sample News Channel",
+      "label": "News",
+      "sublabel": "24/7 News",
+      "description": "24/7 news coverage from around the world",
+      "website": "https://example-news.com",
+      "classification": "News",
+      "views": 25000,
+      "shares": 800,
+      "rating": 7.8,
+      "comment": true,
+      "image": "https://example.com/news-channel.jpg",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 6,
+          "type": "live",
+          "title": "Live Stream",
+          "quality": "1080p",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+        }
+      ],
+      "categories": [
+        {
+          "id": 1,
+          "title": "News"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "USA"
+        }
+      ],
+      "comments": [
+        {
+          "id": 1,
+          "user": "News Viewer",
+          "comment": "Great coverage!",
+          "created_at": "2024-01-15T09:15:00Z"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Sample Sports Channel",
+      "label": "Sports",
+      "sublabel": "Live Sports",
+      "description": "Live sports coverage and highlights",
+      "website": "https://example-sports.com",
+      "classification": "Sports",
+      "views": 18000,
+      "shares": 600,
+      "rating": 8.1,
+      "comment": true,
+      "image": "https://example.com/sports-channel.jpg",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 7,
+          "type": "live",
+          "title": "Live Sports Stream",
+          "quality": "720p",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "title": "Sports"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "USA"
+        }
+      ],
+      "comments": [
+        {
+          "id": 1,
+          "user": "Sports Fan",
+          "comment": "Amazing sports coverage!",
+          "created_at": "2024-01-15T11:20:00Z"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Cinemax",
+      "label": "Movies",
+      "sublabel": "US",
+      "description": "Premium movie channel featuring blockbuster films.",
+      "website": "https://example.com",
+      "classification": "Movies",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.5,
+      "comment": true,
+      "image": "https://i.imgur.com/7t4gFCB.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 601,
+          "type": "live",
+          "title": "HD",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-01-prod.akamaized.net/out/u/cg_cinemax.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 296,
+          "title": "Movies"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "US"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 7,
+      "title": "Hits Now",
+      "label": "Music",
+      "sublabel": "US",
+      "description": "Music channel featuring the latest hits.",
+      "website": "https://example.com",
+      "classification": "Music",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.3,
+      "comment": true,
+      "image": "https://i.imgur.com/S3pNx8G.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 701,
+          "type": "live",
+          "title": "HD",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-09-prod.akamaized.net/out/u/cg_hitsnow.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 474,
+          "title": "Music"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "US"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 8,
+      "title": "Hits",
+      "label": "Music",
+      "sublabel": "US",
+      "description": "Music channel playing popular hits across decades.",
+      "website": "https://example.com",
+      "classification": "Music",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.2,
+      "comment": true,
+      "image": "https://i.imgur.com/jghDgUJ.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 801,
+          "type": "live",
+          "title": "HD",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-04-prod.akamaized.net/out/u/hits_hd1.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 474,
+          "title": "Music"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "US"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 9,
+      "title": "Hits Movies",
+      "label": "Movies",
+      "sublabel": "US",
+      "description": "Movie channel featuring popular films.",
+      "website": "https://example.com",
+      "classification": "Movies",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.4,
+      "comment": true,
+      "image": "https://i.imgur.com/zzdj40q.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 901,
+          "type": "live",
+          "title": "HD",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-12-prod.akamaized.net/out/u/dr_hitsmovies.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 296,
+          "title": "Movies"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "US"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 10,
+      "title": "AXN",
+      "label": "Entertainment",
+      "sublabel": "US",
+      "description": "Action and adventure TV series and movies.",
+      "website": "https://example.com",
+      "classification": "Entertainment",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.5,
+      "comment": true,
+      "image": "https://i.imgur.com/Dj6tVaG.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 1001,
+          "type": "live",
+          "title": "SD",
+          "quality": "SD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-06-prod.akamaized.net/out/u/cg_axn_sd.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 414,
+          "title": "Entertainment"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "US"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 11,
+      "title": "Warner TV",
+      "label": "Entertainment",
+      "sublabel": "US",
+      "description": "Warner Bros. entertainment channel featuring series and movies.",
+      "website": "https://example.com",
+      "classification": "Entertainment",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.6,
+      "comment": true,
+      "image": "https://i.imgur.com/vGEL2Ne.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 1101,
+          "type": "live",
+          "title": "HD",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-11-prod.akamaized.net/out/u/dr_warnertvhd.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 414,
+          "title": "Entertainment"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "US"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 12,
+      "title": "Thrill",
+      "label": "Entertainment",
+      "sublabel": "US",
+      "description": "Channel dedicated to thriller and suspense content.",
+      "website": "https://example.com",
+      "classification": "Entertainment",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.3,
+      "comment": true,
+      "image": "https://i.imgur.com/Szf7VBM.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 1201,
+          "type": "live",
+          "title": "SD",
+          "quality": "SD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-06-prod.akamaized.net/out/u/cg_thrill_sd.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 414,
+          "title": "Entertainment"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "US"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 13,
+      "title": "Lotus Macau",
+      "label": "Entertainment",
+      "sublabel": "MO",
+      "description": "Macau-based entertainment channel.",
+      "website": "https://example.com",
+      "classification": "Entertainment",
+      "views": 0,
+      "shares": 0,
+      "rating": 3.9,
+      "comment": true,
+      "image": "https://i.imgur.com/sKfzEuf.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 1301,
+          "type": "live",
+          "title": "HD",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-07-prod.akamaized.net/out/u/lotusmacau_prd.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 414,
+          "title": "Entertainment"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "MO"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 14,
+      "title": "IBC13",
+      "label": "General",
+      "sublabel": "PH",
+      "description": "Philippine free-to-air television network.",
+      "website": "https://example.com",
+      "classification": "General",
+      "views": 0,
+      "shares": 0,
+      "rating": 3.8,
+      "comment": true,
+      "image": "https://i.imgur.com/Org4yTu.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 1401,
+          "type": "live",
+          "title": "SD",
+          "quality": "SD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-07-prod.akamaized.net/out/u/ibc13_sd.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 959,
+          "title": "General"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "PH"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 15,
+      "title": "PTV4",
+      "label": "News",
+      "sublabel": "PH",
+      "description": "Philippine government-owned news and public affairs channel.",
+      "website": "https://example.com",
+      "classification": "News",
+      "views": 0,
+      "shares": 0,
+      "rating": 3.7,
+      "comment": true,
+      "image": "https://i.imgur.com/Ktl7qZt.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 1501,
+          "type": "live",
+          "title": "SD",
+          "quality": "SD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/cg_ptv4_sd.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 318,
+          "title": "News"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "PH"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 16,
+      "title": "DepEd Channel",
+      "label": "Education",
+      "sublabel": "PH",
+      "description": "Educational channel by the Philippine Department of Education.",
+      "website": "https://example.com",
+      "classification": "Education",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.0,
+      "comment": true,
+      "image": "https://i.imgur.com/TyFFBWn.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 1601,
+          "type": "live",
+          "title": "SD",
+          "quality": "SD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-07-prod.akamaized.net/out/u/depedch_sd.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 176,
+          "title": "Education"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "PH"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 17,
+      "title": "Knowledge Channel",
+      "label": "Education",
+      "sublabel": "PH",
+      "description": "Educational channel for students and teachers.",
+      "website": "https://example.com",
+      "classification": "Education",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.2,
+      "comment": true,
+      "image": "https://i.imgur.com/UIqEr2y.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 1701,
+          "type": "live",
+          "title": "HD",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-13-prod.akamaized.net/out/u/dr_knowledgechannel.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 176,
+          "title": "Education"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "PH"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 18,
+      "title": "TVN",
+      "label": "Entertainment",
+      "sublabel": "KR",
+      "description": "Korean entertainment channel featuring dramas and variety shows.",
+      "website": "https://example.com",
+      "classification": "Entertainment",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.5,
+      "comment": true,
+      "image": "https://i.imgur.com/gmM3ncL.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 1801,
+          "type": "live",
+          "title": "HD",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-09-prod.akamaized.net/out/u/cg_tvnpre.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 414,
+          "title": "Entertainment"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "KR"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 19,
+      "title": "NBA TV Philippines",
+      "label": "Sports",
+      "sublabel": "PH",
+      "description": "Philippine feed of NBA TV, covering basketball games and analysis.",
+      "website": "https://example.com",
+      "classification": "Sports",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.7,
+      "comment": true,
+      "image": "https://i.imgur.com/sG7zuX0.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 1901,
+          "type": "live",
+          "title": "HD",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/pl_nba.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 115,
+          "title": "Sports"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "PH"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 20,
+      "title": "PBA Rush",
+      "label": "Sports",
+      "sublabel": "PH",
+      "description": "Channel dedicated to Philippine Basketball Association (PBA) games.",
+      "website": "https://example.com",
+      "classification": "Sports",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.4,
+      "comment": true,
+      "image": "https://i.imgur.com/J4QCDLG.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 2001,
+          "type": "live",
+          "title": "HD",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-01-prod.akamaized.net/out/u/cg_pbarush_hd1.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 115,
+          "title": "Sports"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "PH"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 21,
+      "title": "BBC Earth",
+      "label": "Documentary",
+      "sublabel": "GB",
+      "description": "Documentary channel featuring nature and science programs.",
+      "website": "https://example.com",
+      "classification": "Documentary",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.8,
+      "comment": true,
+      "image": "https://i.imgur.com/TE9MEV1.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 2101,
+          "type": "live",
+          "title": "HD",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-03-prod.akamaized.net/out/u/cg_bbcearth_hd1.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 64,
+          "title": "Documentary"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "GB"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 22,
+      "title": "History",
+      "label": "Documentary",
+      "sublabel": "US",
+      "description": "Documentary channel featuring historical events and series.",
+      "website": "https://example.com",
+      "classification": "Documentary",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.5,
+      "comment": true,
+      "image": "https://i.imgur.com/BkoC446.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 2201,
+          "type": "live",
+          "title": "HD",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-11-prod.akamaized.net/out/u/dr_historyhd.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 64,
+          "title": "Documentary"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "US"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 23,
+      "title": "Animal Planet",
+      "label": "Documentary",
+      "sublabel": "US",
+      "description": "Documentary channel focused on animals and wildlife.",
+      "website": "https://example.com",
+      "classification": "Documentary",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.4,
+      "comment": true,
+      "image": "https://i.imgur.com/1NcoovM.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 2301,
+          "type": "live",
+          "title": "SD",
+          "quality": "SD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/cg_animal_planet_sd.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 64,
+          "title": "Documentary"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "US"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 24,
+      "title": "Fashion TV",
+      "label": "Lifestyle",
+      "sublabel": "FR",
+      "description": "Fashion and lifestyle channel showcasing runway shows and trends.",
+      "website": "https://example.com",
+      "classification": "Lifestyle",
+      "views": 0,
+      "shares": 0,
+      "rating": 3.9,
+      "comment": true,
+      "image": "https://i.imgur.com/wzjqyZE.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 2401,
+          "type": "live",
+          "title": "HD",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-11-prod.akamaized.net/out/u/dr_fashiontvhd.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 51,
+          "title": "Lifestyle"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "FR"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 25,
+      "title": "Food Network",
+      "label": "Lifestyle",
+      "sublabel": "US",
+      "description": "Cooking and food-related programming.",
+      "website": "https://example.com",
+      "classification": "Lifestyle",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.3,
+      "comment": true,
+      "image": "https://i.imgur.com/EXC1yRz.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 2501,
+          "type": "live",
+          "title": "HD",
+          "quality": "HD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-09-prod.akamaized.net/out/u/cg_foodnetwork_hd1.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 51,
+          "title": "Lifestyle"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "US"
+        }
+      ],
+      "comments": []
+    },
+    {
+      "id": 26,
+      "title": "Bloomberg",
+      "label": "News",
+      "sublabel": "US",
+      "description": "Financial news and market updates.",
+      "website": "https://example.com",
+      "classification": "News",
+      "views": 0,
+      "shares": 0,
+      "rating": 4.2,
+      "comment": true,
+      "image": "https://i.imgur.com/pl4w2NN.png",
+      "playas": "live",
+      "sources": [
+        {
+          "id": 2601,
+          "type": "live",
+          "title": "SD",
+          "quality": "SD",
+          "size": "Live",
+          "kind": "play",
+          "premium": "false",
+          "external": false,
+          "url": "https://qp-pldt-live-grp-09-prod.akamaized.net/out/u/bloomberg_sd.mpd"
+        }
+      ],
+      "categories": [
+        {
+          "id": 318,
+          "title": "News"
+        }
+      ],
+      "countries": [
+        {
+          "id": 1,
+          "title": "US"
+        }
+      ],
+      "comments": []
+    }
+  ],
+  "actors": [
+    {
+      "id": 1,
+      "name": "Tom Hanks",
+      "type": "actor",
+      "role": "Lead Actor",
+      "image": "https://example.com/tom-hanks.jpg",
+      "born": "1956-07-09",
+      "height": "6'0\"",
+      "bio": "American actor and filmmaker",
+      "movies": [
+        {
+          "id": 1,
+          "title": "Big Buck Bunny",
+          "image": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+          "year": "2008"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Emma Watson",
+      "type": "actress",
+      "role": "Lead Actress",
+      "image": "https://example.com/emma-watson.jpg",
+      "born": "1990-04-15",
+      "height": "5'5\"",
+      "bio": "English actress and activist",
+      "movies": [
+        {
+          "id": 2,
+          "title": "Sample TV Series",
+          "image": "https://example.com/sample-series.jpg",
+          "year": "2023"
+        }
+      ]
+    }
+  ],
+  "genres": [
+    {
+      "id": 1,
+      "title": "Action",
+      "posters": []
+    },
+    {
+      "id": 2,
+      "title": "Comedy",
+      "posters": []
+    },
+    {
+      "id": 3,
+      "title": "Drama",
+      "posters": [
+        {
+          "id": 2,
+          "title": "Sample TV Series",
+          "image": "https://example.com/sample-series.jpg"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Horror",
+      "posters": []
+    },
+    {
+      "id": 5,
+      "title": "Sci-Fi",
+      "posters": []
+    },
+    {
+      "id": 6,
+      "title": "Animation",
+      "posters": [
+        {
+          "id": 1,
+          "title": "Big Buck Bunny",
+          "image": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "title": "News"
+    },
+    {
+      "id": 2,
+      "title": "Sports"
+    },
+    {
+      "id": 3,
+      "title": "Entertainment"
+    },
+    {
+      "id": 4,
+      "title": "Documentary"
+    }
+  ],
+  "countries": [
+    {
+      "id": 1,
+      "title": "USA"
+    },
+    {
+      "id": 2,
+      "title": "UK"
+    },
+    {
+      "id": 3,
+      "title": "France"
+    },
+    {
+      "id": 4,
+      "title": "Germany"
+    }
+  ],
+  "subscription_plans": [],
+  "subscription_config": {
+    "enabled": false,
+    "monthly_billing_enabled": false,
+    "free_trial_days": 0,
+    "grace_period_days": 0,
+    "auto_renewal_enabled": false,
+    "payment_methods": [],
+    "currency_default": "USD",
+    "subscription_required_for": []
+  },
+  "video_sources": {
+    "big_buck_bunny": {
+      "title": "Big Buck Bunny",
+      "description": "Famous open-source animation by Blender Foundation",
+      "urls": {
+        "1080p": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        "720p": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        "480p": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+      },
+      "duration": "10:00",
+      "size": "264MB (1080p)",
+      "license": "Creative Commons Attribution 3.0"
+    },
+    "elephants_dream": {
+      "title": "Elephants Dream",
+      "description": "The world's first open movie",
+      "urls": {
+        "1080p": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+      },
+      "duration": "11:00",
+      "size": "128MB",
+      "license": "Creative Commons Attribution 2.5"
+    },
+    "live_streams": {
+      "test_hls": {
+        "title": "Test HLS Stream",
+        "description": "Sample HLS live stream for testing",
+        "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+        "quality": "1080p",
+        "type": "live"
+      }
+    }
+  },
+  "ads_config": {
+    "enabled": false
+  }
+}
