@@ -614,6 +614,10 @@
                         <button class="filter-btn" data-filter="movie">Movies</button>
                         <button class="filter-btn" data-filter="series">Series</button>
                         <button class="filter-btn" data-filter="channel">Live TV</button>
+                        <button class="filter-btn" data-filter="slides">Slides</button>
+                        <button class="filter-btn" data-filter="featured">Featured</button>
+                        <button class="filter-btn" data-filter="actors">Actors</button>
+                        <button class="filter-btn" data-filter="genres">Genres</button>
                     </div>
                 </div>
                 <div id="entryList"></div>
@@ -645,6 +649,15 @@
                 </button>
                 <button class="tab-btn" data-type="channel">
                     <i class="fas fa-satellite-dish"></i> Live TV
+                </button>
+                <button class="tab-btn" data-type="slide">
+                    <i class="fas fa-images"></i> Slide
+                </button>
+                <button class="tab-btn" data-type="actor">
+                    <i class="fas fa-user"></i> Actor
+                </button>
+                <button class="tab-btn" data-type="genre">
+                    <i class="fas fa-tags"></i> Genre
                 </button>
             </div>
             
@@ -794,6 +807,92 @@
                     <div class="form-group">
                         <label for="channelBackupUrl">Backup URL (optional):</label>
                         <input type="text" id="channelBackupUrl" placeholder="Backup stream URL">
+                    </div>
+                </div>
+                
+                <!-- Slide Content -->
+                <div class="category-content" data-type="slide">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="slideTitle">Slide Title:</label>
+                            <input type="text" id="slideTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="slideType">Type:</label>
+                            <select id="slideType">
+                                <option value="movie">Movie</option>
+                                <option value="series">Series</option>
+                                <option value="channel">Channel</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="slideImage">Image URL:</label>
+                        <input type="text" id="slideImage">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="slideUrl">URL:</label>
+                        <input type="text" id="slideUrl" placeholder="e.g., movies/1">
+                    </div>
+                </div>
+                
+                <!-- Actor Content -->
+                <div class="category-content" data-type="actor">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="actorName">Name:</label>
+                            <input type="text" id="actorName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="actorType">Type:</label>
+                            <select id="actorType">
+                                <option value="actor">Actor</option>
+                                <option value="actress">Actress</option>
+                                <option value="director">Director</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="actorRole">Role:</label>
+                            <input type="text" id="actorRole" placeholder="e.g., Lead Actor">
+                        </div>
+                        <div class="form-group">
+                            <label for="actorBorn">Born:</label>
+                            <input type="date" id="actorBorn">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="actorHeight">Height:</label>
+                            <input type="text" id="actorHeight" placeholder="e.g., 5'10\"">
+                        </div>
+                        <div class="form-group">
+                            <label for="actorImage">Image URL:</label>
+                            <input type="text" id="actorImage">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="actorBio">Biography:</label>
+                        <textarea id="actorBio" rows="3"></textarea>
+                    </div>
+                </div>
+                
+                <!-- Genre Content -->
+                <div class="category-content" data-type="genre">
+                    <div class="form-group">
+                        <label for="genreTitle">Genre Name:</label>
+                        <input type="text" id="genreTitle" required placeholder="e.g., Action, Comedy, Drama">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="genreDescription">Description (Optional):</label>
+                        <textarea id="genreDescription" rows="2" placeholder="Brief description of the genre"></textarea>
                     </div>
                 </div>
                 
@@ -1312,9 +1411,21 @@
                 if (!jsonData) return;
                 
                 entryListDiv.innerHTML = '';
+                
+                // Initialize missing arrays
+                if (!jsonData.home) jsonData.home = {};
+                if (!jsonData.home.slides) jsonData.home.slides = [];
+                if (!jsonData.home.featured_movies) jsonData.home.featured_movies = [];
+                if (!jsonData.actors) jsonData.actors = [];
+                if (!jsonData.genres) jsonData.genres = [];
+                
                 const allEntries = [
                     ...(jsonData.movies || []).map(e => ({ ...e, entryType: e.type || (e.seasons ? 'series' : 'movie') })),
-                    ...(jsonData.channels || []).map(e => ({ ...e, entryType: 'channel' }))
+                    ...(jsonData.channels || []).map(e => ({ ...e, entryType: 'channel' })),
+                    ...(jsonData.home.slides || []).map(e => ({ ...e, entryType: 'slide' })),
+                    ...(jsonData.home.featured_movies || []).map(e => ({ ...e, entryType: 'featured' })),
+                    ...(jsonData.actors || []).map(e => ({ ...e, entryType: 'actor', title: e.name })),
+                    ...(jsonData.genres || []).map(e => ({ ...e, entryType: 'genre' }))
                 ];
                 
                 // Apply filter
@@ -1323,7 +1434,11 @@
                     : allEntries.filter(entry => 
                         (currentFilter === 'movie' && entry.entryType === 'movie') ||
                         (currentFilter === 'series' && entry.entryType === 'series') ||
-                        (currentFilter === 'channel' && entry.entryType === 'channel')
+                        (currentFilter === 'channel' && entry.entryType === 'channel') ||
+                        (currentFilter === 'slides' && entry.entryType === 'slide') ||
+                        (currentFilter === 'featured' && entry.entryType === 'featured') ||
+                        (currentFilter === 'actors' && entry.entryType === 'actor') ||
+                        (currentFilter === 'genres' && entry.entryType === 'genre')
                     );
                 
                 // Sort by title
@@ -1342,8 +1457,28 @@
                 
                 filteredEntries.forEach(entry => {
                     const typeClass = `type-${entry.entryType}`;
-                    const typeLabel = entry.entryType === 'movie' ? 'Movie' : 
-                                     entry.entryType === 'series' ? 'Series' : 'Live TV';
+                    const typeLabel = {
+                        'movie': 'Movie',
+                        'series': 'Series', 
+                        'channel': 'Live TV',
+                        'slide': 'Slide',
+                        'featured': 'Featured',
+                        'actor': 'Actor',
+                        'genre': 'Genre'
+                    }[entry.entryType] || entry.entryType;
+                    
+                    // Get appropriate metadata based on type
+                    let metaInfo = '';
+                    if (entry.entryType === 'actor') {
+                        metaInfo = `${entry.type || 'Actor'} • ${entry.role || 'N/A'}`;
+                    } else if (entry.entryType === 'genre') {
+                        const posterCount = entry.posters ? entry.posters.length : 0;
+                        metaInfo = `${posterCount} poster${posterCount !== 1 ? 's' : ''}`;
+                    } else if (entry.entryType === 'slide') {
+                        metaInfo = `Type: ${entry.type || 'N/A'}`;
+                    } else {
+                        metaInfo = `${entry.year ? `Year: ${entry.year} • ` : ''}${entry.rating ? `Rating: ${entry.rating}/10` : ''}`;
+                    }
                     
                     const item = document.createElement('div');
                     item.className = 'entry-item';
@@ -1354,8 +1489,7 @@
                         </div>
                         <div class="entry-item-title">${entry.title}</div>
                         <div class="entry-item-meta">
-                            ${entry.year ? `Year: ${entry.year} • ` : ''}
-                            ${entry.rating ? `Rating: ${entry.rating}/10` : ''}
+                            ${metaInfo}
                         </div>
                         <div class="entry-item-actions">
                             <button class="edit-btn" data-id="${entry.id}" data-type="${entry.entryType}">
