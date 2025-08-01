@@ -1311,16 +1311,35 @@
                     .sort((a, b) => (b.rating || 0) - (a.rating || 0))
                     .slice(0, 5); // Top 5 for slides
                 
-                // Generate slides
-                jsonData.home.slides = slideContent.map((item, index) => ({
-                    id: index + 1,
-                    title: item.title,
-                    type: item.contentType,
-                    image: item.image,
-                    url: item.url,
-                    poster: item.contentType === 'movie' ? { ...item } : null,
-                    channel: item.contentType === 'channel' ? { ...item } : null
-                }));
+                // Generate slides - create at least one default slide if no content
+                if (slideContent.length === 0) {
+                    jsonData.home.slides = [{
+                        id: 1,
+                        title: "Welcome to Movie API",
+                        type: "movie",
+                        image: "https://via.placeholder.com/800x400/2c3e50/ffffff?text=Add+Your+First+Movie",
+                        url: "movies/1",
+                        poster: {
+                            id: 1,
+                            title: "Welcome to Movie API",
+                            type: "movie",
+                            label: "Getting Started",
+                            sublabel: "Add Content",
+                            description: "Start by adding your first movie or TV show!",
+                            image: "https://via.placeholder.com/800x400/2c3e50/ffffff?text=Add+Your+First+Movie"
+                        }
+                    }];
+                } else {
+                    jsonData.home.slides = slideContent.map((item, index) => ({
+                        id: index + 1,
+                        title: item.title,
+                        type: item.contentType,
+                        image: item.image,
+                        url: item.url,
+                        poster: item.contentType === 'movie' ? { ...item } : null,
+                        channel: item.contentType === 'channel' ? { ...item } : null
+                    }));
+                }
                 
                 console.log(`✅ Generated ${jsonData.home.slides.length} slides`);
             }
@@ -1334,11 +1353,24 @@
                     .sort((a, b) => (b.rating || 0) - (a.rating || 0))
                     .slice(0, 10); // Top 10 featured
                 
-                jsonData.home.featured_movies = featuredMovies.map(movie => ({
-                    ...movie,
-                    views: movie.views || 0,
-                    created_at: movie.created_at || new Date().toISOString().split('T')[0]
-                }));
+                // If no featured movies, use all available movies
+                if (featuredMovies.length === 0 && jsonData.movies.length > 0) {
+                    const fallbackMovies = jsonData.movies
+                        .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+                        .slice(0, 5); // Top 5 as fallback
+                    
+                    jsonData.home.featured_movies = fallbackMovies.map(movie => ({
+                        ...movie,
+                        views: movie.views || 0,
+                        created_at: movie.created_at || new Date().toISOString().split('T')[0]
+                    }));
+                } else {
+                    jsonData.home.featured_movies = featuredMovies.map(movie => ({
+                        ...movie,
+                        views: movie.views || 0,
+                        created_at: movie.created_at || new Date().toISOString().split('T')[0]
+                    }));
+                }
                 
                 console.log(`✅ Generated ${jsonData.home.featured_movies.length} featured movies`);
             }
@@ -1381,6 +1413,27 @@
                     }
                 });
                 
+                // Add default actors if none exist
+                if (actorMap.size === 0) {
+                    const defaultActors = [
+                        { name: 'Unknown Actor', type: 'actor', role: 'Lead Actor' },
+                        { name: 'Unknown Actress', type: 'actress', role: 'Lead Actress' }
+                    ];
+                    defaultActors.forEach((actor, index) => {
+                        actorMap.set(actor.name.toLowerCase(), {
+                            id: index + 1,
+                            name: actor.name,
+                            type: actor.type,
+                            role: actor.role,
+                            image: '',
+                            born: '',
+                            height: '',
+                            bio: 'Add actor details when creating movies',
+                            movies: []
+                        });
+                    });
+                }
+                
                 jsonData.actors = Array.from(actorMap.values());
                 console.log(`✅ Generated ${jsonData.actors.length} actors`);
             }
@@ -1417,6 +1470,18 @@
                         });
                     }
                 });
+                
+                // Add default genres if none exist
+                if (genreMap.size === 0) {
+                    const defaultGenres = ['Action', 'Comedy', 'Drama', 'Horror', 'Sci-Fi', 'Animation'];
+                    defaultGenres.forEach((genreName, index) => {
+                        genreMap.set(genreName.toLowerCase(), {
+                            id: index + 1,
+                            title: genreName,
+                            posters: []
+                        });
+                    });
+                }
                 
                 jsonData.genres = Array.from(genreMap.values());
                 console.log(`✅ Generated ${jsonData.genres.length} genres`);
@@ -1584,6 +1649,10 @@
                     
                     console.log('Movies count:', jsonData.movies.length);
                     console.log('Channels count:', jsonData.channels.length);
+                    
+                    // AUTO-GENERATE IMMEDIATELY AFTER LOADING DATA
+                    console.log('🔄 Auto-generating related content after data load...');
+                    autoGenerateRelatedContent();
                     
                     editorDiv.style.display = 'block';
                     saveSectionDiv.style.display = 'block';
