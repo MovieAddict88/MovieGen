@@ -1589,55 +1589,49 @@
                         if (!jsonData) {
                             console.log('Initializing jsonData');
                             jsonData = { movies: [], channels: [] };
-                            editorDiv.style.display = 'block';
-                            saveSectionDiv.style.display = 'block';
                         }
-                        
                         // Validate that we have some data to save
                         if (!jsonData.movies && !jsonData.channels) {
                             jsonData.movies = [];
                             jsonData.channels = [];
                         }
-                        
                         const id = entryIdInput.value;
                         const activeTab = document.querySelector('.tab-btn.active');
-                        
                         if (!activeTab) {
-                            console.error('No active tab found');
+                            showNotification('No content type selected', false);
                             throw new Error('No content type selected');
                         }
-                        
                         const contentType = activeTab.dataset.type;
-                        console.log('Saving content type:', contentType, 'with ID:', id);
-                        
-                        // Debug: Check if required elements exist
-                        console.log('Checking required elements...');
-                        console.log('entryIdInput:', entryIdInput);
-                        console.log('activeTab:', activeTab);
-                        console.log('contentType:', contentType);
-                        
+                        let saveFn;
                         if (contentType === 'channel') {
-                            console.log('Saving channel...');
-                            saveChannel(id);
+                            saveFn = saveChannel;
                         } else if (contentType === 'series') {
-                            console.log('Saving series...');
-                            saveSeries(id);
+                            saveFn = saveSeries;
                         } else {
-                            console.log('Saving movie...');
-                            saveMovie(id);
+                            saveFn = saveMovie;
                         }
-                        
-                        console.log('Content saved successfully');
+                        try {
+                            saveFn(id);
+                        } catch (saveError) {
+                            showNotification(`Error: ${saveError.message}`, false);
+                            throw saveError;
+                        }
                         renderEntries();
                         closeModal();
-                        
+                        // Show editor and save section after saving
+                        editorDiv.style.display = 'block';
+                        saveSectionDiv.style.display = 'block';
                         // Save to localStorage after successful save
                         saveToLocalStorage();
                         showNotification('Content saved successfully!', true);
-                        
+                        // Optionally scroll to save section
+                        const saveSection = document.getElementById('save-section');
+                        if (saveSection) {
+                            saveSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
                     } catch (error) {
                         console.error('Error saving content:', error);
-                        showNotification(`Error saving content: ${error.message}`, false);
+                        // Error notification already shown above if save fails
                     } finally {
                         // Reset button state
                         saveButton.disabled = false;
