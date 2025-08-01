@@ -642,6 +642,9 @@
                 <button id="manualGenButton" class="btn btn-secondary" style="margin-left: 20px;">
                     <i class="fas fa-magic"></i> Generate Now
                 </button>
+                <button id="validateJsonButton" class="btn btn-secondary" style="margin-left: 10px;">
+                    <i class="fas fa-check-circle"></i> Validate JSON
+                </button>
                 <div id="autoGenStatus" style="margin-left: 20px; font-size: 0.9rem; color: var(--success); display: none;">
                     <i class="fas fa-check-circle"></i> Auto-generation active
                 </div>
@@ -1363,6 +1366,38 @@
                 });
             }
             
+            const validateJsonButton = document.getElementById('validateJsonButton');
+            if (validateJsonButton) {
+                validateJsonButton.addEventListener('click', () => {
+                    if (!jsonData) {
+                        showNotification('Please load data first before validating', false);
+                        return;
+                    }
+                    
+                    console.log('🔍 Manual JSON validation triggered...');
+                    const validation = validateJsonStructure(jsonData);
+                    
+                    if (validation.isValid) {
+                        showNotification('✅ JSON structure is valid!', true);
+                        if (validation.warnings.length > 0) {
+                            console.warn('⚠️ Warnings:', validation.warnings);
+                            setTimeout(() => {
+                                showNotification(`⚠️ Warnings: ${validation.warnings.join(', ')}`, false);
+                            }, 1000);
+                        }
+                    } else {
+                        showNotification(`❌ JSON validation failed: ${validation.errors.join(', ')}`, false);
+                        
+                        if (confirm('Would you like to attempt to fix the issues automatically?')) {
+                            const fixResult = fixJsonStructure(jsonData);
+                            jsonData = fixResult.data;
+                            renderEntries();
+                            showNotification(`✅ Fixed ${fixResult.fixes.length} issues!`, true);
+                        }
+                    }
+                });
+            }
+            
             // --- Auto-Generation Functions ---
             function autoGenerateRelatedContent() {
                 if (!autoGenerationEnabled) {
@@ -1772,9 +1807,39 @@
                     console.log('Loading JSON data...');
                     console.log('JSON string length:', jsonString.length);
                     
-                    jsonData = JSON.parse(jsonString);
-                    console.log('Parsed JSON data:', jsonData);
+                    const rawData = JSON.parse(jsonString);
+                    console.log('Parsed JSON data:', rawData);
                     
+                    // Validate JSON structure
+                    console.log('🔍 Validating JSON structure...');
+                    const validation = validateJsonStructure(rawData);
+                    
+                    if (!validation.isValid) {
+                        console.error('❌ JSON validation failed:', validation.errors);
+                        showNotification(`JSON validation failed: ${validation.errors.join(', ')}`, false);
+                        
+                        // Ask user if they want to fix the structure
+                        if (confirm('JSON structure has issues. Would you like to attempt to fix them automatically?')) {
+                            console.log('🔧 Attempting to fix JSON structure...');
+                            const fixResult = fixJsonStructure(rawData);
+                            jsonData = fixResult.data;
+                            
+                            if (fixResult.fixes.length > 0) {
+                                console.log('✅ Fixes applied:', fixResult.fixes);
+                                showNotification(`Fixed ${fixResult.fixes.length} issues: ${fixResult.fixes.join(', ')}`, true);
+                            }
+                        } else {
+                            throw new Error('JSON structure validation failed');
+                        }
+                    } else {
+                        jsonData = rawData;
+                        if (validation.warnings.length > 0) {
+                            console.warn('⚠️ JSON warnings:', validation.warnings);
+                            showNotification(`Loaded with warnings: ${validation.warnings.join(', ')}`, false);
+                        }
+                    }
+                    
+                    // Ensure required arrays exist
                     if (!jsonData.movies) {
                         console.log('No movies array found, creating empty array');
                         jsonData.movies = [];
@@ -2744,6 +2809,192 @@
                     closeModal();
                 }
             });
+
+            // --- JSON Validation and Structure Checking ---
+            function validateJsonStructure(data) {
+                console.log('🔍 Validating JSON structure...');
+                const errors = [];
+                const warnings = [];
+                
+                try {
+                    // Check for required top-level sections
+                    const requiredSections = ['api_info', 'home', 'movies', 'channels', 'actors', 'genres'];
+                    requiredSections.forEach(section => {
+                        if (!data[section]) {
+                            errors.push(`Missing required section: ${section}`);
+                        }
+                    });
+                    
+                    // Check for duplicate sections
+                    const sections = Object.keys(data);
+                    const duplicates = sections.filter((item, index) => sections.indexOf(item) !== index);
+                    if (duplicates.length > 0) {
+                        errors.push(`Duplicate sections found: ${duplicates.join(', ')}`);
+                    }
+                    
+                    // Check for nested "movies" arrays in actors
+                    if (data.actors && Array.isArray(data.actors)) {
+                        data.actors.forEach((actor, index) => {
+                            if (actor.movies) {
+                                warnings.push(`Actor "${actor.name}" has nested "movies" array - consider renaming to "filmography"`);
+                            }
+                        });
+                    }
+                    
+                    // Validate arrays are actually arrays
+                    const arraySections = ['movies', 'channels', 'actors', 'genres'];
+                    arraySections.forEach(section => {
+                        if (data[section] && !Array.isArray(data[section])) {
+                            errors.push(`Section "${section}" should be an array`);
+                        }
+                    });
+                    
+                    // Check for empty or invalid entries
+                    if (data.movies && Array.isArray(data.movies)) {
+                        data.movies.forEach((movie, index) => {
+                            if (!movie.title || movie.title.trim() === '') {
+                                errors.push(`Movie at index ${index} has empty or missing title`);
+                            }
+                            if (!movie.id) {
+                                errors.push(`Movie "${movie.title}" has missing ID`);
+                            }
+                        });
+                    }
+                    
+                    if (data.channels && Array.isArray(data.channels)) {
+                        data.channels.forEach((channel, index) => {
+                            if (!channel.title || channel.title.trim() === '') {
+                                errors.push(`Channel at index ${index} has empty or missing title`);
+                            }
+                            if (!channel.id) {
+                                errors.push(`Channel "${channel.title}" has missing ID`);
+                            }
+                        });
+                    }
+                    
+                    // Check home section structure
+                    if (data.home) {
+                        if (!data.home.slides || !Array.isArray(data.home.slides)) {
+                            warnings.push('Home section missing or invalid slides array');
+                        }
+                        if (!data.home.featured_movies || !Array.isArray(data.home.featured_movies)) {
+                            warnings.push('Home section missing or invalid featured_movies array');
+                        }
+                    }
+                    
+                    return { errors, warnings, isValid: errors.length === 0 };
+                } catch (error) {
+                    return { 
+                        errors: [`JSON validation error: ${error.message}`], 
+                        warnings: [], 
+                        isValid: false 
+                    };
+                }
+            }
+            
+            function fixJsonStructure(data) {
+                console.log('🔧 Fixing JSON structure...');
+                const fixes = [];
+                
+                try {
+                    // Ensure all required sections exist
+                    if (!data.api_info) {
+                        data.api_info = {
+                            version: "2.0",
+                            description: "Enhanced Free Movie & TV Streaming JSON API",
+                            last_updated: new Date().toISOString().split('T')[0],
+                            total_movies: 0,
+                            total_channels: 0,
+                            total_actors: 0
+                        };
+                        fixes.push('Created missing api_info section');
+                    }
+                    
+                    if (!data.home) {
+                        data.home = { slides: [], featured_movies: [] };
+                        fixes.push('Created missing home section');
+                    }
+                    
+                    if (!data.home.slides) {
+                        data.home.slides = [];
+                        fixes.push('Created missing slides array');
+                    }
+                    
+                    if (!data.home.featured_movies) {
+                        data.home.featured_movies = [];
+                        fixes.push('Created missing featured_movies array');
+                    }
+                    
+                    if (!data.movies) {
+                        data.movies = [];
+                        fixes.push('Created missing movies array');
+                    }
+                    
+                    if (!data.channels) {
+                        data.channels = [];
+                        fixes.push('Created missing channels array');
+                    }
+                    
+                    if (!data.actors) {
+                        data.actors = [];
+                        fixes.push('Created missing actors array');
+                    }
+                    
+                    if (!data.genres) {
+                        data.genres = [];
+                        fixes.push('Created missing genres array');
+                    }
+                    
+                    // Fix nested movies arrays in actors
+                    if (data.actors && Array.isArray(data.actors)) {
+                        data.actors.forEach(actor => {
+                            if (actor.movies && !actor.filmography) {
+                                actor.filmography = actor.movies;
+                                delete actor.movies;
+                                fixes.push(`Renamed "movies" to "filmography" for actor "${actor.name}"`);
+                            }
+                        });
+                    }
+                    
+                    // Remove duplicate sections (keep only the first occurrence)
+                    const seenSections = new Set();
+                    const cleanedData = {};
+                    
+                    Object.keys(data).forEach(key => {
+                        if (!seenSections.has(key)) {
+                            cleanedData[key] = data[key];
+                            seenSections.add(key);
+                        } else {
+                            fixes.push(`Removed duplicate section: ${key}`);
+                        }
+                    });
+                    
+                    // Clean empty entries
+                    if (cleanedData.movies) {
+                        const originalLength = cleanedData.movies.length;
+                        cleanedData.movies = cleanedData.movies.filter(movie => 
+                            movie && movie.title && movie.title.trim() !== ''
+                        );
+                        if (cleanedData.movies.length !== originalLength) {
+                            fixes.push(`Removed ${originalLength - cleanedData.movies.length} empty movie entries`);
+                        }
+                    }
+                    
+                    if (cleanedData.channels) {
+                        const originalLength = cleanedData.channels.length;
+                        cleanedData.channels = cleanedData.channels.filter(channel => 
+                            channel && channel.title && channel.title.trim() !== ''
+                        );
+                        if (cleanedData.channels.length !== originalLength) {
+                            fixes.push(`Removed ${originalLength - cleanedData.channels.length} empty channel entries`);
+                        }
+                    }
+                    
+                    return { data: cleanedData, fixes };
+                } catch (error) {
+                    return { data: data, fixes: [`Error fixing structure: ${error.message}`] };
+                }
+            }
         });
     </script>
 </body>
