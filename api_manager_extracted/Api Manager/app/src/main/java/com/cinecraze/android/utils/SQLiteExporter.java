@@ -78,8 +78,14 @@ public class SQLiteExporter {
      */
     public byte[] generateSQLiteData(List<ContentItem> contentItems, List<ServerConfig> serverConfigs) {
         try {
-            // Create database in memory
-            PlaylistDatabaseHelper dbHelper = new PlaylistDatabaseHelper(context);
+            // Create a temporary database file
+            File tempDbFile = new File(context.getFilesDir(), "temp_" + DATABASE_NAME);
+            if (tempDbFile.exists()) {
+                tempDbFile.delete();
+            }
+            
+            // Create database helper with the temp file
+            PlaylistDatabaseHelper dbHelper = new PlaylistDatabaseHelper(context, tempDbFile.getAbsolutePath());
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             
             try {
@@ -94,21 +100,24 @@ public class SQLiteExporter {
                 
                 Log.i(TAG, "Successfully generated SQLite data for " + contentItems.size() + " items");
                 
-                // Get database file path
-                String dbPath = db.getPath();
-                File dbFile = new File(dbPath);
-                
                 // Read the database file into byte array
-                if (dbFile.exists()) {
-                    return java.nio.file.Files.readAllBytes(dbFile.toPath());
+                if (tempDbFile.exists()) {
+                    byte[] data = java.nio.file.Files.readAllBytes(tempDbFile.toPath());
+                    Log.i(TAG, "Generated SQLite data size: " + data.length + " bytes");
+                    return data;
                 } else {
-                    Log.e(TAG, "Database file not found after creation");
+                    Log.e(TAG, "Temporary database file not found after creation");
                     return null;
                 }
                 
             } finally {
                 db.close();
                 dbHelper.close();
+                
+                // Clean up temporary file
+                if (tempDbFile.exists()) {
+                    tempDbFile.delete();
+                }
             }
             
         } catch (Exception e) {
@@ -354,6 +363,10 @@ public class SQLiteExporter {
         
         public PlaylistDatabaseHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        }
+        
+        public PlaylistDatabaseHelper(Context context, String dbPath) {
+            super(context, dbPath, null, DATABASE_VERSION);
         }
         
         @Override

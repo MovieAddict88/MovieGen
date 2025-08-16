@@ -264,6 +264,15 @@ public class DataManagementFragment extends Fragment {
     private void exportAsSQLite() {
         executor.submit(() -> {
             try {
+                // First try to generate SQLite data to test if it works
+                byte[] dbData = dataManager.generateSQLiteData();
+                if (dbData == null || dbData.length == 0) {
+                    requireActivity().runOnUiThread(() -> {
+                        showStatus("❌ SQLite data generation failed - no data to export");
+                    });
+                    return;
+                }
+                
                 // Export to SQLite database
                 boolean success = dataManager.saveSQLiteToDownloads();
                 
@@ -405,9 +414,10 @@ public class DataManagementFragment extends Fragment {
         
         executor.submit(() -> {
             try {
-                File dbFile = dataManager.exportToSQLite();
-                if (dbFile != null) {
-                    boolean success = githubService.uploadSQLiteToGitHub(token, repo, dbFilePath, dbFile);
+                // Generate SQLite data directly (no file creation)
+                byte[] dbData = dataManager.generateSQLiteData();
+                if (dbData != null && dbData.length > 0) {
+                    boolean success = githubService.uploadSQLiteToGitHub(token, repo, dbFilePath, dbData);
                     final String error = githubService.getLastErrorMessage();
                     
                     requireActivity().runOnUiThread(() -> {
@@ -430,8 +440,8 @@ public class DataManagementFragment extends Fragment {
                     requireActivity().runOnUiThread(() -> {
                         uploadToGitHub.setEnabled(true);
                         uploadToGitHub.setText("Upload to GitHub");
-                        githubStatus.setText("❌ SQLite export failed");
-                        showStatus("SQLite export failed");
+                        githubStatus.setText("❌ SQLite data generation failed");
+                        showStatus("SQLite data generation failed - check logs for details");
                     });
                 }
             } catch (Exception e) {
@@ -464,9 +474,9 @@ public class DataManagementFragment extends Fragment {
                 final String dbFilePath = filePath.replaceAll("\\.json$", ".db").endsWith(".db") ? 
                                         filePath.replaceAll("\\.json$", ".db") : "playlist.db";
                 
-                File dbFile = dataManager.exportToSQLite();
-                final boolean sqliteSuccess = dbFile != null && 
-                                            githubService.uploadSQLiteToGitHub(token, repo, dbFilePath, dbFile);
+                byte[] dbData = dataManager.generateSQLiteData();
+                final boolean sqliteSuccess = dbData != null && dbData.length > 0 && 
+                                            githubService.uploadSQLiteToGitHub(token, repo, dbFilePath, dbData);
                 
                 final String error = githubService.getLastErrorMessage();
                 
