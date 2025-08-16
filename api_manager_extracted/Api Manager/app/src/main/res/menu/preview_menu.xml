@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_fix_missing_meta"
+        android:title="Fix Missing Metadata" />
+    <item
+        android:id="@+id/action_fix_missing_servers"
+        android:title="Fix Missing Servers" />
+    <item
+        android:id="@+id/action_fill_missing_episodes"
+        android:title="Fill Seasons &amp; Episodes" />
+</menu>

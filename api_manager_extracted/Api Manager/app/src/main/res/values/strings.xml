@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CineCraze</string>
+    
+    <!-- Navigation -->
+    <string name="nav_tmdb">TMDB Generator</string>
+    <string name="nav_manual">Manual Input</string>
+    <string name="nav_bulk">Bulk Operations</string>
+    <string name="nav_data">Data Management</string>
+    <string name="nav_servers">Auto-Embed</string>
+    
+    <!-- TMDB Generator -->
+    <string name="api_key_management">API Key Management</string>
+    <string name="select_tmdb_api_key">Select TMDB API Key</string>
+    <string name="movie_generator">Movie Generator</string>
+    <string name="tv_series_generator">TV Series Generator</string>
+    <string name="tmdb_search_preview">TMDB Search &amp; Preview</string>
+    <string name="generate_movie">Generate Movie</string>
+    <string name="generate_series">Generate Series</string>
+    <string name="search_tmdb">Search TMDB</string>
+    
+    <!-- Manual Input -->
+    <string name="manual_content_input">Manual Content Input</string>
+    <string name="basic_information">Basic Information</string>
+    <string name="video_sources">Video Sources</string>
+    <string name="tv_series_settings">TV Series Settings</string>
+    <string name="generate_content">Generate Content</string>
+    
+    <!-- Bulk Operations -->
+    <string name="year_based_generation">Year-based Generation</string>
+    <string name="genre_based_generation">Genre-based Generation</string>
+    <string name="generation_progress">Generation Progress</string>
+    <string name="generation_results">Generation Results</string>
+    <string name="generate_by_year">Generate by Year</string>
+    <string name="generate_by_genre">Generate by Genre</string>
+    
+    <!-- Data Management -->
+    <string name="import_export_data">Import/Export Data</string>
+    <string name="github_integration">GitHub Integration</string>
+    <string name="data_management">Data Management</string>
+    <string name="storage_information">Storage Information</string>
+    <string name="import_json">Import JSON</string>
+    <string name="export_json">Export JSON</string>
+    <string name="upload_to_github">Upload to GitHub</string>
+    <string name="clear_data">Clear Data</string>
+    <string name="remove_duplicates">Remove Duplicates</string>
+    <string name="migrate_storage">Migrate Storage</string>
+    <string name="optimize">Optimize</string>
+    <string name="backup_data">Backup Data</string>
+    <string name="restore_data">Restore Data</string>
+    <string name="check_github_token">Check GitHub Token</string>
+    <string name="test_drm_handling">Test DRM Handling</string>
+    
+    <!-- Auto-Embed -->
+    <string name="auto_embed_server_management">Auto-Embed Server Management</string>
+    <string name="available_servers">Available Servers</string>
+    <string name="content_management">Content Management</string>
+    <string name="processing_status">Processing Status</string>
+    <string name="toggle_all">Toggle All</string>
+    <string name="enable_recommended">Enable Recommended</string>
+    <string name="check_status">Check Status</string>
+    <string name="apply_to_content">Apply to Content</string>
+    <string name="auto_generate_missing">Auto-Generate Missing</string>
+    <string name="refresh_content">Refresh Content</string>
+    
+    <!-- Common -->
+    <string name="title">Title</string>
+    <string name="subcategory">Subcategory</string>
+    <string name="country">Country</string>
+    <string name="description">Description</string>
+    <string name="image_url">Image URL</string>
+    <string name="year">Year</string>
+    <string name="rating">Rating</string>
+    <string name="content_type">Content Type</string>
+    <string name="additional_servers">Additional Servers</string>
+    <string name="add_server">Add Server</string>
+    <string name="seasons">Seasons</string>
+    <string name="episodes_per_season">Episodes per Season</string>
+    <string name="search_query">Search Query</string>
+    <string name="search_type">Search Type</string>
+    <string name="genre">Genre</string>
+    <string name="max_results">Max Results</string>
+    <string name="start_year">Start Year</string>
+    <string name="end_year">End Year</string>
+    <string name="github_token">GitHub Personal Access Token</string>
+    <string name="repository_name">Repository Name</string>
+    <string name="file_path">File Path</string>
+    <string name="content_filter">Content Filter</string>
+    
+    <!-- Messages -->
+    <string name="processing">Processing...</string>
+    <string name="cancel">Cancel</string>
+    <string name="success">Success</string>
+    <string name="error">Error</string>
+    <string name="warning">Warning</string>
+    <string name="info">Info</string>
+    <string name="loading">Loading...</string>
+    <string name="no_data">No data available</string>
+    <string name="data_loaded">Data loaded successfully</string>
+    <string name="data_saved">Data saved successfully</string>
+    <string name="data_exported">Data exported successfully</string>
+    <string name="data_imported">Data imported successfully</string>
+    <string name="upload_successful">Upload successful</string>
+    <string name="upload_failed">Upload failed</string>
+    <string name="generation_complete">Generation complete</string>
+    <string name="generation_cancelled">Generation cancelled</string>
+    
+    <!-- Placeholders -->
+    <string name="enter_title">Enter title...</string>
+    <string name="enter_description">Enter description...</string>
+    <string name="search_movies_tv">Search for movies or TV shows...</string>
+    <string name="example_fight_club">e.g., 550 (Fight Club)</string>
+    <string name="example_game_of_thrones">e.g., 1399 (Game of Thrones)</string>
+    <string name="example_seasons">e.g., 1,2,3 or leave empty for all</string>
+    <string name="example_episodes">e.g., 10 or leave empty for auto</string>
+    <string name="example_action_drama">e.g., Action, Drama, Comedy</string>
+    <string name="example_country">e.g., USA, Korea, Japan</string>
+    <string name="example_image_url">https://...</string>
+    <string name="example_year">2024</string>
+    <string name="example_rating">8.5</string>
+    <string name="example_github_token">ghp_...</string>
+    <string name="example_repository">username/repository</string>
+    <string name="example_file_path">data/playlist.json</string>
+    
+    <!-- Content Types -->
+    <string name="movie">Movie</string>
+    <string name="tv_series">TV Series</string>
+    <string name="live_tv">Live TV</string>
+    <string name="all_content">All Content</string>
+    <string name="all_genres">All Genres</string>
+    <string name="search_mode">Search Mode</string>
+    
+    <!-- Genres -->
+    <string name="action">Action</string>
+    <string name="adventure">Adventure</string>
+    <string name="animation">Animation</string>
+    <string name="comedy">Comedy</string>
+    <string name="crime">Crime</string>
+    <string name="documentary">Documentary</string>
+    <string name="drama">Drama</string>
+    <string name="family">Family</string>
+    <string name="fantasy">Fantasy</string>
+    <string name="history">History</string>
+    <string name="horror">Horror</string>
+    <string name="music">Music</string>
+    <string name="mystery">Mystery</string>
+    <string name="romance">Romance</string>
+    <string name="science_fiction">Science Fiction</string>
+    <string name="tv_movie">TV Movie</string>
+    <string name="thriller">Thriller</string>
+    <string name="war">War</string>
+    <string name="western">Western</string>
+    
+    <!-- Search Types -->
+    <string name="k_drama">K-Drama</string>
+    <string name="c_drama">C-Drama</string>
+    <string name="j_drama">J-Drama</string>
+    <string name="pinoy">Pinoy</string>
+    <string name="thai">Thai</string>
+    <string name="indian">Indian</string>
+    <string name="turkish">Turkish</string>
+    <string name="korean_variety">Korean Variety</string>
+
+    <!-- Preview -->
+    <string name="open_preview">Open Preview</string>
+    <string name="preview_title">Content Preview</string>
+    <string name="preview_filters">Preview Filters</string>
+</resources>

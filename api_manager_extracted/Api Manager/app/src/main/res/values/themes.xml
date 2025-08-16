@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Netflix-style application theme. -->
+    <style name="Theme.CineCraze" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Netflix Primary brand color. -->
+        <item name="colorPrimary">@color/netflix_red</item>
+        <item name="colorPrimaryVariant">@color/netflix_red_dark</item>
+        <item name="colorOnPrimary">@color/netflix_text_white</item>
+        
+        <!-- Netflix Secondary brand color. -->
+        <item name="colorSecondary">@color/netflix_red</item>
+        <item name="colorSecondaryVariant">@color/netflix_red_dark</item>
+        <item name="colorOnSecondary">@color/netflix_text_white</item>
+        
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/netflix_black</item>
+        <item name="android:navigationBarColor">@color/netflix_black</item>
+        
+        <!-- Netflix Background colors -->
+        <item name="android:colorBackground">@color/netflix_black</item>
+        <item name="colorSurface">@color/netflix_dark_gray</item>
+        <item name="colorOnSurface">@color/netflix_text_white</item>
+        
+        <!-- Netflix Text colors -->
+        <item name="android:textColorPrimary">@color/netflix_text_white</item>
+        <item name="android:textColorSecondary">@color/netflix_text_gray</item>
+        
+        <!-- Customize your theme here. -->
+        <item name="android:windowBackground">@color/netflix_black</item>
+        
+        <!-- Material Design 3 specific -->
+        <item name="colorSurfaceVariant">@color/netflix_medium_gray</item>
+        <item name="colorOnSurfaceVariant">@color/netflix_text_gray</item>
+        <item name="colorOutline">@color/netflix_light_gray</item>
+        
+        <!-- Typography -->
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.CineCraze.HeadlineLarge</item>
+        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.CineCraze.HeadlineMedium</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.CineCraze.HeadlineSmall</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.CineCraze.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.CineCraze.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.CineCraze.BodySmall</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.CineCraze.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.CineCraze.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.CineCraze.LabelSmall</item>
+    </style>
+
+    <!-- Netflix Typography styles -->
+    <style name="TextAppearance.CineCraze.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:textColor">@color/netflix_text_white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.CineCraze.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textColor">@color/netflix_text_white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.CineCraze.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:textColor">@color/netflix_text_white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.CineCraze.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textColor">@color/netflix_text_white</item>
+    </style>
+
+    <style name="TextAppearance.CineCraze.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/netflix_text_white</item>
+    </style>
+
+    <style name="TextAppearance.CineCraze.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">@color/netflix_text_gray</item>
+    </style>
+
+    <style name="TextAppearance.CineCraze.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textColor">@color/netflix_text_white</item>
+    </style>
+
+    <style name="TextAppearance.CineCraze.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textColor">@color/netflix_text_white</item>
+    </style>
+
+    <style name="TextAppearance.CineCraze.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textColor">@color/netflix_text_gray</item>
+    </style>
+
+    <!-- Netflix Card styles -->
+    <style name="Widget.CineCraze.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/card_background</item>
+        <item name="cardCornerRadius">8dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="strokeColor">@color/card_border</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="Widget.CineCraze.Card.Preview" parent="Widget.CineCraze.Card">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">6dp</item>
+    </style>
+
+    <!-- Netflix Button styles -->
+    <style name="Widget.CineCraze.Button" parent="Widget.Material3.Button">
+        <item name="android:textColor">@color/netflix_text_white</item>
+        <item name="backgroundTint">@color/netflix_red</item>
+        <item name="cornerRadius">6dp</item>
+    </style>
+
+    <style name="Widget.CineCraze.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textColor">@color/netflix_red</item>
+        <item name="strokeColor">@color/netflix_red</item>
+        <item name="cornerRadius">6dp</item>
+    </style>
+
+    <style name="Widget.CineCraze.Button.Secondary" parent="Widget.Material3.Button">
+        <item name="android:textColor">@color/netflix_text_white</item>
+        <item name="backgroundTint">@color/netflix_light_gray</item>
+        <item name="cornerRadius">6dp</item>
+    </style>
+
+    <!-- Netflix Toolbar style -->
+    <style name="Widget.CineCraze.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/netflix_black</item>
+        <item name="titleTextColor">@color/netflix_text_white</item>
+        <item name="subtitleTextColor">@color/netflix_text_gray</item>
+    </style>
+
+    <!-- Netflix FAB style -->
+    <style name="Widget.CineCraze.FAB" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="backgroundTint">@color/netflix_red</item>
+        <item name="tint">@color/netflix_text_white</item>
+    </style>
+</resources>

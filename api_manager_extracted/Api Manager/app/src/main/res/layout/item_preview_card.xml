@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardBackgroundColor="@color/card_background"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="6dp"
+    app:strokeColor="@color/card_border"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Poster/Image at top -->
+        <ImageView
+            android:id="@+id/preview_poster"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:contentDescription="Poster"
+            android:background="@color/netflix_light_gray" />
+
+        <!-- Info section below -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/preview_title_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/netflix_text_white"
+                android:textSize="16sp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Meta info -->
+            <TextView
+                android:id="@+id/preview_meta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/netflix_text_gray"
+                android:textSize="12sp"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Status flags -->
+            <TextView
+                android:id="@+id/preview_flags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/netflix_text_white"
+                android:textSize="11sp"
+                android:background="@color/netflix_medium_gray"
+                android:padding="8dp"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Single Generate button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_generate"
+                style="@style/Widget.CineCraze.Button"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="Generate"
+                android:textSize="14sp"
+                app:icon="@drawable/ic_clapperboard"
+                app:iconSize="18dp"
+                app:iconPadding="8dp" />
+
+        </LinearLayout>
+
+        <!-- TMDB Input Row (hidden by default) -->
+        <LinearLayout
+            android:id="@+id/tmdb_input_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:visibility="gone"
+            android:background="@color/netflix_medium_gray">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tmdb_input_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="TMDB ID"
+                app:boxBackgroundColor="@color/netflix_light_gray"
+                app:hintTextColor="@color/netflix_red"
+                app:boxStrokeColor="@color/netflix_red"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_tmdb_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textSize="12sp"
+                    android:textColor="@color/netflix_text_white" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_confirm_tmdb"
+                style="@style/Widget.CineCraze.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="Go"
+                android:textSize="12sp"
+                app:icon="@drawable/ic_check"
+                app:iconSize="16dp"
+                app:iconPadding="6dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
