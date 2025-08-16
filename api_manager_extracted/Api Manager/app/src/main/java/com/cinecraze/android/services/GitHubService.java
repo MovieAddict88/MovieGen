@@ -102,9 +102,9 @@ public class GitHubService {
     }
     
     /**
-     * Upload SQLite database file to GitHub repository
+     * Upload SQLite database data directly to GitHub repository
      */
-    public boolean uploadSQLiteToGitHub(String token, String repo, String filePath, java.io.File dbFile) {
+    public boolean uploadSQLiteToGitHub(String token, String repo, String filePath, byte[] dbData) {
         lastErrorMessage = "";
         try {
             // Parse repository owner and name
@@ -127,9 +127,8 @@ public class GitHubService {
             // Check if file exists to get SHA
             String sha = getFileSha(token, owner, repoName, filePath);
             
-            // Read database file and encode to base64
-            byte[] fileBytes = java.nio.file.Files.readAllBytes(dbFile.toPath());
-            String base64Content = Base64.getEncoder().encodeToString(fileBytes);
+            // Encode database data to base64
+            String base64Content = Base64.getEncoder().encodeToString(dbData);
             
             // Prepare upload data
             JsonObject uploadData = new JsonObject();
@@ -169,6 +168,20 @@ public class GitHubService {
         } catch (Exception e) {
             lastErrorMessage = e.getMessage();
             Log.e(TAG, "Error uploading SQLite database to GitHub", e);
+            return false;
+        }
+    }
+    
+    /**
+     * Upload SQLite database file to GitHub repository (legacy method)
+     */
+    public boolean uploadSQLiteFileToGitHub(String token, String repo, String filePath, java.io.File dbFile) {
+        try {
+            byte[] fileBytes = java.nio.file.Files.readAllBytes(dbFile.toPath());
+            return uploadSQLiteToGitHub(token, repo, filePath, fileBytes);
+        } catch (Exception e) {
+            lastErrorMessage = e.getMessage();
+            Log.e(TAG, "Error reading SQLite file for upload", e);
             return false;
         }
     }

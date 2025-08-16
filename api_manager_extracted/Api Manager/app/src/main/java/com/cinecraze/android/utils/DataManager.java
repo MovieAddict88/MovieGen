@@ -386,6 +386,19 @@ public class DataManager {
     }
     
     /**
+     * Generate SQLite database data as byte array (for direct upload)
+     */
+    public byte[] generateSQLiteData() {
+        try {
+            SQLiteExporter exporter = new SQLiteExporter(context);
+            return exporter.generateSQLiteData(contentItems, serverConfigs);
+        } catch (Exception e) {
+            Log.e(TAG, "Error generating SQLite data", e);
+            return null;
+        }
+    }
+    
+    /**
      * Save SQLite database to downloads folder
      */
     public boolean saveSQLiteToDownloads() {

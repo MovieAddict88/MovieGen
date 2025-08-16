@@ -74,6 +74,50 @@ public class SQLiteExporter {
     }
     
     /**
+     * Generate SQLite database data as byte array (for direct upload)
+     */
+    public byte[] generateSQLiteData(List<ContentItem> contentItems, List<ServerConfig> serverConfigs) {
+        try {
+            // Create database in memory
+            PlaylistDatabaseHelper dbHelper = new PlaylistDatabaseHelper(context);
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            
+            try {
+                // Export categories
+                exportCategories(db, contentItems);
+                
+                // Export entries
+                exportEntries(db, contentItems);
+                
+                // Export metadata
+                exportMetadata(db, contentItems, serverConfigs);
+                
+                Log.i(TAG, "Successfully generated SQLite data for " + contentItems.size() + " items");
+                
+                // Get database file path
+                String dbPath = db.getPath();
+                File dbFile = new File(dbPath);
+                
+                // Read the database file into byte array
+                if (dbFile.exists()) {
+                    return java.nio.file.Files.readAllBytes(dbFile.toPath());
+                } else {
+                    Log.e(TAG, "Database file not found after creation");
+                    return null;
+                }
+                
+            } finally {
+                db.close();
+                dbHelper.close();
+            }
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error generating SQLite data", e);
+            return null;
+        }
+    }
+    
+    /**
      * Export categories to database
      */
     private void exportCategories(SQLiteDatabase db, List<ContentItem> contentItems) {
