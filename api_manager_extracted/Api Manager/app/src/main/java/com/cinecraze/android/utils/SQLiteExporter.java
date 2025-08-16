@@ -294,9 +294,9 @@ public class SQLiteExporter {
     }
     
     /**
-     * Save database file to downloads folder
+     * Save database data to downloads folder
      */
-    public boolean saveToDownloads(File dbFile) {
+    public boolean saveToDownloads(byte[] dbData) {
         try {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                 android.content.ContentValues values = new android.content.ContentValues();
@@ -317,36 +317,25 @@ public class SQLiteExporter {
                         return false;
                     }
                     
-                    // Copy database file to output stream
-                    try (java.io.FileInputStream fis = new java.io.FileInputStream(dbFile)) {
-                        byte[] buffer = new byte[8192];
-                        int bytesRead;
-                        while ((bytesRead = fis.read(buffer)) != -1) {
-                            out.write(buffer, 0, bytesRead);
-                        }
-                    }
+                    // Write database data directly to output stream
+                    out.write(dbData);
                 }
 
                 // Mark as not pending so it becomes visible to user
                 values.clear();
                 values.put(android.provider.MediaStore.Downloads.IS_PENDING, 0);
                 context.getContentResolver().update(itemUri, values, null, null);
+                Log.i(TAG, "Successfully saved SQLite database to Downloads: " + DATABASE_NAME);
                 return true;
             } else {
-                android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
                 File downloads = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
                 if (downloads != null && (downloads.exists() || downloads.mkdirs())) {
                     File outFile = new File(downloads, DATABASE_NAME);
                     try (FileOutputStream fos = new FileOutputStream(outFile)) {
-                        // Copy database file
-                        try (java.io.FileInputStream sourceFis = new java.io.FileInputStream(dbFile)) {
-                            byte[] buffer = new byte[8192];
-                            int bytesRead;
-                            while ((bytesRead = sourceFis.read(buffer)) != -1) {
-                                fos.write(buffer, 0, bytesRead);
-                            }
-                        }
+                        // Write database data directly
+                        fos.write(dbData);
                     }
+                    Log.i(TAG, "Successfully saved SQLite database to Downloads: " + DATABASE_NAME);
                     return true;
                 }
             }
@@ -354,6 +343,19 @@ public class SQLiteExporter {
             Log.e(TAG, "Error saving to Downloads", e);
         }
         return false;
+    }
+    
+    /**
+     * Save database file to downloads folder (legacy method)
+     */
+    public boolean saveToDownloads(File dbFile) {
+        try {
+            byte[] fileBytes = java.nio.file.Files.readAllBytes(dbFile.toPath());
+            return saveToDownloads(fileBytes);
+        } catch (Exception e) {
+            Log.e(TAG, "Error reading file for download", e);
+            return false;
+        }
     }
     
     /**

@@ -390,8 +390,15 @@ public class DataManager {
      */
     public byte[] generateSQLiteData() {
         try {
+            Log.i(TAG, "Generating SQLite data for " + contentItems.size() + " content items");
             SQLiteExporter exporter = new SQLiteExporter(context);
-            return exporter.generateSQLiteData(contentItems, serverConfigs);
+            byte[] data = exporter.generateSQLiteData(contentItems, serverConfigs);
+            if (data != null) {
+                Log.i(TAG, "Successfully generated SQLite data: " + data.length + " bytes");
+            } else {
+                Log.e(TAG, "SQLiteExporter returned null data");
+            }
+            return data;
         } catch (Exception e) {
             Log.e(TAG, "Error generating SQLite data", e);
             return null;
@@ -403,12 +410,33 @@ public class DataManager {
      */
     public boolean saveSQLiteToDownloads() {
         try {
-            File dbFile = exportToSQLite();
-            if (dbFile != null) {
-                SQLiteExporter exporter = new SQLiteExporter(context);
-                return exporter.saveToDownloads(dbFile);
+            Log.i(TAG, "Starting SQLite download save process");
+            
+            // Generate SQLite data first
+            byte[] dbData = generateSQLiteData();
+            if (dbData == null) {
+                Log.e(TAG, "Failed to generate SQLite data - returned null");
+                return false;
             }
-            return false;
+            
+            if (dbData.length == 0) {
+                Log.e(TAG, "Failed to generate SQLite data - empty array");
+                return false;
+            }
+            
+            Log.i(TAG, "Generated SQLite data successfully, saving to downloads...");
+            
+            // Save to downloads using the exporter
+            SQLiteExporter exporter = new SQLiteExporter(context);
+            boolean success = exporter.saveToDownloads(dbData);
+            
+            if (success) {
+                Log.i(TAG, "Successfully saved SQLite database to downloads");
+            } else {
+                Log.e(TAG, "Failed to save SQLite database to downloads");
+            }
+            
+            return success;
         } catch (Exception e) {
             Log.e(TAG, "Error saving SQLite to downloads", e);
             return false;

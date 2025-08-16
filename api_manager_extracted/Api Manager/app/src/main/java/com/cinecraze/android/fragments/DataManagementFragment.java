@@ -264,26 +264,40 @@ public class DataManagementFragment extends Fragment {
     private void exportAsSQLite() {
         executor.submit(() -> {
             try {
+                Log.i("DataManagement", "Starting SQLite export...");
+                
                 // First try to generate SQLite data to test if it works
                 byte[] dbData = dataManager.generateSQLiteData();
-                if (dbData == null || dbData.length == 0) {
+                if (dbData == null) {
+                    Log.e("DataManagement", "SQLite data generation returned null");
+                    requireActivity().runOnUiThread(() -> {
+                        showStatus("❌ SQLite data generation failed - returned null");
+                    });
+                    return;
+                }
+                
+                if (dbData.length == 0) {
+                    Log.e("DataManagement", "SQLite data generation returned empty array");
                     requireActivity().runOnUiThread(() -> {
                         showStatus("❌ SQLite data generation failed - no data to export");
                     });
                     return;
                 }
                 
+                Log.i("DataManagement", "SQLite data generated successfully, size: " + dbData.length + " bytes");
+                
                 // Export to SQLite database
                 boolean success = dataManager.saveSQLiteToDownloads();
                 
                 requireActivity().runOnUiThread(() -> {
                     if (success) {
-                        showStatus("✅ SQLite database exported to Downloads: playlist.db");
+                        showStatus("✅ SQLite database exported to Downloads: playlist.db (" + dbData.length + " bytes)");
                     } else {
                         showStatus("❌ SQLite export failed - check logs for details");
                     }
                 });
             } catch (Exception e) {
+                Log.e("DataManagement", "SQLite export exception", e);
                 requireActivity().runOnUiThread(() -> {
                     showStatus("❌ SQLite export failed: " + e.getMessage());
                 });
