@@ -392,10 +392,8 @@ public class DataManagementFragment extends Fragment {
     
     private void uploadToGitHubAsSQLite(String token, String repo, String filePath) {
         // Change file path to .db extension
-        String dbFilePath = filePath.replaceAll("\\.json$", ".db");
-        if (!dbFilePath.endsWith(".db")) {
-            dbFilePath = "playlist.db";
-        }
+        final String dbFilePath = filePath.replaceAll("\\.json$", ".db").endsWith(".db") ? 
+                                 filePath.replaceAll("\\.json$", ".db") : "playlist.db";
         
         // Save configuration
         dataManager.saveGitHubConfig(token, repo, dbFilePath);
@@ -460,19 +458,15 @@ public class DataManagementFragment extends Fragment {
             try {
                 // Upload JSON
                 String jsonData = dataManager.exportToJson();
-                boolean jsonSuccess = githubService.uploadToGitHub(token, repo, filePath, jsonData);
+                final boolean jsonSuccess = githubService.uploadToGitHub(token, repo, filePath, jsonData);
                 
                 // Upload SQLite
-                String dbFilePath = filePath.replaceAll("\\.json$", ".db");
-                if (!dbFilePath.endsWith(".db")) {
-                    dbFilePath = "playlist.db";
-                }
+                final String dbFilePath = filePath.replaceAll("\\.json$", ".db").endsWith(".db") ? 
+                                        filePath.replaceAll("\\.json$", ".db") : "playlist.db";
                 
                 File dbFile = dataManager.exportToSQLite();
-                boolean sqliteSuccess = false;
-                if (dbFile != null) {
-                    sqliteSuccess = githubService.uploadSQLiteToGitHub(token, repo, dbFilePath, dbFile);
-                }
+                final boolean sqliteSuccess = dbFile != null && 
+                                            githubService.uploadSQLiteToGitHub(token, repo, dbFilePath, dbFile);
                 
                 final String error = githubService.getLastErrorMessage();
                 
