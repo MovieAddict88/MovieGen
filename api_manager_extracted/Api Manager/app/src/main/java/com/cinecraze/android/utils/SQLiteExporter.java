@@ -258,17 +258,17 @@ public class SQLiteExporter {
                     return false;
                 }
 
-                try (android.content.ContentResolver.OpenOutputStream out = context.getContentResolver().openOutputStream(itemUri)) {
+                try (java.io.OutputStream out = context.getContentResolver().openOutputStream(itemUri)) {
                     if (out == null) {
                         Log.e(TAG, "OutputStream is null for " + itemUri);
                         return false;
                     }
                     
                     // Copy database file to output stream
-                    try (FileOutputStream fos = new FileOutputStream(dbFile)) {
+                    try (java.io.FileInputStream fis = new java.io.FileInputStream(dbFile)) {
                         byte[] buffer = new byte[8192];
                         int bytesRead;
-                        while ((bytesRead = fos.read(buffer)) != -1) {
+                        while ((bytesRead = fis.read(buffer)) != -1) {
                             out.write(buffer, 0, bytesRead);
                         }
                     }
@@ -286,10 +286,10 @@ public class SQLiteExporter {
                     File outFile = new File(downloads, DATABASE_NAME);
                     try (FileOutputStream fos = new FileOutputStream(outFile)) {
                         // Copy database file
-                        try (FileOutputStream sourceFos = new FileOutputStream(dbFile)) {
+                        try (java.io.FileInputStream sourceFis = new java.io.FileInputStream(dbFile)) {
                             byte[] buffer = new byte[8192];
                             int bytesRead;
-                            while ((bytesRead = sourceFos.read(buffer)) != -1) {
+                            while ((bytesRead = sourceFis.read(buffer)) != -1) {
                                 fos.write(buffer, 0, bytesRead);
                             }
                         }

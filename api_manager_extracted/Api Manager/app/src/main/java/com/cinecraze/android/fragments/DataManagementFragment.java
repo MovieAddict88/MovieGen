@@ -17,8 +17,10 @@ import com.cinecraze.android.R;
 import com.cinecraze.android.models.ContentItem;
 import com.cinecraze.android.services.GitHubService;
 import com.cinecraze.android.utils.DataManager;
+import com.cinecraze.android.utils.SQLiteExporterTest;
 import com.google.android.material.textfield.TextInputEditText;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -125,14 +127,8 @@ public class DataManagementFragment extends Fragment {
         optimizeStorage.setOnClickListener(v -> optimizeStorage());
         backupData.setOnClickListener(v -> backupData());
         restoreData.setOnClickListener(v -> restoreData());
-        testDrmHandling.setOnClickListener(v -> testDrmHandling());
+        testDrmHandling.setOnClickListener(v -> runComprehensiveTests());
         testTVSeriesStructure.setOnClickListener(v -> testTVSeriesImportStructure());
-        
-        // Add SQLite test button if it exists in layout
-        View testSQLiteButton = view.findViewById(R.id.test_sqlite_export);
-        if (testSQLiteButton != null) {
-            testSQLiteButton.setOnClickListener(v -> testSQLiteExport());
-        }
     }
 
     private void initializeServices() {
@@ -273,14 +269,14 @@ public class DataManagementFragment extends Fragment {
                 
                 requireActivity().runOnUiThread(() -> {
                     if (success) {
-                        showStatus("SQLite database exported to Downloads: playlist.db");
+                        showStatus("✅ SQLite database exported to Downloads: playlist.db");
                     } else {
-                        showStatus("SQLite export failed");
+                        showStatus("❌ SQLite export failed - check logs for details");
                     }
                 });
             } catch (Exception e) {
                 requireActivity().runOnUiThread(() -> {
-                    showStatus("SQLite export failed: " + e.getMessage());
+                    showStatus("❌ SQLite export failed: " + e.getMessage());
                 });
             }
         });
@@ -566,6 +562,36 @@ public class DataManagementFragment extends Fragment {
             }
         });
     }
+    
+    // Enhanced test method that includes SQLite export testing
+    private void runComprehensiveTests() {
+        executor.submit(() -> {
+            try {
+                // Test DRM handling
+                boolean drmSuccess = dataManager.testDrmHandling();
+                
+                // Test TV Series structure
+                boolean tvSuccess = dataManager.testTVSeriesImportStructure();
+                
+                // Test SQLite export
+                boolean sqliteSuccess = SQLiteExporterTest.testSQLiteExport(requireContext());
+                
+                requireActivity().runOnUiThread(() -> {
+                    StringBuilder result = new StringBuilder();
+                    result.append("Comprehensive Test Results:\n");
+                    result.append("DRM Handling: ").append(drmSuccess ? "✅" : "❌").append("\n");
+                    result.append("TV Series Structure: ").append(tvSuccess ? "✅" : "❌").append("\n");
+                    result.append("SQLite Export: ").append(sqliteSuccess ? "✅" : "❌");
+                    
+                    showStatus(result.toString());
+                });
+            } catch (Exception e) {
+                requireActivity().runOnUiThread(() -> {
+                    showStatus("Comprehensive test error: " + e.getMessage());
+                });
+            }
+        });
+    }
 
     private void testTVSeriesImportStructure() {
         executor.submit(() -> {
@@ -588,6 +614,7 @@ public class DataManagementFragment extends Fragment {
         });
     }
     
+    // SQLite export test method - can be called from menu or other UI elements
     private void testSQLiteExport() {
         executor.submit(() -> {
             try {
