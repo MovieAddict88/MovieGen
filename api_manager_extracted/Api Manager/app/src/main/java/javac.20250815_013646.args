@@ -1,0 +1,4 @@
+-cp
+/dev/null
+-Xlint:all
+./com/cinecraze/android/utils/JsonStructure.java

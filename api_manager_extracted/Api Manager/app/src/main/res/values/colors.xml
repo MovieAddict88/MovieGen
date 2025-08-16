@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Netflix Primary Colors -->
+    <color name="primary">#FFE50914</color>
+    <color name="primary_variant">#FFB81D00</color>
+    <color name="primary_dark">#FFB81D00</color>
+    
+    <!-- Netflix Secondary Colors -->
+    <color name="secondary">#FFE50914</color>
+    <color name="secondary_variant">#FFB81D00</color>
+    
+    <!-- Netflix Background Colors -->
+    <color name="background">#FF000000</color>
+    <color name="surface">#FF141414</color>
+    <color name="surface_light">#FF1F1F1F</color>
+    <color name="surface_dark">#FF0A0A0A</color>
+    
+    <!-- Netflix Text Colors -->
+    <color name="text_primary">#FFFFFFFF</color>
+    <color name="text_secondary">#FFB3B3B3</color>
+    <color name="text_disabled">#FF666666</color>
+    <color name="text">#FFFFFFFF</color>
+    
+    <!-- Netflix Status Colors -->
+    <color name="success">#FF46D369</color>
+    <color name="warning">#FFFFA500</color>
+    <color name="error">#FFE50914</color>
+    <color name="info">#FF0071EB</color>
+    <color name="danger">#FFE50914</color>
+    
+    <!-- Common Colors -->
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="transparent">#00000000</color>
+    
+    <!-- Netflix Brand Colors -->
+    <color name="netflix_red">#FFE50914</color>
+    <color name="netflix_red_dark">#FFB81D00</color>
+    <color name="netflix_red_light">#FFFF1A1A</color>
+    <color name="netflix_black">#FF000000</color>
+    <color name="netflix_dark_gray">#FF141414</color>
+    <color name="netflix_medium_gray">#FF1F1F1F</color>
+    <color name="netflix_light_gray">#FF333333</color>
+    <color name="netflix_text_white">#FFFFFFFF</color>
+    <color name="netflix_text_gray">#FFB3B3B3</color>
+    <color name="netflix_text_dark_gray">#FF666666</color>
+    
+    <!-- Material Design Colors (kept for compatibility) -->
+    <color name="material_red">#FFE50914</color>
+    <color name="material_pink">#FFE91E63</color>
+    <color name="material_purple">#FF9C27B0</color>
+    <color name="material_deep_purple">#FF673AB7</color>
+    <color name="material_indigo">#FF3F51B5</color>
+    <color name="material_blue">#FF2196F3</color>
+    <color name="material_light_blue">#FF03A9F4</color>
+    <color name="material_cyan">#FF00BCD4</color>
+    <color name="material_teal">#FF009688</color>
+    <color name="material_green">#FF46D369</color>
+    <color name="material_light_green">#FF8BC34A</color>
+    <color name="material_lime">#FFCDDC39</color>
+    <color name="material_yellow">#FFFFEB3B</color>
+    <color name="material_amber">#FFFFC107</color>
+    <color name="material_orange">#FFFF9800</color>
+    <color name="material_deep_orange">#FFFF5722</color>
+    <color name="material_brown">#FF795548</color>
+    <color name="material_grey">#FF9E9E9E</color>
+    <color name="material_blue_grey">#FF607D8B</color>
+    
+    <!-- Additional Colors for Content Management -->
+    <color name="placeholder_background">#FF333333</color>
+    <color name="error_color">#FFE50914</color>
+    
+    <!-- Netflix Card Colors -->
+    <color name="card_background">#FF1F1F1F</color>
+    <color name="card_border">#FF333333</color>
+    <color name="card_shadow">#80000000</color>
+    
+    <!-- Netflix Button Colors -->
+    <color name="button_primary">#FFE50914</color>
+    <color name="button_secondary">#FF333333</color>
+    <color name="button_text">#FFFFFFFF</color>
+    <color name="button_outline">#FFE50914</color>
+</resources>
